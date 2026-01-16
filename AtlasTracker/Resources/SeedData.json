@@ -1,0 +1,568 @@
+{
+  "version": 1,
+  "compounds": [
+    {
+      "name": "Vitamin C",
+      "category": "supplement",
+      "supportedUnits": ["mg", "g"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Vitamin D3",
+      "category": "supplement",
+      "supportedUnits": ["IU", "mcg"],
+      "defaultUnit": "IU",
+      "requiresInjection": false
+    },
+    {
+      "name": "Vitamin B12",
+      "category": "supplement",
+      "supportedUnits": ["mcg", "mg"],
+      "defaultUnit": "mcg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Omega-3 Fish Oil",
+      "category": "supplement",
+      "supportedUnits": ["mg", "g", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Magnesium Glycinate",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Zinc",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Creatine Monohydrate",
+      "category": "supplement",
+      "supportedUnits": ["g", "mg"],
+      "defaultUnit": "g",
+      "requiresInjection": false
+    },
+    {
+      "name": "Ashwagandha",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "L-Theanine",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Melatonin",
+      "category": "supplement",
+      "supportedUnits": ["mg", "mcg"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Coenzyme Q10 (CoQ10)",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Turmeric/Curcumin",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Probiotics",
+      "category": "supplement",
+      "supportedUnits": ["caps", "units"],
+      "defaultUnit": "caps",
+      "requiresInjection": false
+    },
+    {
+      "name": "Iron",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Calcium",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Vitamin K2",
+      "category": "supplement",
+      "supportedUnits": ["mcg", "caps"],
+      "defaultUnit": "mcg",
+      "requiresInjection": false
+    },
+    {
+      "name": "NAC (N-Acetyl Cysteine)",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Glutathione",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Berberine",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Alpha Lipoic Acid",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Testosterone Cypionate",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Testosterone Enanthate",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Testosterone Propionate",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Nandrolone Decanoate (Deca)",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Nandrolone Phenylpropionate (NPP)",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Boldenone Undecylenate (EQ)",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Trenbolone Acetate",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Trenbolone Enanthate",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Masteron (Drostanolone)",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Primobolan (Methenolone)",
+      "category": "ped",
+      "supportedUnits": ["mg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["glute_left", "glute_right", "delt_left", "delt_right", "quad_left", "quad_right", "vg_left", "vg_right"]
+    },
+    {
+      "name": "Anavar (Oxandrolone)",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Anadrol (Oxymetholone)",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Dianabol (Methandrostenolone)",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Winstrol (Stanozolol)",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Turinabol",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Proviron (Mesterolone)",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Halotestin",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Superdrol",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "HCG",
+      "category": "ped",
+      "supportedUnits": ["IU", "ml"],
+      "defaultUnit": "IU",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Clomid (Clomiphene)",
+      "category": "ped",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "HGH (Somatropin)",
+      "category": "peptide",
+      "supportedUnits": ["IU", "mg"],
+      "defaultUnit": "IU",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+    },
+    {
+      "name": "Tirzepatide",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+    },
+    {
+      "name": "Semaglutide",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+    },
+    {
+      "name": "BPC-157",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "TB-500",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "CJC-1295 (with DAC)",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "CJC-1295 (no DAC/Mod GRF)",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Ipamorelin",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "GHRP-6",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "GHRP-2",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Tesamorelin",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Sermorelin",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "IGF-1 LR3",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "MGF (Mechano Growth Factor)",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Melanotan II",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "PT-141 (Bremelanotide)",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Epithalon",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "GHK-Cu",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Thymosin Alpha-1",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "AOD-9604",
+      "category": "peptide",
+      "supportedUnits": ["mcg", "mg", "ml"],
+      "defaultUnit": "mcg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "Anastrozole (Arimidex)",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Letrozole (Femara)",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Exemestane (Aromasin)",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Cabergoline (Dostinex)",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Tamoxifen (Nolvadex)",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Raloxifene",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Metformin",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Trazodone",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Finasteride",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Dutasteride",
+      "category": "medicine",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Sildenafil",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Tadalafil",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Modafinil",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Liothyronine (T3)",
+      "category": "medicine",
+      "supportedUnits": ["mcg", "tabs"],
+      "defaultUnit": "mcg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Levothyroxine (T4)",
+      "category": "medicine",
+      "supportedUnits": ["mcg", "tabs"],
+      "defaultUnit": "mcg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Isotretinoin (Accutane)",
+      "category": "medicine",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    }
+  ]
+}
