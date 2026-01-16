@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 
 // MARK: - Dose Log View Model
 final class DoseLogViewModel: ObservableObject {
@@ -68,27 +67,15 @@ final class DoseLogViewModel: ObservableObject {
 
     // MARK: - Private Properties
     private let coreDataManager = CoreDataManager.shared
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
     init() {
         loadTrackedCompounds()
-        setupBindings()
     }
 
     init(preselectedCompound: Compound) {
         loadTrackedCompounds()
-        setupBindings()
         selectCompound(preselectedCompound)
-    }
-
-    // MARK: - Setup Bindings
-    private func setupBindings() {
-        $selectedCompound
-            .sink { [weak self] compound in
-                self?.updateForSelectedCompound(compound)
-            }
-            .store(in: &cancellables)
     }
 
     // MARK: - Load Tracked Compounds
@@ -99,22 +86,27 @@ final class DoseLogViewModel: ObservableObject {
     // MARK: - Select Compound
     func selectCompound(_ compound: Compound) {
         selectedCompound = compound
+        configureForCompound(compound)
     }
 
     func selectTrackedCompound(_ tracked: TrackedCompound) {
         guard let compound = tracked.compound else { return }
         selectedCompound = compound
+
+        // Pre-fill from tracked settings
         dosageAmount = String(tracked.dosageAmount)
         selectedUnit = tracked.dosageUnit
+
+        // Set recommended injection site
+        if compound.requiresInjection {
+            selectedInjectionSite = recommendedSiteRawValue
+        } else {
+            selectedInjectionSite = nil
+        }
     }
 
-    // MARK: - Update for Selected Compound
-    private func updateForSelectedCompound(_ compound: Compound?) {
-        guard let compound = compound else {
-            resetForm()
-            return
-        }
-
+    // MARK: - Configure for Compound
+    private func configureForCompound(_ compound: Compound) {
         // Set default unit
         selectedUnit = compound.defaultUnit
 
