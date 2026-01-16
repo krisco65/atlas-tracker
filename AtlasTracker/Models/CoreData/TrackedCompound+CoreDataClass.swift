@@ -226,4 +226,15 @@ public class TrackedCompound: NSManagedObject {
         guard let nextDose = nextDoseDate() else { return false }
         return nextDose < Date()
     }
+
+    // MARK: - Schedule Display String
+    var scheduleDisplayString: String {
+        var result = scheduleDescription
+        if let time = notificationTime {
+            let formatter = DateFormatter()
+            formatter.timeStyle = .short
+            result += " at \(formatter.string(from: time))"
+        }
+        return result
+    }
 }

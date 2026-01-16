@@ -56,6 +56,7 @@ struct CategoryFilterChip: View {
             .background(isSelected ? (category?.color ?? Color.accentPrimary) : Color.backgroundTertiary)
             .cornerRadius(20)
         }
+        .buttonStyle(.plain)
     }
 }
 

@@ -146,4 +146,8 @@ final class DashboardViewModel: ObservableObject {
     var activeCompoundsCount: Int {
         return coreDataManager.fetchTrackedCompounds(activeOnly: true).count
     }
+
+    var activeTrackedCompounds: [TrackedCompound] {
+        return coreDataManager.fetchTrackedCompounds(activeOnly: true)
+    }
 }

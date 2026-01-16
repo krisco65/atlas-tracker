@@ -3,6 +3,7 @@ import SwiftUI
 struct DashboardView: View {
     @StateObject private var viewModel = DashboardViewModel()
     @State private var selectedTracked: TrackedCompound?
+    @State private var showActiveCompounds = false
 
     var body: some View {
         NavigationStack {
@@ -51,6 +52,9 @@ struct DashboardView: View {
                         viewModel.loadData()
                     }
                 }
+            }
+            .sheet(isPresented: $showActiveCompounds) {
+                ActiveCompoundsSheet(trackedCompounds: viewModel.activeTrackedCompounds)
             }
         }
     }
@@ -169,13 +173,18 @@ struct DashboardView: View {
                 color: .accentPrimary
             )
 
-            StatCard(
-                title: "Active",
-                value: "\(viewModel.activeCompoundsCount)",
-                subtitle: "compounds",
-                icon: "pills.fill",
-                color: .accentSecondary
-            )
+            Button {
+                showActiveCompounds = true
+            } label: {
+                StatCard(
+                    title: "Active",
+                    value: "\(viewModel.activeCompoundsCount)",
+                    subtitle: "compounds",
+                    icon: "pills.fill",
+                    color: .accentSecondary
+                )
+            }
+            .buttonStyle(.plain)
         }
     }
 
@@ -331,21 +340,13 @@ struct QuickLogSheet: View {
     let tracked: TrackedCompound
     let onComplete: () -> Void
     @Environment(\.dismiss) private var dismiss
-    @StateObject private var viewModel: DoseLogViewModel
-
-    init(compound: Compound, tracked: TrackedCompound, onComplete: @escaping () -> Void) {
-        self.compound = compound
-        self.tracked = tracked
-        self.onComplete = onComplete
-        _viewModel = StateObject(wrappedValue: DoseLogViewModel(preselectedCompound: compound))
-    }
 
     var body: some View {
         NavigationStack {
-            LogDoseView(viewModel: viewModel, onSuccess: {
+            LogDoseView(onSuccess: {
                 onComplete()
                 dismiss()
-            })
+            }, preselectedCompound: compound)
             .navigationTitle("Log \(compound.name ?? "Dose")")
             .navigationBarTitleDisplayMode(.inline)
             .toolbar {
@@ -356,6 +357,86 @@ struct QuickLogSheet: View {
                 }
             }
         }
+    }
+}
+
+// MARK: - Active Compounds Sheet
+struct ActiveCompoundsSheet: View {
+    let trackedCompounds: [TrackedCompound]
+    @Environment(\.dismiss) private var dismiss
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.backgroundPrimary
+                    .ignoresSafeArea()
+
+                if trackedCompounds.isEmpty {
+                    EmptyStateView(
+                        icon: "pills",
+                        title: "No Active Compounds",
+                        message: "Start tracking compounds in the Library"
+                    )
+                } else {
+                    ScrollView {
+                        LazyVStack(spacing: 12) {
+                            ForEach(trackedCompounds, id: \.id) { tracked in
+                                ActiveCompoundRow(tracked: tracked)
+                            }
+                        }
+                        .padding()
+                    }
+                }
+            }
+            .navigationTitle("Active Compounds")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .navigationBarTrailing) {
+                    Button("Done") {
+                        dismiss()
+                    }
+                }
+            }
+        }
+    }
+}
+
+struct ActiveCompoundRow: View {
+    let tracked: TrackedCompound
+
+    var body: some View {
+        HStack(spacing: 12) {
+            Image(systemName: tracked.compound?.category.icon ?? "pills")
+                .foregroundColor(.white)
+                .frame(width: 40, height: 40)
+                .background(tracked.compound?.category.color ?? .accentPrimary)
+                .cornerRadius(8)
+
+            VStack(alignment: .leading, spacing: 4) {
+                Text(tracked.compound?.name ?? "Unknown")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+
+                Text(tracked.dosageString)
+                    .font(.subheadline)
+                    .foregroundColor(.textSecondary)
+
+                Text(tracked.scheduleDisplayString)
+                    .font(.caption)
+                    .foregroundColor(.textTertiary)
+            }
+
+            Spacer()
+
+            if tracked.notificationEnabled {
+                Image(systemName: "bell.fill")
+                    .foregroundColor(.accentPrimary)
+                    .font(.caption)
+            }
+        }
+        .padding()
+        .background(Color.backgroundSecondary)
+        .cornerRadius(12)
     }
 }
 

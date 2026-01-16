@@ -17,11 +17,13 @@ struct ContentView: View {
                 }
                 .tag(1)
 
-            LogDoseView()
-                .tabItem {
-                    Label("Log", systemImage: "plus.circle.fill")
-                }
-                .tag(2)
+            NavigationStack {
+                LogDoseView()
+            }
+            .tabItem {
+                Label("Log", systemImage: "plus.circle.fill")
+            }
+            .tag(2)
 
             AnalyticsView()
                 .tabItem {

@@ -142,6 +142,27 @@
       "requiresInjection": false
     },
     {
+      "name": "Glycine",
+      "category": "supplement",
+      "supportedUnits": ["g", "mg", "caps"],
+      "defaultUnit": "g",
+      "requiresInjection": false
+    },
+    {
+      "name": "TUDCA",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Milk Thistle",
+      "category": "supplement",
+      "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
       "name": "Testosterone Cypionate",
       "category": "ped",
       "supportedUnits": ["mg", "ml"],
@@ -453,6 +474,22 @@
       "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
     },
     {
+      "name": "Retatrutide",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+    },
+    {
+      "name": "Glow (SS-31/Elamipretide)",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
       "name": "Anastrozole (Arimidex)",
       "category": "medicine",
       "supportedUnits": ["mg", "tabs"],
@@ -561,6 +598,48 @@
       "name": "Isotretinoin (Accutane)",
       "category": "medicine",
       "supportedUnits": ["mg", "caps"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Amitriptyline",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Losartan",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Amlodipine",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Cialis (Tadalafil)",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Montelukast",
+      "category": "medicine",
+      "supportedUnits": ["mg", "tabs"],
+      "defaultUnit": "mg",
+      "requiresInjection": false
+    },
+    {
+      "name": "Minoxidil",
+      "category": "medicine",
+      "supportedUnits": ["mg", "ml", "tabs"],
       "defaultUnit": "mg",
       "requiresInjection": false
     }

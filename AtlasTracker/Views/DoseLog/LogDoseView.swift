@@ -1,65 +1,70 @@
 import SwiftUI
 
 struct LogDoseView: View {
-    @StateObject private var viewModel: DoseLogViewModel
+    @StateObject private var viewModel = DoseLogViewModel()
     var onSuccess: (() -> Void)?
+    var preselectedCompound: Compound?
 
-    init(viewModel: DoseLogViewModel? = nil, onSuccess: (() -> Void)? = nil) {
-        _viewModel = StateObject(wrappedValue: viewModel ?? DoseLogViewModel())
+    init(onSuccess: (() -> Void)? = nil, preselectedCompound: Compound? = nil) {
         self.onSuccess = onSuccess
+        self.preselectedCompound = preselectedCompound
     }
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.backgroundPrimary
-                    .ignoresSafeArea()
+        ZStack {
+            Color.backgroundPrimary
+                .ignoresSafeArea()
 
-                if viewModel.showSuccess {
-                    successView
-                } else {
-                    ScrollView {
-                        VStack(spacing: 24) {
-                            // Compound Selector
-                            compoundSelector
+            if viewModel.showSuccess {
+                successView
+            } else {
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Compound Selector
+                        compoundSelector
 
-                            if viewModel.selectedCompound != nil {
-                                // Dosage Section
-                                dosageSection
+                        if viewModel.selectedCompound != nil {
+                            // Dosage Section
+                            dosageSection
 
-                                // Injection Site Section (if applicable)
-                                if viewModel.requiresInjectionSite {
-                                    injectionSiteSection
-                                }
-
-                                // Date/Time Section
-                                dateTimeSection
-
-                                // Notes Section
-                                notesSection
-
-                                // Log Button
-                                logButton
+                            // Injection Site Section (if applicable)
+                            if viewModel.requiresInjectionSite {
+                                injectionSiteSection
                             }
 
-                            Spacer(minLength: 40)
+                            // Date/Time Section
+                            dateTimeSection
+
+                            // Notes Section
+                            notesSection
+
+                            // Log Button
+                            logButton
                         }
-                        .padding()
+
+                        Spacer(minLength: 40)
                     }
+                    .padding()
                 }
             }
-            .navigationTitle("Log Dose")
-            .navigationBarTitleDisplayMode(.large)
-            .onAppear {
-                viewModel.loadTrackedCompounds()
+        }
+        .navigationTitle("Log Dose")
+        .navigationBarTitleDisplayMode(.large)
+        .onAppear {
+            viewModel.loadTrackedCompounds()
+            if let compound = preselectedCompound {
+                viewModel.selectCompound(compound)
             }
-            .alert("Error", isPresented: .constant(viewModel.errorMessage != nil)) {
-                Button("OK") {
-                    viewModel.errorMessage = nil
-                }
-            } message: {
-                Text(viewModel.errorMessage ?? "")
+        }
+        .alert("Error", isPresented: Binding(
+            get: { viewModel.errorMessage != nil },
+            set: { if !$0 { viewModel.errorMessage = nil } }
+        )) {
+            Button("OK") {
+                viewModel.errorMessage = nil
             }
+        } message: {
+            Text(viewModel.errorMessage ?? "")
         }
     }
 
@@ -348,6 +353,8 @@ struct InjectionSiteButton: View {
 }
 
 #Preview {
-    LogDoseView()
-        .preferredColorScheme(.dark)
+    NavigationStack {
+        LogDoseView()
+    }
+    .preferredColorScheme(.dark)
 }
