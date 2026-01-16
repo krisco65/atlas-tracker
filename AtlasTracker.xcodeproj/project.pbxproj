@@ -1,0 +1,743 @@
+// !$*UTF8*$!
+{
+	archiveVersion = 1;
+	classes = {
+	};
+	objectVersion = 56;
+	objects = {
+
+/* Begin PBXBuildFile section */
+		/* App */
+		A1000001001 /* AtlasTrackerApp.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100001001 /* AtlasTrackerApp.swift */; };
+		A1000001002 /* AppDelegate.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100001002 /* AppDelegate.swift */; };
+
+		/* Models - Enums */
+		A1000002001 /* CompoundCategory.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002001 /* CompoundCategory.swift */; };
+		A1000002002 /* DosageUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002002 /* DosageUnit.swift */; };
+		A1000002003 /* ScheduleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002003 /* ScheduleType.swift */; };
+		A1000002004 /* InjectionSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002004 /* InjectionSite.swift */; };
+
+		/* Models - CoreData */
+		A1000003001 /* CoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003001 /* CoreDataModel.swift */; };
+		A1000003002 /* Compound+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003002 /* Compound+CoreDataClass.swift */; };
+		A1000003003 /* Compound+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003003 /* Compound+CoreDataProperties.swift */; };
+		A1000003004 /* TrackedCompound+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003004 /* TrackedCompound+CoreDataClass.swift */; };
+		A1000003005 /* TrackedCompound+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003005 /* TrackedCompound+CoreDataProperties.swift */; };
+		A1000003006 /* DoseLog+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003006 /* DoseLog+CoreDataClass.swift */; };
+		A1000003007 /* DoseLog+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003007 /* DoseLog+CoreDataProperties.swift */; };
+		A1000003008 /* Inventory+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003008 /* Inventory+CoreDataClass.swift */; };
+		A1000003009 /* Inventory+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003009 /* Inventory+CoreDataProperties.swift */; };
+		A1000003010 /* WeightEntry+CoreDataClass.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003010 /* WeightEntry+CoreDataClass.swift */; };
+		A1000003011 /* WeightEntry+CoreDataProperties.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003011 /* WeightEntry+CoreDataProperties.swift */; };
+
+		/* ViewModels */
+		A1000004001 /* LibraryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100004001 /* LibraryViewModel.swift */; };
+		A1000004002 /* DashboardViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100004002 /* DashboardViewModel.swift */; };
+		A1000004003 /* DoseLogViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100004003 /* DoseLogViewModel.swift */; };
+		A1000004004 /* CompoundDetailViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100004004 /* CompoundDetailViewModel.swift */; };
+
+		/* Services */
+		A1000005001 /* CoreDataManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005001 /* CoreDataManager.swift */; };
+		A1000005002 /* SeedDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005002 /* SeedDataService.swift */; };
+		A1000005003 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005003 /* NotificationService.swift */; };
+		A1000005004 /* InjectionSiteRecommendationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005004 /* InjectionSiteRecommendationService.swift */; };
+
+		/* Utilities */
+		A1000006001 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006001 /* Constants.swift */; };
+		A1000006002 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006002 /* Color+Theme.swift */; };
+		A1000006003 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006003 /* View+Extensions.swift */; };
+		A1000006004 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006004 /* Date+Extensions.swift */; };
+
+		/* Views - Main */
+		A1000007001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100007001 /* ContentView.swift */; };
+
+		/* Views - Components */
+		A1000008001 /* CategoryBadge.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100008001 /* CategoryBadge.swift */; };
+		A1000008002 /* SearchBarView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100008002 /* SearchBarView.swift */; };
+		A1000008003 /* EmptyStateView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100008003 /* EmptyStateView.swift */; };
+
+		/* Views - Library */
+		A1000009001 /* LibraryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100009001 /* LibraryView.swift */; };
+		A1000009002 /* CompoundListRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100009002 /* CompoundListRow.swift */; };
+		A1000009003 /* AddCustomCompoundView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100009003 /* AddCustomCompoundView.swift */; };
+
+		/* Views - CompoundDetail */
+		A1000010001 /* CompoundDetailView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100010001 /* CompoundDetailView.swift */; };
+		A1000010002 /* TrackingSetupView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100010002 /* TrackingSetupView.swift */; };
+
+		/* Views - Dashboard */
+		A1000011001 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100011001 /* DashboardView.swift */; };
+
+		/* Views - DoseLog */
+		A1000012001 /* LogDoseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100012001 /* LogDoseView.swift */; };
+
+		/* Views - Analytics */
+		A1000013001 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100013001 /* AnalyticsView.swift */; };
+
+		/* Views - Settings */
+		A1000014001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100014001 /* SettingsView.swift */; };
+
+		/* Resources */
+		A1000015001 /* SeedData.json in Resources */ = {isa = PBXBuildFile; fileRef = A1100015001 /* SeedData.json */; };
+		A1000015002 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1100015002 /* Assets.xcassets */; };
+/* End PBXBuildFile section */
+
+/* Begin PBXFileReference section */
+		A1200000001 /* AtlasTracker.app */ = {isa = PBXFileReference; explicitFileType = wrapper.application; includeInIndex = 0; path = AtlasTracker.app; sourceTree = BUILT_PRODUCTS_DIR; };
+
+		/* App */
+		A1100001001 /* AtlasTrackerApp.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtlasTrackerApp.swift; sourceTree = "<group>"; };
+		A1100001002 /* AppDelegate.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AppDelegate.swift; sourceTree = "<group>"; };
+
+		/* Models - Enums */
+		A1100002001 /* CompoundCategory.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompoundCategory.swift; sourceTree = "<group>"; };
+		A1100002002 /* DosageUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DosageUnit.swift; sourceTree = "<group>"; };
+		A1100002003 /* ScheduleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleType.swift; sourceTree = "<group>"; };
+		A1100002004 /* InjectionSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSite.swift; sourceTree = "<group>"; };
+
+		/* Models - CoreData */
+		A1100003001 /* CoreDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModel.swift; sourceTree = "<group>"; };
+		A1100003002 /* Compound+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Compound+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A1100003003 /* Compound+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Compound+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A1100003004 /* TrackedCompound+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackedCompound+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A1100003005 /* TrackedCompound+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "TrackedCompound+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A1100003006 /* DoseLog+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DoseLog+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A1100003007 /* DoseLog+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "DoseLog+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A1100003008 /* Inventory+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inventory+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A1100003009 /* Inventory+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Inventory+CoreDataProperties.swift"; sourceTree = "<group>"; };
+		A1100003010 /* WeightEntry+CoreDataClass.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeightEntry+CoreDataClass.swift"; sourceTree = "<group>"; };
+		A1100003011 /* WeightEntry+CoreDataProperties.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "WeightEntry+CoreDataProperties.swift"; sourceTree = "<group>"; };
+
+		/* ViewModels */
+		A1100004001 /* LibraryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryViewModel.swift; sourceTree = "<group>"; };
+		A1100004002 /* DashboardViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardViewModel.swift; sourceTree = "<group>"; };
+		A1100004003 /* DoseLogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoseLogViewModel.swift; sourceTree = "<group>"; };
+		A1100004004 /* CompoundDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompoundDetailViewModel.swift; sourceTree = "<group>"; };
+
+		/* Services */
+		A1100005001 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
+		A1100005002 /* SeedDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedDataService.swift; sourceTree = "<group>"; };
+		A1100005003 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
+		A1100005004 /* InjectionSiteRecommendationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSiteRecommendationService.swift; sourceTree = "<group>"; };
+
+		/* Utilities */
+		A1100006001 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
+		A1100006002 /* Color+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Theme.swift"; sourceTree = "<group>"; };
+		A1100006003 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
+		A1100006004 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+
+		/* Views - Main */
+		A1100007001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
+
+		/* Views - Components */
+		A1100008001 /* CategoryBadge.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CategoryBadge.swift; sourceTree = "<group>"; };
+		A1100008002 /* SearchBarView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SearchBarView.swift; sourceTree = "<group>"; };
+		A1100008003 /* EmptyStateView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EmptyStateView.swift; sourceTree = "<group>"; };
+
+		/* Views - Library */
+		A1100009001 /* LibraryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LibraryView.swift; sourceTree = "<group>"; };
+		A1100009002 /* CompoundListRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompoundListRow.swift; sourceTree = "<group>"; };
+		A1100009003 /* AddCustomCompoundView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AddCustomCompoundView.swift; sourceTree = "<group>"; };
+
+		/* Views - CompoundDetail */
+		A1100010001 /* CompoundDetailView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompoundDetailView.swift; sourceTree = "<group>"; };
+		A1100010002 /* TrackingSetupView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TrackingSetupView.swift; sourceTree = "<group>"; };
+
+		/* Views - Dashboard */
+		A1100011001 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+
+		/* Views - DoseLog */
+		A1100012001 /* LogDoseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogDoseView.swift; sourceTree = "<group>"; };
+
+		/* Views - Analytics */
+		A1100013001 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
+
+		/* Views - Settings */
+		A1100014001 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
+
+		/* Resources */
+		A1100015001 /* SeedData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SeedData.json; sourceTree = "<group>"; };
+		A1100015002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+/* End PBXFileReference section */
+
+/* Begin PBXFrameworksBuildPhase section */
+		A1300000001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXGroup section */
+		A1400000001 /* Root */ = {
+			isa = PBXGroup;
+			children = (
+				A1400000002 /* AtlasTracker */,
+				A1400000003 /* Products */,
+			);
+			sourceTree = "<group>";
+		};
+		A1400000002 /* AtlasTracker */ = {
+			isa = PBXGroup;
+			children = (
+				A1400001000 /* App */,
+				A1400002000 /* Models */,
+				A1400004000 /* ViewModels */,
+				A1400005000 /* Views */,
+				A1400006000 /* Services */,
+				A1400007000 /* Utilities */,
+				A1400008000 /* Resources */,
+			);
+			path = AtlasTracker;
+			sourceTree = "<group>";
+		};
+		A1400000003 /* Products */ = {
+			isa = PBXGroup;
+			children = (
+				A1200000001 /* AtlasTracker.app */,
+			);
+			name = Products;
+			sourceTree = "<group>";
+		};
+		A1400001000 /* App */ = {
+			isa = PBXGroup;
+			children = (
+				A1100001001 /* AtlasTrackerApp.swift */,
+				A1100001002 /* AppDelegate.swift */,
+			);
+			path = App;
+			sourceTree = "<group>";
+		};
+		A1400002000 /* Models */ = {
+			isa = PBXGroup;
+			children = (
+				A1400002001 /* Enums */,
+				A1400002002 /* CoreData */,
+			);
+			path = Models;
+			sourceTree = "<group>";
+		};
+		A1400002001 /* Enums */ = {
+			isa = PBXGroup;
+			children = (
+				A1100002001 /* CompoundCategory.swift */,
+				A1100002002 /* DosageUnit.swift */,
+				A1100002003 /* ScheduleType.swift */,
+				A1100002004 /* InjectionSite.swift */,
+			);
+			path = Enums;
+			sourceTree = "<group>";
+		};
+		A1400002002 /* CoreData */ = {
+			isa = PBXGroup;
+			children = (
+				A1100003001 /* CoreDataModel.swift */,
+				A1100003002 /* Compound+CoreDataClass.swift */,
+				A1100003003 /* Compound+CoreDataProperties.swift */,
+				A1100003004 /* TrackedCompound+CoreDataClass.swift */,
+				A1100003005 /* TrackedCompound+CoreDataProperties.swift */,
+				A1100003006 /* DoseLog+CoreDataClass.swift */,
+				A1100003007 /* DoseLog+CoreDataProperties.swift */,
+				A1100003008 /* Inventory+CoreDataClass.swift */,
+				A1100003009 /* Inventory+CoreDataProperties.swift */,
+				A1100003010 /* WeightEntry+CoreDataClass.swift */,
+				A1100003011 /* WeightEntry+CoreDataProperties.swift */,
+			);
+			path = CoreData;
+			sourceTree = "<group>";
+		};
+		A1400004000 /* ViewModels */ = {
+			isa = PBXGroup;
+			children = (
+				A1100004001 /* LibraryViewModel.swift */,
+				A1100004002 /* DashboardViewModel.swift */,
+				A1100004003 /* DoseLogViewModel.swift */,
+				A1100004004 /* CompoundDetailViewModel.swift */,
+			);
+			path = ViewModels;
+			sourceTree = "<group>";
+		};
+		A1400005000 /* Views */ = {
+			isa = PBXGroup;
+			children = (
+				A1400005001 /* Main */,
+				A1400005002 /* Components */,
+				A1400005003 /* Library */,
+				A1400005004 /* CompoundDetail */,
+				A1400005005 /* Dashboard */,
+				A1400005006 /* DoseLog */,
+				A1400005007 /* Analytics */,
+				A1400005008 /* Settings */,
+			);
+			path = Views;
+			sourceTree = "<group>";
+		};
+		A1400005001 /* Main */ = {
+			isa = PBXGroup;
+			children = (
+				A1100007001 /* ContentView.swift */,
+			);
+			path = Main;
+			sourceTree = "<group>";
+		};
+		A1400005002 /* Components */ = {
+			isa = PBXGroup;
+			children = (
+				A1100008001 /* CategoryBadge.swift */,
+				A1100008002 /* SearchBarView.swift */,
+				A1100008003 /* EmptyStateView.swift */,
+			);
+			path = Components;
+			sourceTree = "<group>";
+		};
+		A1400005003 /* Library */ = {
+			isa = PBXGroup;
+			children = (
+				A1100009001 /* LibraryView.swift */,
+				A1100009002 /* CompoundListRow.swift */,
+				A1100009003 /* AddCustomCompoundView.swift */,
+			);
+			path = Library;
+			sourceTree = "<group>";
+		};
+		A1400005004 /* CompoundDetail */ = {
+			isa = PBXGroup;
+			children = (
+				A1100010001 /* CompoundDetailView.swift */,
+				A1100010002 /* TrackingSetupView.swift */,
+			);
+			path = CompoundDetail;
+			sourceTree = "<group>";
+		};
+		A1400005005 /* Dashboard */ = {
+			isa = PBXGroup;
+			children = (
+				A1100011001 /* DashboardView.swift */,
+			);
+			path = Dashboard;
+			sourceTree = "<group>";
+		};
+		A1400005006 /* DoseLog */ = {
+			isa = PBXGroup;
+			children = (
+				A1100012001 /* LogDoseView.swift */,
+			);
+			path = DoseLog;
+			sourceTree = "<group>";
+		};
+		A1400005007 /* Analytics */ = {
+			isa = PBXGroup;
+			children = (
+				A1100013001 /* AnalyticsView.swift */,
+			);
+			path = Analytics;
+			sourceTree = "<group>";
+		};
+		A1400005008 /* Settings */ = {
+			isa = PBXGroup;
+			children = (
+				A1100014001 /* SettingsView.swift */,
+			);
+			path = Settings;
+			sourceTree = "<group>";
+		};
+		A1400006000 /* Services */ = {
+			isa = PBXGroup;
+			children = (
+				A1100005001 /* CoreDataManager.swift */,
+				A1100005002 /* SeedDataService.swift */,
+				A1100005003 /* NotificationService.swift */,
+				A1100005004 /* InjectionSiteRecommendationService.swift */,
+			);
+			path = Services;
+			sourceTree = "<group>";
+		};
+		A1400007000 /* Utilities */ = {
+			isa = PBXGroup;
+			children = (
+				A1100006001 /* Constants.swift */,
+				A1400007001 /* Extensions */,
+			);
+			path = Utilities;
+			sourceTree = "<group>";
+		};
+		A1400007001 /* Extensions */ = {
+			isa = PBXGroup;
+			children = (
+				A1100006002 /* Color+Theme.swift */,
+				A1100006003 /* View+Extensions.swift */,
+				A1100006004 /* Date+Extensions.swift */,
+			);
+			path = Extensions;
+			sourceTree = "<group>";
+		};
+		A1400008000 /* Resources */ = {
+			isa = PBXGroup;
+			children = (
+				A1100015001 /* SeedData.json */,
+				A1100015002 /* Assets.xcassets */,
+			);
+			path = Resources;
+			sourceTree = "<group>";
+		};
+/* End PBXGroup section */
+
+/* Begin PBXNativeTarget section */
+		A1500000001 /* AtlasTracker */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A1700000001 /* Build configuration list for PBXNativeTarget "AtlasTracker" */;
+			buildPhases = (
+				A1600000001 /* Sources */,
+				A1300000001 /* Frameworks */,
+				A1600000002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+			);
+			name = AtlasTracker;
+			productName = AtlasTracker;
+			productReference = A1200000001 /* AtlasTracker.app */;
+			productType = "com.apple.product-type.application";
+		};
+/* End PBXNativeTarget section */
+
+/* Begin PBXProject section */
+		A1800000001 /* Project object */ = {
+			isa = PBXProject;
+			attributes = {
+				BuildIndependentTargetsInParallel = 1;
+				LastSwiftUpdateCheck = 1500;
+				LastUpgradeCheck = 1500;
+				TargetAttributes = {
+					A1500000001 = {
+						CreatedOnToolsVersion = 15.0;
+					};
+				};
+			};
+			buildConfigurationList = A1700000002 /* Build configuration list for PBXProject "AtlasTracker" */;
+			compatibilityVersion = "Xcode 14.0";
+			developmentRegion = en;
+			hasScannedForEncodings = 0;
+			knownRegions = (
+				en,
+				Base,
+			);
+			mainGroup = A1400000001 /* Root */;
+			productRefGroup = A1400000003 /* Products */;
+			projectDirPath = "";
+			projectRoot = "";
+			targets = (
+				A1500000001 /* AtlasTracker */,
+			);
+		};
+/* End PBXProject section */
+
+/* Begin PBXResourcesBuildPhase section */
+		A1600000002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A1000015001 /* SeedData.json in Resources */,
+				A1000015002 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXResourcesBuildPhase section */
+
+/* Begin PBXSourcesBuildPhase section */
+		A1600000001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				/* App */
+				A1000001001 /* AtlasTrackerApp.swift in Sources */,
+				A1000001002 /* AppDelegate.swift in Sources */,
+
+				/* Models - Enums */
+				A1000002001 /* CompoundCategory.swift in Sources */,
+				A1000002002 /* DosageUnit.swift in Sources */,
+				A1000002003 /* ScheduleType.swift in Sources */,
+				A1000002004 /* InjectionSite.swift in Sources */,
+
+				/* Models - CoreData */
+				A1000003001 /* CoreDataModel.swift in Sources */,
+				A1000003002 /* Compound+CoreDataClass.swift in Sources */,
+				A1000003003 /* Compound+CoreDataProperties.swift in Sources */,
+				A1000003004 /* TrackedCompound+CoreDataClass.swift in Sources */,
+				A1000003005 /* TrackedCompound+CoreDataProperties.swift in Sources */,
+				A1000003006 /* DoseLog+CoreDataClass.swift in Sources */,
+				A1000003007 /* DoseLog+CoreDataProperties.swift in Sources */,
+				A1000003008 /* Inventory+CoreDataClass.swift in Sources */,
+				A1000003009 /* Inventory+CoreDataProperties.swift in Sources */,
+				A1000003010 /* WeightEntry+CoreDataClass.swift in Sources */,
+				A1000003011 /* WeightEntry+CoreDataProperties.swift in Sources */,
+
+				/* ViewModels */
+				A1000004001 /* LibraryViewModel.swift in Sources */,
+				A1000004002 /* DashboardViewModel.swift in Sources */,
+				A1000004003 /* DoseLogViewModel.swift in Sources */,
+				A1000004004 /* CompoundDetailViewModel.swift in Sources */,
+
+				/* Services */
+				A1000005001 /* CoreDataManager.swift in Sources */,
+				A1000005002 /* SeedDataService.swift in Sources */,
+				A1000005003 /* NotificationService.swift in Sources */,
+				A1000005004 /* InjectionSiteRecommendationService.swift in Sources */,
+
+				/* Utilities */
+				A1000006001 /* Constants.swift in Sources */,
+				A1000006002 /* Color+Theme.swift in Sources */,
+				A1000006003 /* View+Extensions.swift in Sources */,
+				A1000006004 /* Date+Extensions.swift in Sources */,
+
+				/* Views - Main */
+				A1000007001 /* ContentView.swift in Sources */,
+
+				/* Views - Components */
+				A1000008001 /* CategoryBadge.swift in Sources */,
+				A1000008002 /* SearchBarView.swift in Sources */,
+				A1000008003 /* EmptyStateView.swift in Sources */,
+
+				/* Views - Library */
+				A1000009001 /* LibraryView.swift in Sources */,
+				A1000009002 /* CompoundListRow.swift in Sources */,
+				A1000009003 /* AddCustomCompoundView.swift in Sources */,
+
+				/* Views - CompoundDetail */
+				A1000010001 /* CompoundDetailView.swift in Sources */,
+				A1000010002 /* TrackingSetupView.swift in Sources */,
+
+				/* Views - Dashboard */
+				A1000011001 /* DashboardView.swift in Sources */,
+
+				/* Views - DoseLog */
+				A1000012001 /* LogDoseView.swift in Sources */,
+
+				/* Views - Analytics */
+				A1000013001 /* AnalyticsView.swift in Sources */,
+
+				/* Views - Settings */
+				A1000014001 /* SettingsView.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+/* End PBXSourcesBuildPhase section */
+
+/* Begin XCBuildConfiguration section */
+		A1900000001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = dwarf;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_TESTABILITY = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_DYNAMIC_NO_PIC = NO;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_OPTIMIZATION_LEVEL = 0;
+				GCC_PREPROCESSOR_DEFINITIONS = (
+					"DEBUG=1",
+					"$(inherited)",
+				);
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = INCLUDE_SOURCE;
+				MTL_FAST_MATH = YES;
+				ONLY_ACTIVE_ARCH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_ACTIVE_COMPILATION_CONDITIONS = "DEBUG $(inherited)";
+				SWIFT_OPTIMIZATION_LEVEL = "-Onone";
+			};
+			name = Debug;
+		};
+		A1900000002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ALWAYS_SEARCH_USER_PATHS = NO;
+				ASSETCATALOG_COMPILER_GENERATE_SWIFT_ASSET_SYMBOL_EXTENSIONS = YES;
+				CLANG_ANALYZER_NONNULL = YES;
+				CLANG_ANALYZER_NUMBER_OBJECT_CONVERSION = YES_AGGRESSIVE;
+				CLANG_CXX_LANGUAGE_STANDARD = "gnu++20";
+				CLANG_ENABLE_MODULES = YES;
+				CLANG_ENABLE_OBJC_ARC = YES;
+				CLANG_ENABLE_OBJC_WEAK = YES;
+				CLANG_WARN_BLOCK_CAPTURE_AUTORELEASING = YES;
+				CLANG_WARN_BOOL_CONVERSION = YES;
+				CLANG_WARN_COMMA = YES;
+				CLANG_WARN_CONSTANT_CONVERSION = YES;
+				CLANG_WARN_DEPRECATED_OBJC_IMPLEMENTATIONS = YES;
+				CLANG_WARN_DIRECT_OBJC_ISA_USAGE = YES_ERROR;
+				CLANG_WARN_DOCUMENTATION_COMMENTS = YES;
+				CLANG_WARN_EMPTY_BODY = YES;
+				CLANG_WARN_ENUM_CONVERSION = YES;
+				CLANG_WARN_INFINITE_RECURSION = YES;
+				CLANG_WARN_INT_CONVERSION = YES;
+				CLANG_WARN_NON_LITERAL_NULL_CONVERSION = YES;
+				CLANG_WARN_OBJC_IMPLICIT_RETAIN_SELF = YES;
+				CLANG_WARN_OBJC_LITERAL_CONVERSION = YES;
+				CLANG_WARN_OBJC_ROOT_CLASS = YES_ERROR;
+				CLANG_WARN_QUOTED_INCLUDE_IN_FRAMEWORK_HEADER = YES;
+				CLANG_WARN_RANGE_LOOP_ANALYSIS = YES;
+				CLANG_WARN_STRICT_PROTOTYPES = YES;
+				CLANG_WARN_SUSPICIOUS_MOVE = YES;
+				CLANG_WARN_UNGUARDED_AVAILABILITY = YES_AGGRESSIVE;
+				CLANG_WARN_UNREACHABLE_CODE = YES;
+				CLANG_WARN__DUPLICATE_METHOD_MATCH = YES;
+				COPY_PHASE_STRIP = NO;
+				DEBUG_INFORMATION_FORMAT = "dwarf-with-dsym";
+				ENABLE_NS_ASSERTIONS = NO;
+				ENABLE_STRICT_OBJC_MSGSEND = YES;
+				ENABLE_USER_SCRIPT_SANDBOXING = YES;
+				GCC_C_LANGUAGE_STANDARD = gnu17;
+				GCC_NO_COMMON_BLOCKS = YES;
+				GCC_WARN_64_TO_32_BIT_CONVERSION = YES;
+				GCC_WARN_ABOUT_RETURN_TYPE = YES_ERROR;
+				GCC_WARN_UNDECLARED_SELECTOR = YES;
+				GCC_WARN_UNINITIALIZED_AUTOS = YES_AGGRESSIVE;
+				GCC_WARN_UNUSED_FUNCTION = YES;
+				GCC_WARN_UNUSED_VARIABLE = YES;
+				IPHONEOS_DEPLOYMENT_TARGET = 16.0;
+				LOCALIZATION_PREFERS_STRING_CATALOGS = YES;
+				MTL_ENABLE_DEBUG_INFO = NO;
+				MTL_FAST_MATH = YES;
+				SDKROOT = iphoneos;
+				SWIFT_COMPILATION_MODE = wholemodule;
+				VALIDATE_PRODUCT = YES;
+			};
+			name = Release;
+		};
+		A1900000003 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Atlas Tracker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock Atlas Tracker with Face ID";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atlastracker.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Debug;
+		};
+		A1900000004 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				ASSETCATALOG_COMPILER_APPICON_NAME = AppIcon;
+				ASSETCATALOG_COMPILER_GLOBAL_ACCENT_COLOR_NAME = AccentColor;
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				ENABLE_PREVIEWS = YES;
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_KEY_CFBundleDisplayName = "Atlas Tracker";
+				INFOPLIST_KEY_LSApplicationCategoryType = "public.app-category.healthcare-fitness";
+				INFOPLIST_KEY_NSFaceIDUsageDescription = "Unlock Atlas Tracker with Face ID";
+				INFOPLIST_KEY_UIApplicationSceneManifest_Generation = YES;
+				INFOPLIST_KEY_UIApplicationSupportsIndirectInputEvents = YES;
+				INFOPLIST_KEY_UILaunchScreen_Generation = YES;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations = UIInterfaceOrientationPortrait;
+				INFOPLIST_KEY_UISupportedInterfaceOrientations_iPad = "UIInterfaceOrientationLandscapeLeft UIInterfaceOrientationLandscapeRight UIInterfaceOrientationPortrait UIInterfaceOrientationPortraitUpsideDown";
+				INFOPLIST_KEY_UIUserInterfaceStyle = Dark;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atlastracker.app;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SUPPORTS_MAC_DESIGNED_FOR_IPHONE_IPAD = NO;
+				SWIFT_EMIT_LOC_STRINGS = YES;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+			};
+			name = Release;
+		};
+/* End XCBuildConfiguration section */
+
+/* Begin XCConfigurationList section */
+		A1700000001 /* Build configuration list for PBXNativeTarget "AtlasTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1900000003 /* Debug */,
+				A1900000004 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A1700000002 /* Build configuration list for PBXProject "AtlasTracker" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A1900000001 /* Debug */,
+				A1900000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+/* End XCConfigurationList section */
+	};
+	rootObject = A1800000001 /* Project object */;
+}
