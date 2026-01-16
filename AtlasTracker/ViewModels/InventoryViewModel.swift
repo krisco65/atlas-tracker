@@ -60,7 +60,10 @@ final class InventoryViewModel: ObservableObject {
     /// Returns compounds that don't already have inventory
     var compoundsWithoutInventory: [Compound] {
         let existingCompoundIds = Set(inventoryItems.compactMap { $0.compound?.id })
-        return eligibleCompounds.filter { !existingCompoundIds.contains($0.id) }
+        return eligibleCompounds.filter { compound in
+            guard let id = compound.id else { return true }
+            return !existingCompoundIds.contains(id)
+        }
     }
 
     // MARK: - Form Validation
