@@ -14,31 +14,12 @@ struct BodyDiagramView: View {
     }
 
     var body: some View {
-        VStack(spacing: 16) {
-            // Legend
-            HStack(spacing: 20) {
-                LegendItem(color: .accentPrimary, label: "Selected")
-                LegendItem(color: .statusWarning, label: "Last Used")
-                LegendItem(color: .statusSuccess, label: "Recommended")
-            }
-            .font(.caption)
-
-            // Body Diagram
-            switch injectionType {
-            case .intramuscular:
-                PEDBodyDiagramView(
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite
-                )
-            case .subcutaneous:
-                PeptideBodyDiagramView(
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite
-                )
-            }
-        }
+        VisualBodySilhouette(
+            injectionType: injectionType,
+            selectedSite: $selectedSite,
+            lastUsedSite: lastUsedSite,
+            recommendedSite: recommendedSite
+        )
     }
 }
 

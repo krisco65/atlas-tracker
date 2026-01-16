@@ -304,7 +304,7 @@
       "supportedUnits": ["IU", "ml"],
       "defaultUnit": "IU",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Clomid (Clomiphene)",
@@ -319,7 +319,7 @@
       "supportedUnits": ["IU", "mg"],
       "defaultUnit": "IU",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower", "left_love_handle_upper", "right_love_handle_upper", "thigh_left", "thigh_right"]
     },
     {
       "name": "Tirzepatide",
@@ -327,7 +327,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower", "left_love_handle_upper", "right_love_handle_upper", "thigh_left", "thigh_right"]
     },
     {
       "name": "Semaglutide",
@@ -335,7 +335,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower", "left_love_handle_upper", "right_love_handle_upper", "thigh_left", "thigh_right"]
     },
     {
       "name": "BPC-157",
@@ -343,7 +343,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "TB-500",
@@ -351,7 +351,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "CJC-1295 (with DAC)",
@@ -359,7 +359,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "CJC-1295 (no DAC/Mod GRF)",
@@ -367,7 +367,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Ipamorelin",
@@ -375,7 +375,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "GHRP-6",
@@ -383,7 +383,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "GHRP-2",
@@ -391,7 +391,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Tesamorelin",
@@ -399,7 +399,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Sermorelin",
@@ -407,7 +407,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "IGF-1 LR3",
@@ -415,7 +415,7 @@
       "supportedUnits": ["mcg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "MGF (Mechano Growth Factor)",
@@ -423,7 +423,7 @@
       "supportedUnits": ["mcg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Melanotan II",
@@ -431,7 +431,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "PT-141 (Bremelanotide)",
@@ -439,7 +439,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Epithalon",
@@ -447,7 +447,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "GHK-Cu",
@@ -455,7 +455,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Thymosin Alpha-1",
@@ -463,7 +463,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "AOD-9604",
@@ -471,7 +471,7 @@
       "supportedUnits": ["mcg", "mg", "ml"],
       "defaultUnit": "mcg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Retatrutide",
@@ -479,7 +479,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower", "left_love_handle_upper", "right_love_handle_upper", "thigh_left", "thigh_right"]
     },
     {
       "name": "GLOW (BPC-157 + TB-500 + GHK-Cu)",
@@ -487,7 +487,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "MOTS-C",
@@ -495,7 +495,7 @@
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",
       "requiresInjection": true,
-      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
       "name": "Anastrozole (Arimidex)",

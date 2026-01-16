@@ -85,38 +85,60 @@ enum PEDInjectionSite: String, CaseIterable, Codable {
             ("Ventrogluteal", [.vgLeft, .vgRight])
         ]
     }
+
+    // For visual body map positioning (front view)
+    var bodyMapPosition: (x: CGFloat, y: CGFloat) {
+        switch self {
+        case .gluteLeft: return (0.30, 0.58)
+        case .gluteRight: return (0.70, 0.58)
+        case .deltLeft: return (0.15, 0.22)
+        case .deltRight: return (0.85, 0.22)
+        case .quadLeft: return (0.35, 0.72)
+        case .quadRight: return (0.65, 0.72)
+        case .vgLeft: return (0.22, 0.52)
+        case .vgRight: return (0.78, 0.52)
+        }
+    }
 }
 
 // MARK: - Peptide Injection Sites (Subcutaneous)
 enum PeptideInjectionSite: String, CaseIterable, Codable {
-    // Belly quadrants
-    case bellyUpperLeft = "belly_upper_left"
-    case bellyUpperRight = "belly_upper_right"
-    case bellyLowerLeft = "belly_lower_left"
-    case bellyLowerRight = "belly_lower_right"
+    // Left side of belly button (2 zones)
+    case leftBellyUpper = "left_belly_upper"
+    case leftBellyLower = "left_belly_lower"
 
-    // Love handles
-    case loveHandleLeft = "love_handle_left"
-    case loveHandleRight = "love_handle_right"
+    // Right side of belly button (2 zones)
+    case rightBellyUpper = "right_belly_upper"
+    case rightBellyLower = "right_belly_lower"
 
-    // Glute quadrants for SubQ
+    // Left love handle (2 zones)
+    case leftLoveHandleUpper = "left_love_handle_upper"
+    case leftLoveHandleLower = "left_love_handle_lower"
+
+    // Right love handle (2 zones)
+    case rightLoveHandleUpper = "right_love_handle_upper"
+    case rightLoveHandleLower = "right_love_handle_lower"
+
+    // Glute quadrants for SubQ (4 zones)
     case gluteLeftUpper = "glute_left_upper"
     case gluteLeftLower = "glute_left_lower"
     case gluteRightUpper = "glute_right_upper"
     case gluteRightLower = "glute_right_lower"
 
-    // Thighs
+    // Thighs (2 zones)
     case thighLeft = "thigh_left"
     case thighRight = "thigh_right"
 
     var displayName: String {
         switch self {
-        case .bellyUpperLeft: return "Belly - Upper Left"
-        case .bellyUpperRight: return "Belly - Upper Right"
-        case .bellyLowerLeft: return "Belly - Lower Left"
-        case .bellyLowerRight: return "Belly - Lower Right"
-        case .loveHandleLeft: return "Left Love Handle"
-        case .loveHandleRight: return "Right Love Handle"
+        case .leftBellyUpper: return "Left of Navel - Upper"
+        case .leftBellyLower: return "Left of Navel - Lower"
+        case .rightBellyUpper: return "Right of Navel - Upper"
+        case .rightBellyLower: return "Right of Navel - Lower"
+        case .leftLoveHandleUpper: return "Left Love Handle - Upper"
+        case .leftLoveHandleLower: return "Left Love Handle - Lower"
+        case .rightLoveHandleUpper: return "Right Love Handle - Upper"
+        case .rightLoveHandleLower: return "Right Love Handle - Lower"
         case .gluteLeftUpper: return "Left Glute - Upper"
         case .gluteLeftLower: return "Left Glute - Lower"
         case .gluteRightUpper: return "Right Glute - Upper"
@@ -128,12 +150,14 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
 
     var shortName: String {
         switch self {
-        case .bellyUpperLeft: return "Belly UL"
-        case .bellyUpperRight: return "Belly UR"
-        case .bellyLowerLeft: return "Belly LL"
-        case .bellyLowerRight: return "Belly LR"
-        case .loveHandleLeft: return "L Handle"
-        case .loveHandleRight: return "R Handle"
+        case .leftBellyUpper: return "L Belly U"
+        case .leftBellyLower: return "L Belly L"
+        case .rightBellyUpper: return "R Belly U"
+        case .rightBellyLower: return "R Belly L"
+        case .leftLoveHandleUpper: return "L Handle U"
+        case .leftLoveHandleLower: return "L Handle L"
+        case .rightLoveHandleUpper: return "R Handle U"
+        case .rightLoveHandleLower: return "R Handle L"
         case .gluteLeftUpper: return "L Glute U"
         case .gluteLeftLower: return "L Glute L"
         case .gluteRightUpper: return "R Glute U"
@@ -145,9 +169,9 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
 
     var bodyPart: String {
         switch self {
-        case .bellyUpperLeft, .bellyUpperRight, .bellyLowerLeft, .bellyLowerRight:
+        case .leftBellyUpper, .leftBellyLower, .rightBellyUpper, .rightBellyLower:
             return "Belly"
-        case .loveHandleLeft, .loveHandleRight:
+        case .leftLoveHandleUpper, .leftLoveHandleLower, .rightLoveHandleUpper, .rightLoveHandleLower:
             return "Love Handles"
         case .gluteLeftUpper, .gluteLeftLower, .gluteRightUpper, .gluteRightLower:
             return "Glutes"
@@ -158,7 +182,7 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
 
     var isLeftSide: Bool {
         switch self {
-        case .bellyUpperLeft, .bellyLowerLeft, .loveHandleLeft,
+        case .leftBellyUpper, .leftBellyLower, .leftLoveHandleUpper, .leftLoveHandleLower,
              .gluteLeftUpper, .gluteLeftLower, .thighLeft:
             return true
         default:
@@ -168,11 +192,33 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
 
     static var grouped: [(name: String, sites: [PeptideInjectionSite])] {
         return [
-            ("Belly", [.bellyUpperLeft, .bellyUpperRight, .bellyLowerLeft, .bellyLowerRight]),
-            ("Love Handles", [.loveHandleLeft, .loveHandleRight]),
+            ("Belly (Left of Navel)", [.leftBellyUpper, .leftBellyLower]),
+            ("Belly (Right of Navel)", [.rightBellyUpper, .rightBellyLower]),
+            ("Left Love Handle", [.leftLoveHandleUpper, .leftLoveHandleLower]),
+            ("Right Love Handle", [.rightLoveHandleUpper, .rightLoveHandleLower]),
             ("Glutes", [.gluteLeftUpper, .gluteLeftLower, .gluteRightUpper, .gluteRightLower]),
             ("Thighs", [.thighLeft, .thighRight])
         ]
+    }
+
+    // For visual body map positioning
+    var bodyMapPosition: (x: CGFloat, y: CGFloat) {
+        switch self {
+        case .leftBellyUpper: return (0.35, 0.42)
+        case .leftBellyLower: return (0.35, 0.48)
+        case .rightBellyUpper: return (0.65, 0.42)
+        case .rightBellyLower: return (0.65, 0.48)
+        case .leftLoveHandleUpper: return (0.18, 0.42)
+        case .leftLoveHandleLower: return (0.18, 0.48)
+        case .rightLoveHandleUpper: return (0.82, 0.42)
+        case .rightLoveHandleLower: return (0.82, 0.48)
+        case .gluteLeftUpper: return (0.35, 0.56)
+        case .gluteLeftLower: return (0.35, 0.62)
+        case .gluteRightUpper: return (0.65, 0.56)
+        case .gluteRightLower: return (0.65, 0.62)
+        case .thighLeft: return (0.35, 0.72)
+        case .thighRight: return (0.65, 0.72)
+        }
     }
 }
 
