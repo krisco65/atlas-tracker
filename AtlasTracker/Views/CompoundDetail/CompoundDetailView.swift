@@ -55,7 +55,20 @@ struct CompoundDetailView: View {
         }
         .navigationTitle(viewModel.compound.name ?? "Compound")
         .navigationBarTitleDisplayMode(.inline)
+        .navigationBarBackButtonHidden(true)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                Button {
+                    dismiss()
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "chevron.left")
+                            .fontWeight(.semibold)
+                        Text("Library")
+                    }
+                    .foregroundColor(.accentPrimary)
+                }
+            }
             ToolbarItem(placement: .navigationBarTrailing) {
                 Button {
                     viewModel.toggleFavorite()
