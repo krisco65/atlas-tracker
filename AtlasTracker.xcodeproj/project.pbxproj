@@ -77,6 +77,15 @@
 		/* Views - Settings */
 		A1000014001 /* SettingsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100014001 /* SettingsView.swift */; };
 
+		/* Views - InjectionSite */
+		A1000016001 /* BodyDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016001 /* BodyDiagramView.swift */; };
+		A1000016002 /* PEDBodyDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016002 /* PEDBodyDiagramView.swift */; };
+		A1000016003 /* PeptideBodyDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016003 /* PeptideBodyDiagramView.swift */; };
+		A1000016004 /* InjectionSitePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016004 /* InjectionSitePickerView.swift */; };
+
+		/* Preview Content */
+		A1000017001 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100017001 /* PreviewData.swift */; };
+
 		/* Resources */
 		A1000015001 /* SeedData.json in Resources */ = {isa = PBXBuildFile; fileRef = A1100015001 /* SeedData.json */; };
 		A1000015002 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1100015002 /* Assets.xcassets */; };
@@ -155,6 +164,15 @@
 		/* Views - Settings */
 		A1100014001 /* SettingsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SettingsView.swift; sourceTree = "<group>"; };
 
+		/* Views - InjectionSite */
+		A1100016001 /* BodyDiagramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyDiagramView.swift; sourceTree = "<group>"; };
+		A1100016002 /* PEDBodyDiagramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEDBodyDiagramView.swift; sourceTree = "<group>"; };
+		A1100016003 /* PeptideBodyDiagramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeptideBodyDiagramView.swift; sourceTree = "<group>"; };
+		A1100016004 /* InjectionSitePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSitePickerView.swift; sourceTree = "<group>"; };
+
+		/* Preview Content */
+		A1100017001 /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
+
 		/* Resources */
 		A1100015001 /* SeedData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SeedData.json; sourceTree = "<group>"; };
 		A1100015002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
@@ -189,6 +207,7 @@
 				A1400006000 /* Services */,
 				A1400007000 /* Utilities */,
 				A1400008000 /* Resources */,
+				A1400009000 /* Preview Content */,
 			);
 			path = AtlasTracker;
 			sourceTree = "<group>";
@@ -270,6 +289,7 @@
 				A1400005006 /* DoseLog */,
 				A1400005007 /* Analytics */,
 				A1400005008 /* Settings */,
+				A1400005009 /* InjectionSite */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -343,6 +363,17 @@
 			path = Settings;
 			sourceTree = "<group>";
 		};
+		A1400005009 /* InjectionSite */ = {
+			isa = PBXGroup;
+			children = (
+				A1100016001 /* BodyDiagramView.swift */,
+				A1100016002 /* PEDBodyDiagramView.swift */,
+				A1100016003 /* PeptideBodyDiagramView.swift */,
+				A1100016004 /* InjectionSitePickerView.swift */,
+			);
+			path = InjectionSite;
+			sourceTree = "<group>";
+		};
 		A1400006000 /* Services */ = {
 			isa = PBXGroup;
 			children = (
@@ -380,6 +411,14 @@
 				A1100015002 /* Assets.xcassets */,
 			);
 			path = Resources;
+			sourceTree = "<group>";
+		};
+		A1400009000 /* Preview Content */ = {
+			isa = PBXGroup;
+			children = (
+				A1100017001 /* PreviewData.swift */,
+			);
+			path = "Preview Content";
 			sourceTree = "<group>";
 		};
 /* End PBXGroup section */
@@ -521,6 +560,15 @@
 
 				/* Views - Settings */
 				A1000014001 /* SettingsView.swift in Sources */,
+
+				/* Views - InjectionSite */
+				A1000016001 /* BodyDiagramView.swift in Sources */,
+				A1000016002 /* PEDBodyDiagramView.swift in Sources */,
+				A1000016003 /* PeptideBodyDiagramView.swift in Sources */,
+				A1000016004 /* InjectionSitePickerView.swift in Sources */,
+
+				/* Preview Content */
+				A1000017001 /* PreviewData.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};

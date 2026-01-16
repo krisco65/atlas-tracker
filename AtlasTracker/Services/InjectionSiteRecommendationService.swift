@@ -171,6 +171,39 @@ final class InjectionSiteRecommendationService {
         }
     }
 
+    func lastUsedSiteRawValue(for compound: Compound) -> String? {
+        return lastUsedSite(for: compound)
+    }
+
+    // MARK: - Recent Site History
+
+    struct SiteHistoryEntry {
+        let rawValue: String
+        let displayName: String
+        let date: Date
+    }
+
+    func recentSiteHistory(for compound: Compound, limit: Int = 5) -> [SiteHistoryEntry] {
+        let logs = CoreDataManager.shared.fetchDoseLogs(for: compound, limit: limit)
+
+        return logs.compactMap { log -> SiteHistoryEntry? in
+            guard let rawValue = log.injectionSiteRaw,
+                  let timestamp = log.timestamp else { return nil }
+
+            let displayName: String
+            switch compound.category {
+            case .ped:
+                displayName = PEDInjectionSite(rawValue: rawValue)?.displayName ?? rawValue
+            case .peptide:
+                displayName = PeptideInjectionSite(rawValue: rawValue)?.displayName ?? rawValue
+            default:
+                displayName = rawValue
+            }
+
+            return SiteHistoryEntry(rawValue: rawValue, displayName: displayName, date: timestamp)
+        }
+    }
+
     // MARK: - Site Usage Statistics
 
     func siteUsageStats(for category: CompoundCategory) -> [(site: String, count: Int, lastUsed: Date?)] {

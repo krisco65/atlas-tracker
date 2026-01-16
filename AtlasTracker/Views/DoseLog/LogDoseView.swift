@@ -2,6 +2,7 @@ import SwiftUI
 
 struct LogDoseView: View {
     @StateObject private var viewModel = DoseLogViewModel()
+    @State private var showBodyDiagram = false
     var onSuccess: (() -> Void)?
     var preselectedCompound: Compound?
 
@@ -65,6 +66,15 @@ struct LogDoseView: View {
             }
         } message: {
             Text(viewModel.errorMessage ?? "")
+        }
+        .sheet(isPresented: $showBodyDiagram) {
+            if let compound = viewModel.selectedCompound {
+                InjectionSitePickerView(
+                    compound: compound,
+                    selectedSite: $viewModel.selectedInjectionSite,
+                    onConfirm: {}
+                )
+            }
         }
     }
 
@@ -172,21 +182,70 @@ struct LogDoseView: View {
 
                 Spacer()
 
-                if let recommended = viewModel.recommendedSite {
+                Button {
+                    showBodyDiagram = true
+                } label: {
                     HStack(spacing: 4) {
-                        Image(systemName: "star.fill")
-                            .font(.caption)
-                        Text("Recommended: \(recommended)")
-                            .font(.caption)
+                        Image(systemName: "figure.stand")
+                        Text("Body Diagram")
                     }
+                    .font(.caption)
                     .foregroundColor(.accentPrimary)
                 }
             }
 
+            // Recommendation Card
+            if let recommended = viewModel.recommendedSite {
+                HStack {
+                    Image(systemName: "star.circle.fill")
+                        .foregroundColor(.statusSuccess)
+
+                    VStack(alignment: .leading, spacing: 2) {
+                        Text("Recommended")
+                            .font(.caption)
+                            .foregroundColor(.textSecondary)
+                        Text(recommended)
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.textPrimary)
+                    }
+
+                    Spacer()
+
+                    if viewModel.selectedInjectionSite != viewModel.recommendedSiteRawValue {
+                        Button {
+                            viewModel.selectedInjectionSite = viewModel.recommendedSiteRawValue
+                            let generator = UIImpactFeedbackGenerator(style: .medium)
+                            generator.impactOccurred()
+                        } label: {
+                            Text("Use")
+                                .font(.caption)
+                                .fontWeight(.semibold)
+                                .foregroundColor(.white)
+                                .padding(.horizontal, 12)
+                                .padding(.vertical, 6)
+                                .background(Color.statusSuccess)
+                                .cornerRadius(6)
+                        }
+                    } else {
+                        Image(systemName: "checkmark.circle.fill")
+                            .foregroundColor(.statusSuccess)
+                    }
+                }
+                .padding()
+                .background(Color.statusSuccess.opacity(0.1))
+                .cornerRadius(10)
+            }
+
             if let lastUsed = viewModel.lastUsedSite {
-                Text("Last used: \(lastUsed)")
-                    .font(.caption)
-                    .foregroundColor(.textSecondary)
+                HStack {
+                    Image(systemName: "clock.arrow.circlepath")
+                        .foregroundColor(.statusWarning)
+                        .font(.caption)
+                    Text("Last used: \(lastUsed)")
+                        .font(.caption)
+                        .foregroundColor(.textSecondary)
+                }
             }
 
             // Injection site picker
