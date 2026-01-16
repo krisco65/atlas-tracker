@@ -1,8 +1,7 @@
 import SwiftUI
 
 // MARK: - Visual Body Silhouette
-/// Clean, modern regional injection site picker
-/// Uses card-based layout instead of body drawing for professional appearance
+/// Body image with tappable injection site overlays
 struct VisualBodySilhouette: View {
     let injectionType: BodyDiagramView.InjectionType
     @Binding var selectedSite: String?
@@ -10,47 +9,99 @@ struct VisualBodySilhouette: View {
     let recommendedSite: String?
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 12) {
             // Legend
             HStack(spacing: 16) {
-                LegendIndicator(color: .accentPrimary, label: "Selected")
-                LegendIndicator(color: .statusSuccess, label: "Recommended")
-                LegendIndicator(color: .statusWarning, label: "Last Used")
+                LegendItem(color: .accentPrimary, label: "Selected")
+                LegendItem(color: .statusSuccess, label: "Recommended")
+                LegendItem(color: .statusWarning, label: "Last Used")
             }
             .font(.caption2)
-            .padding(.horizontal)
 
-            // Regional site picker
-            if injectionType == .intramuscular {
-                PEDSitesPicker(
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite
-                )
-            } else {
-                PeptideSitesPicker(
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite
-                )
-            }
+            // Body image with overlay buttons
+            GeometryReader { geometry in
+                let imageSize = calculateImageSize(in: geometry.size)
+                let offsetX = (geometry.size.width - imageSize.width) / 2
+                let offsetY = (geometry.size.height - imageSize.height) / 2
 
-            // Selected site confirmation
-            if let selected = selectedSite {
-                let displayName = getDisplayName(for: selected)
-                HStack(spacing: 8) {
-                    Image(systemName: "checkmark.circle.fill")
-                        .foregroundColor(.accentPrimary)
-                    Text(displayName)
-                        .font(.subheadline)
-                        .fontWeight(.semibold)
+                ZStack {
+                    // Body silhouette image
+                    Image("Body")
+                        .resizable()
+                        .aspectRatio(contentMode: .fit)
+                        .frame(width: imageSize.width, height: imageSize.height)
+                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+
+                    // Injection site buttons
+                    if injectionType == .intramuscular {
+                        // PED sites
+                        ForEach(PEDInjectionSite.allCases, id: \.self) { site in
+                            InjectionButton(
+                                isSelected: selectedSite == site.rawValue,
+                                isRecommended: recommendedSite == site.rawValue,
+                                isLastUsed: lastUsedSite == site.rawValue,
+                                label: site.shortName
+                            ) {
+                                withAnimation(.easeOut(duration: 0.15)) {
+                                    selectedSite = site.rawValue
+                                }
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            }
+                            .position(
+                                x: offsetX + imageSize.width * site.bodyMapPosition.x,
+                                y: offsetY + imageSize.height * site.bodyMapPosition.y
+                            )
+                        }
+                    } else {
+                        // Peptide sites
+                        ForEach(PeptideInjectionSite.allCases, id: \.self) { site in
+                            InjectionButton(
+                                isSelected: selectedSite == site.rawValue,
+                                isRecommended: recommendedSite == site.rawValue,
+                                isLastUsed: lastUsedSite == site.rawValue,
+                                label: site.shortName
+                            ) {
+                                withAnimation(.easeOut(duration: 0.15)) {
+                                    selectedSite = site.rawValue
+                                }
+                                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                            }
+                            .position(
+                                x: offsetX + imageSize.width * site.bodyMapPosition.x,
+                                y: offsetY + imageSize.height * site.bodyMapPosition.y
+                            )
+                        }
+                    }
                 }
-                .foregroundColor(.textPrimary)
-                .padding(.horizontal, 16)
-                .padding(.vertical, 10)
-                .background(Color.accentPrimary.opacity(0.15))
-                .cornerRadius(20)
             }
+            .frame(height: 420)
+
+            // Selected site display
+            if let selected = selectedSite {
+                SelectedSiteLabel(
+                    displayName: getDisplayName(for: selected),
+                    injectionType: injectionType
+                )
+            }
+        }
+        .padding(.horizontal, 8)
+    }
+
+    private func calculateImageSize(in containerSize: CGSize) -> CGSize {
+        // Maintain aspect ratio, fit within container
+        let maxWidth = min(containerSize.width * 0.9, 300)
+        let maxHeight = containerSize.height * 0.95
+
+        // Assuming body image is roughly 1:2.2 aspect ratio (width:height)
+        let aspectRatio: CGFloat = 0.45
+
+        let widthBasedHeight = maxWidth / aspectRatio
+        let heightBasedWidth = maxHeight * aspectRatio
+
+        if widthBasedHeight <= maxHeight {
+            return CGSize(width: maxWidth, height: widthBasedHeight)
+        } else {
+            return CGSize(width: heightBasedWidth, height: maxHeight)
         }
     }
 
@@ -63,354 +114,106 @@ struct VisualBodySilhouette: View {
     }
 }
 
-// MARK: - PED Sites Picker (Intramuscular)
-struct PEDSitesPicker: View {
-    @Binding var selectedSite: String?
-    let lastUsedSite: String?
-    let recommendedSite: String?
-
-    var body: some View {
-        VStack(spacing: 12) {
-            // Shoulders (Delts)
-            RegionCard(
-                title: "Shoulders",
-                icon: "figure.arms.open",
-                sites: [
-                    (.deltLeft, "Left Deltoid"),
-                    (.deltRight, "Right Deltoid")
-                ],
-                selectedSite: $selectedSite,
-                lastUsedSite: lastUsedSite,
-                recommendedSite: recommendedSite
-            )
-
-            // Glutes
-            RegionCard(
-                title: "Glutes",
-                icon: "figure.stand",
-                sites: [
-                    (.gluteLeft, "Left Glute"),
-                    (.gluteRight, "Right Glute")
-                ],
-                selectedSite: $selectedSite,
-                lastUsedSite: lastUsedSite,
-                recommendedSite: recommendedSite
-            )
-
-            // Ventrogluteal
-            RegionCard(
-                title: "Ventrogluteal",
-                icon: "figure.walk",
-                sites: [
-                    (.vgLeft, "Left VG"),
-                    (.vgRight, "Right VG")
-                ],
-                selectedSite: $selectedSite,
-                lastUsedSite: lastUsedSite,
-                recommendedSite: recommendedSite
-            )
-
-            // Quads
-            RegionCard(
-                title: "Quadriceps",
-                icon: "figure.run",
-                sites: [
-                    (.quadLeft, "Left Quad"),
-                    (.quadRight, "Right Quad")
-                ],
-                selectedSite: $selectedSite,
-                lastUsedSite: lastUsedSite,
-                recommendedSite: recommendedSite
-            )
-        }
-    }
-}
-
-// MARK: - Peptide Sites Picker (Subcutaneous)
-struct PeptideSitesPicker: View {
-    @Binding var selectedSite: String?
-    let lastUsedSite: String?
-    let recommendedSite: String?
-
-    var body: some View {
-        VStack(spacing: 12) {
-            // Abdomen - Left of Navel
-            RegionCardPeptide(
-                title: "Left Abdomen",
-                icon: "square.lefthalf.filled",
-                sites: [
-                    (.leftBellyUpper, "Upper"),
-                    (.leftBellyLower, "Lower")
-                ],
-                selectedSite: $selectedSite,
-                lastUsedSite: lastUsedSite,
-                recommendedSite: recommendedSite
-            )
-
-            // Abdomen - Right of Navel
-            RegionCardPeptide(
-                title: "Right Abdomen",
-                icon: "square.righthalf.filled",
-                sites: [
-                    (.rightBellyUpper, "Upper"),
-                    (.rightBellyLower, "Lower")
-                ],
-                selectedSite: $selectedSite,
-                lastUsedSite: lastUsedSite,
-                recommendedSite: recommendedSite
-            )
-
-            // Love Handles
-            HStack(spacing: 12) {
-                RegionCardPeptide(
-                    title: "Left Side",
-                    icon: "arrow.left.square",
-                    sites: [
-                        (.leftLoveHandleUpper, "Upper"),
-                        (.leftLoveHandleLower, "Lower")
-                    ],
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite,
-                    compact: true
-                )
-
-                RegionCardPeptide(
-                    title: "Right Side",
-                    icon: "arrow.right.square",
-                    sites: [
-                        (.rightLoveHandleUpper, "Upper"),
-                        (.rightLoveHandleLower, "Lower")
-                    ],
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite,
-                    compact: true
-                )
-            }
-
-            // Glutes (SubQ)
-            HStack(spacing: 12) {
-                RegionCardPeptide(
-                    title: "Left Glute",
-                    icon: "circle.lefthalf.filled",
-                    sites: [
-                        (.gluteLeftUpper, "Upper"),
-                        (.gluteLeftLower, "Lower")
-                    ],
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite,
-                    compact: true
-                )
-
-                RegionCardPeptide(
-                    title: "Right Glute",
-                    icon: "circle.righthalf.filled",
-                    sites: [
-                        (.gluteRightUpper, "Upper"),
-                        (.gluteRightLower, "Lower")
-                    ],
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite,
-                    compact: true
-                )
-            }
-
-            // Thighs
-            RegionCardPeptide(
-                title: "Thighs",
-                icon: "figure.stand",
-                sites: [
-                    (.thighLeft, "Left Thigh"),
-                    (.thighRight, "Right Thigh")
-                ],
-                selectedSite: $selectedSite,
-                lastUsedSite: lastUsedSite,
-                recommendedSite: recommendedSite
-            )
-        }
-    }
-}
-
-// MARK: - Region Card (PED)
-struct RegionCard: View {
-    let title: String
-    let icon: String
-    let sites: [(PEDInjectionSite, String)]
-    @Binding var selectedSite: String?
-    let lastUsedSite: String?
-    let recommendedSite: String?
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 10) {
-            // Header
-            HStack(spacing: 8) {
-                Image(systemName: icon)
-                    .font(.subheadline)
-                    .foregroundColor(.accentPrimary)
-                Text(title)
-                    .font(.subheadline)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.textPrimary)
-                Spacer()
-            }
-
-            // Site buttons
-            HStack(spacing: 10) {
-                ForEach(sites, id: \.0) { site, label in
-                    SiteButton(
-                        label: label,
-                        isSelected: selectedSite == site.rawValue,
-                        isLastUsed: lastUsedSite == site.rawValue,
-                        isRecommended: recommendedSite == site.rawValue
-                    ) {
-                        withAnimation(.easeInOut(duration: 0.2)) {
-                            selectedSite = site.rawValue
-                        }
-                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                    }
-                }
-            }
-        }
-        .padding(14)
-        .background(Color.backgroundSecondary)
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - Region Card (Peptide)
-struct RegionCardPeptide: View {
-    let title: String
-    let icon: String
-    let sites: [(PeptideInjectionSite, String)]
-    @Binding var selectedSite: String?
-    let lastUsedSite: String?
-    let recommendedSite: String?
-    var compact: Bool = false
-
-    var body: some View {
-        VStack(alignment: .leading, spacing: 8) {
-            // Header
-            HStack(spacing: 6) {
-                Image(systemName: icon)
-                    .font(.caption)
-                    .foregroundColor(.categoryPeptide)
-                Text(title)
-                    .font(.caption)
-                    .fontWeight(.semibold)
-                    .foregroundColor(.textPrimary)
-                Spacer()
-            }
-
-            // Site buttons
-            if compact {
-                VStack(spacing: 6) {
-                    ForEach(sites, id: \.0) { site, label in
-                        SiteButton(
-                            label: label,
-                            isSelected: selectedSite == site.rawValue,
-                            isLastUsed: lastUsedSite == site.rawValue,
-                            isRecommended: recommendedSite == site.rawValue,
-                            compact: true
-                        ) {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                selectedSite = site.rawValue
-                            }
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        }
-                    }
-                }
-            } else {
-                HStack(spacing: 8) {
-                    ForEach(sites, id: \.0) { site, label in
-                        SiteButton(
-                            label: label,
-                            isSelected: selectedSite == site.rawValue,
-                            isLastUsed: lastUsedSite == site.rawValue,
-                            isRecommended: recommendedSite == site.rawValue
-                        ) {
-                            withAnimation(.easeInOut(duration: 0.2)) {
-                                selectedSite = site.rawValue
-                            }
-                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
-                        }
-                    }
-                }
-            }
-        }
-        .padding(compact ? 10 : 14)
-        .background(Color.backgroundSecondary)
-        .cornerRadius(12)
-    }
-}
-
-// MARK: - Site Button
-struct SiteButton: View {
-    let label: String
+// MARK: - Injection Button
+struct InjectionButton: View {
     let isSelected: Bool
-    let isLastUsed: Bool
     let isRecommended: Bool
-    var compact: Bool = false
+    let isLastUsed: Bool
+    let label: String
     let onTap: () -> Void
+
+    private let buttonSize: CGFloat = 28
+    private let selectedSize: CGFloat = 32
+
+    private var currentSize: CGFloat {
+        isSelected ? selectedSize : buttonSize
+    }
 
     private var backgroundColor: Color {
         if isSelected { return .accentPrimary }
-        if isRecommended { return .statusSuccess.opacity(0.2) }
-        if isLastUsed { return .statusWarning.opacity(0.2) }
-        return .backgroundTertiary
+        return Color.black.opacity(0.6)
     }
 
     private var borderColor: Color {
         if isSelected { return .accentPrimary }
         if isRecommended { return .statusSuccess }
         if isLastUsed { return .statusWarning }
-        return .clear
+        return Color.white.opacity(0.3)
     }
 
-    private var textColor: Color {
-        if isSelected { return .white }
-        return .textPrimary
+    private var borderWidth: CGFloat {
+        if isSelected { return 0 }
+        if isRecommended || isLastUsed { return 2 }
+        return 1
     }
 
     var body: some View {
         Button(action: onTap) {
-            HStack(spacing: 4) {
+            ZStack {
+                // Glow effect for recommended
+                if isRecommended && !isSelected {
+                    Circle()
+                        .fill(Color.statusSuccess.opacity(0.4))
+                        .frame(width: currentSize + 12, height: currentSize + 12)
+                        .blur(radius: 6)
+                }
+
+                // Main circle
+                Circle()
+                    .fill(backgroundColor)
+                    .frame(width: currentSize, height: currentSize)
+                    .overlay(
+                        Circle()
+                            .stroke(borderColor, lineWidth: borderWidth)
+                    )
+                    .shadow(color: isSelected ? .accentPrimary.opacity(0.5) : .clear, radius: 4)
+
+                // Star for recommended
                 if isRecommended && !isSelected {
                     Image(systemName: "star.fill")
-                        .font(.system(size: 8))
+                        .font(.system(size: 10))
                         .foregroundColor(.statusSuccess)
+                        .offset(x: currentSize / 2 - 2, y: -currentSize / 2 + 2)
                 }
-                Text(label)
-                    .font(compact ? .caption : .subheadline)
-                    .fontWeight(isSelected ? .semibold : .medium)
             }
-            .foregroundColor(textColor)
-            .frame(maxWidth: .infinity)
-            .padding(.vertical, compact ? 8 : 10)
-            .padding(.horizontal, 8)
-            .background(backgroundColor)
-            .cornerRadius(8)
-            .overlay(
-                RoundedRectangle(cornerRadius: 8)
-                    .stroke(borderColor, lineWidth: isSelected ? 0 : 1.5)
-            )
         }
         .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.1 : 1.0)
+        .animation(.easeOut(duration: 0.15), value: isSelected)
     }
 }
 
-// MARK: - Legend Indicator
-struct LegendIndicator: View {
+// MARK: - Selected Site Label
+struct SelectedSiteLabel: View {
+    let displayName: String
+    let injectionType: BodyDiagramView.InjectionType
+
+    var body: some View {
+        HStack(spacing: 8) {
+            Image(systemName: "checkmark.circle.fill")
+                .foregroundColor(.accentPrimary)
+            Text(displayName)
+                .font(.subheadline)
+                .fontWeight(.semibold)
+        }
+        .foregroundColor(.textPrimary)
+        .padding(.horizontal, 16)
+        .padding(.vertical, 10)
+        .background(Color.accentPrimary.opacity(0.15))
+        .cornerRadius(20)
+    }
+}
+
+// MARK: - Legend Item
+struct LegendItem: View {
     let color: Color
     let label: String
 
     var body: some View {
         HStack(spacing: 4) {
-            RoundedRectangle(cornerRadius: 3)
+            Circle()
                 .fill(color)
-                .frame(width: 12, height: 12)
+                .frame(width: 10, height: 10)
             Text(label)
                 .foregroundColor(.textSecondary)
         }
@@ -438,6 +241,7 @@ struct LegendDot: View {
         VStack {
             Text("Peptide Injection Sites")
                 .font(.headline)
+                .foregroundColor(.white)
             VisualBodySilhouette(
                 injectionType: .subcutaneous,
                 selectedSite: .constant("left_belly_upper"),
@@ -456,6 +260,7 @@ struct LegendDot: View {
         VStack {
             Text("PED Injection Sites")
                 .font(.headline)
+                .foregroundColor(.white)
             VisualBodySilhouette(
                 injectionType: .intramuscular,
                 selectedSite: .constant("glute_left"),

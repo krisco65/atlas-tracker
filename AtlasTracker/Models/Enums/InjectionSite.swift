@@ -86,18 +86,17 @@ enum PEDInjectionSite: String, CaseIterable, Codable {
         ]
     }
 
-    // For visual body map positioning (8-head proportion system)
-    // y values: head=0.0-0.125, shoulders=0.19, chest=0.28, waist=0.40, hips=0.50, knees=0.75
+    // Body image positioning (x: 0=left edge, 1=right edge; y: 0=top, 1=bottom)
     var bodyMapPosition: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .deltLeft: return (0.12, 0.21)      // Left shoulder
-        case .deltRight: return (0.88, 0.21)    // Right shoulder
-        case .vgLeft: return (0.22, 0.48)       // Left hip/VG area
-        case .vgRight: return (0.78, 0.48)      // Right hip/VG area
-        case .gluteLeft: return (0.30, 0.52)    // Left glute
-        case .gluteRight: return (0.70, 0.52)   // Right glute
-        case .quadLeft: return (0.35, 0.68)     // Left quad (front thigh)
-        case .quadRight: return (0.65, 0.68)    // Right quad (front thigh)
+        case .deltLeft: return (0.18, 0.18)     // Left shoulder/deltoid
+        case .deltRight: return (0.82, 0.18)    // Right shoulder/deltoid
+        case .vgLeft: return (0.25, 0.46)       // Left ventrogluteal (hip)
+        case .vgRight: return (0.75, 0.46)      // Right ventrogluteal (hip)
+        case .gluteLeft: return (0.32, 0.50)    // Left glute (visible from front)
+        case .gluteRight: return (0.68, 0.50)   // Right glute (visible from front)
+        case .quadLeft: return (0.38, 0.62)     // Left quadricep
+        case .quadRight: return (0.62, 0.62)    // Right quadricep
         }
     }
 }
@@ -202,28 +201,28 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
         ]
     }
 
-    // For visual body map positioning (8-head proportion system)
-    // Spread out to avoid overlap - belly=0.36-0.44, glutes=0.50-0.58, thighs=0.68
+    // Body image positioning (x: 0=left edge, 1=right edge; y: 0=top, 1=bottom)
     var bodyMapPosition: (x: CGFloat, y: CGFloat) {
         switch self {
-        // Belly sites - left and right of center
-        case .leftBellyUpper: return (0.38, 0.36)
-        case .leftBellyLower: return (0.38, 0.44)
-        case .rightBellyUpper: return (0.62, 0.36)
-        case .rightBellyLower: return (0.62, 0.44)
-        // Love handles - wider positioning
-        case .leftLoveHandleUpper: return (0.22, 0.36)
-        case .leftLoveHandleLower: return (0.22, 0.44)
-        case .rightLoveHandleUpper: return (0.78, 0.36)
-        case .rightLoveHandleLower: return (0.78, 0.44)
-        // Glutes for SubQ - lower on the body
-        case .gluteLeftUpper: return (0.32, 0.51)
-        case .gluteLeftLower: return (0.32, 0.58)
-        case .gluteRightUpper: return (0.68, 0.51)
-        case .gluteRightLower: return (0.68, 0.58)
-        // Thighs
-        case .thighLeft: return (0.36, 0.68)
-        case .thighRight: return (0.64, 0.68)
+        // Belly - left of navel (inner abdomen)
+        case .leftBellyUpper: return (0.40, 0.36)
+        case .leftBellyLower: return (0.40, 0.42)
+        // Belly - right of navel (inner abdomen)
+        case .rightBellyUpper: return (0.60, 0.36)
+        case .rightBellyLower: return (0.60, 0.42)
+        // Love handles - outer sides
+        case .leftLoveHandleUpper: return (0.26, 0.36)
+        case .leftLoveHandleLower: return (0.26, 0.42)
+        case .rightLoveHandleUpper: return (0.74, 0.36)
+        case .rightLoveHandleLower: return (0.74, 0.42)
+        // Glutes (SubQ) - hip area visible from front
+        case .gluteLeftUpper: return (0.32, 0.48)
+        case .gluteLeftLower: return (0.32, 0.54)
+        case .gluteRightUpper: return (0.68, 0.48)
+        case .gluteRightLower: return (0.68, 0.54)
+        // Thighs - front of legs
+        case .thighLeft: return (0.38, 0.64)
+        case .thighRight: return (0.62, 0.64)
         }
     }
 }
