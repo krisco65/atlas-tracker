@@ -12,6 +12,9 @@ struct SettingsView: View {
     @State private var isImportingFromHealth = false
     @State private var healthImportCount = 0
     @State private var showHealthImportResult = false
+    @State private var showHealthKitError = false
+    @State private var healthKitErrorMessage = ""
+    @State private var isConnectingHealthKit = false
 
     var body: some View {
         NavigationStack {
@@ -83,46 +86,49 @@ struct SettingsView: View {
                     }
 
                     // Apple Health Section
-                    if HealthKitService.shared.isHealthKitAvailable {
-                        Section {
-                            HStack {
-                                Label("Apple Health", systemImage: "heart.fill")
-                                    .foregroundColor(.pink)
-                                Spacer()
-                                if isHealthKitAuthorized {
-                                    Text("Connected")
-                                        .font(.caption)
-                                        .foregroundColor(.statusSuccess)
-                                } else {
-                                    Button("Connect") {
-                                        Task {
-                                            isHealthKitAuthorized = await HealthKitService.shared.requestAuthorization()
-                                        }
-                                    }
-                                    .font(.caption)
-                                    .foregroundColor(.accentPrimary)
-                                }
-                            }
-
+                    Section {
+                        HStack {
+                            Label("Apple Health", systemImage: "heart.fill")
+                                .foregroundColor(.pink)
+                            Spacer()
                             if isHealthKitAuthorized {
-                                Button {
-                                    importFromHealth()
-                                } label: {
-                                    HStack {
-                                        Label("Import Weight Data", systemImage: "arrow.down.circle")
-                                        Spacer()
-                                        if isImportingFromHealth {
-                                            ProgressView()
-                                                .scaleEffect(0.8)
-                                        }
+                                Text("Connected")
+                                    .font(.caption)
+                                    .foregroundColor(.statusSuccess)
+                            } else if isConnectingHealthKit {
+                                ProgressView()
+                                    .scaleEffect(0.8)
+                            } else {
+                                Button("Connect") {
+                                    connectToHealthKit()
+                                }
+                                .font(.caption)
+                                .foregroundColor(.accentPrimary)
+                            }
+                        }
+
+                        if isHealthKitAuthorized {
+                            Button {
+                                importFromHealth()
+                            } label: {
+                                HStack {
+                                    Label("Import Weight Data", systemImage: "arrow.down.circle")
+                                    Spacer()
+                                    if isImportingFromHealth {
+                                        ProgressView()
+                                            .scaleEffect(0.8)
                                     }
                                 }
-                                .disabled(isImportingFromHealth)
                             }
-                        } header: {
-                            Text("Apple Health")
-                        } footer: {
+                            .disabled(isImportingFromHealth)
+                        }
+                    } header: {
+                        Text("Apple Health")
+                    } footer: {
+                        if HealthKitService.shared.isHealthKitAvailable {
                             Text("Sync weight entries from Apple Health to track your progress alongside your compounds.")
+                        } else {
+                            Text("Apple Health is not available on this device.")
                         }
                     }
 
@@ -193,6 +199,11 @@ struct SettingsView: View {
             } message: {
                 Text("Imported \(healthImportCount) weight entries from Apple Health.")
             }
+            .alert("Apple Health Error", isPresented: $showHealthKitError) {
+                Button("OK") { }
+            } message: {
+                Text(healthKitErrorMessage)
+            }
             .alert("Reset All Data?", isPresented: $showResetConfirmation) {
                 Button("Cancel", role: .cancel) { }
                 Button("Reset", role: .destructive) {
@@ -211,6 +222,35 @@ struct SettingsView: View {
     private func loadNotificationCount() {
         NotificationService.shared.getPendingNotificationsCount { count in
             notificationCount = count
+        }
+    }
+
+    private func connectToHealthKit() {
+        guard HealthKitService.shared.isHealthKitAvailable else {
+            healthKitErrorMessage = "Apple Health is not available on this device. HealthKit requires an iPhone or Apple Watch."
+            showHealthKitError = true
+            return
+        }
+
+        isConnectingHealthKit = true
+
+        Task {
+            do {
+                let authorized = await HealthKitService.shared.requestAuthorization()
+
+                await MainActor.run {
+                    isConnectingHealthKit = false
+                    isHealthKitAuthorized = authorized
+
+                    if authorized {
+                        let generator = UINotificationFeedbackGenerator()
+                        generator.notificationOccurred(.success)
+                    } else {
+                        healthKitErrorMessage = "Could not connect to Apple Health. Please check that you've granted permission in Settings > Privacy > Health > Atlas Tracker."
+                        showHealthKitError = true
+                    }
+                }
+            }
         }
     }
 
@@ -238,6 +278,8 @@ struct DataManagementView: View {
     @State private var compoundCount = 0
     @State private var doseLogCount = 0
     @State private var trackedCount = 0
+    @State private var showForceRefreshConfirm = false
+    @State private var showRefreshSuccess = false
 
     var body: some View {
         ZStack {
@@ -277,10 +319,17 @@ struct DataManagementView: View {
                     } label: {
                         Label("Re-seed Default Compounds", systemImage: "arrow.clockwise")
                     }
+
+                    Button {
+                        showForceRefreshConfirm = true
+                    } label: {
+                        Label("Force Refresh Database", systemImage: "arrow.triangle.2.circlepath")
+                            .foregroundColor(.statusWarning)
+                    }
                 } header: {
                     Text("Maintenance")
                 } footer: {
-                    Text("This will re-add any deleted default compounds without affecting your custom compounds or logs.")
+                    Text("Re-seed adds missing compounds. Force Refresh deletes ALL default compounds and re-imports from scratch (your custom compounds and logs are kept).")
                 }
             }
             .scrollContentBackground(.hidden)
@@ -291,12 +340,34 @@ struct DataManagementView: View {
         .onAppear {
             loadStats()
         }
+        .alert("Force Refresh Database?", isPresented: $showForceRefreshConfirm) {
+            Button("Cancel", role: .cancel) { }
+            Button("Refresh", role: .destructive) {
+                forceRefreshDatabase()
+            }
+        } message: {
+            Text("This will delete all default compounds and re-import them from scratch. Your custom compounds, tracked compounds, and dose logs will be preserved.")
+        }
+        .alert("Database Refreshed", isPresented: $showRefreshSuccess) {
+            Button("OK") { }
+        } message: {
+            Text("All default compounds have been refreshed. New peptides (GLOW, MOTS-C, Retatrutide) should now be available.")
+        }
     }
 
     private func loadStats() {
         compoundCount = CoreDataManager.shared.fetchAllCompounds().count
         trackedCount = CoreDataManager.shared.fetchTrackedCompounds(activeOnly: true).count
         doseLogCount = CoreDataManager.shared.doseCount(from: Date.distantPast, to: Date())
+    }
+
+    private func forceRefreshDatabase() {
+        SeedDataService.shared.forceReseedFromScratch(context: CoreDataManager.shared.viewContext)
+        loadStats()
+        showRefreshSuccess = true
+
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
 }
 

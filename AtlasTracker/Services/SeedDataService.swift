@@ -38,8 +38,13 @@ final class SeedDataService {
     func seedDatabaseIfNeeded(context: NSManagedObjectContext) {
         let lastVersion = UserDefaults.standard.integer(forKey: AppConstants.UserDefaultsKeys.lastSeedDataVersion)
 
-        if lastVersion < AppConstants.seedDataVersion {
+        if lastVersion == 0 {
+            // First time - do full seed
             seedDatabase(context: context)
+            UserDefaults.standard.set(AppConstants.seedDataVersion, forKey: AppConstants.UserDefaultsKeys.lastSeedDataVersion)
+        } else if lastVersion < AppConstants.seedDataVersion {
+            // Version update - add missing compounds without deleting
+            addMissingCompounds(context: context)
             UserDefaults.standard.set(AppConstants.seedDataVersion, forKey: AppConstants.UserDefaultsKeys.lastSeedDataVersion)
         }
     }
@@ -248,20 +253,80 @@ final class SeedDataService {
 
     // MARK: - Force Re-seed (for testing/updates)
     func forceSeed(context: NSManagedObjectContext) {
+        addMissingCompounds(context: context)
+    }
+
+    // MARK: - Force Re-seed from Scratch (delete all default compounds and re-import)
+    func forceReseedFromScratch(context: NSManagedObjectContext) {
         // Delete all non-custom compounds
-        let request: NSFetchRequest<NSFetchRequestResult> = Compound.fetchRequest()
+        let request: NSFetchRequest<Compound> = Compound.fetchRequest()
         request.predicate = NSPredicate(format: "isCustom == NO")
-        let deleteRequest = NSBatchDeleteRequest(fetchRequest: request)
 
         do {
-            try context.execute(deleteRequest)
+            let defaultCompounds = try context.fetch(request)
+            print("Deleting \(defaultCompounds.count) default compounds...")
+
+            for compound in defaultCompounds {
+                context.delete(compound)
+            }
+
             try context.save()
+            print("Deleted all default compounds")
         } catch {
-            print("Error deleting existing compounds: \(error)")
+            print("Error deleting default compounds: \(error)")
         }
 
-        // Re-seed
+        // Reset the seed data version to force fresh import
         UserDefaults.standard.set(0, forKey: AppConstants.UserDefaultsKeys.lastSeedDataVersion)
-        seedDatabaseIfNeeded(context: context)
+
+        // Re-seed the database
+        seedDatabase(context: context)
+
+        // Update version
+        UserDefaults.standard.set(AppConstants.seedDataVersion, forKey: AppConstants.UserDefaultsKeys.lastSeedDataVersion)
+
+        print("Force reseed complete - database refreshed with latest compounds")
+    }
+
+    // MARK: - Add Missing Compounds (non-destructive update)
+    func addMissingCompounds(context: NSManagedObjectContext) {
+        guard let seedData = loadSeedData() else {
+            print("Failed to load seed data")
+            return
+        }
+
+        // Get existing compound names
+        let request: NSFetchRequest<Compound> = Compound.fetchRequest()
+        request.predicate = NSPredicate(format: "isCustom == NO")
+
+        var existingNames = Set<String>()
+        do {
+            let existing = try context.fetch(request)
+            existingNames = Set(existing.compactMap { $0.name })
+        } catch {
+            print("Error fetching existing compounds: \(error)")
+        }
+
+        // Add missing compounds
+        var addedCount = 0
+        for seedCompound in seedData.compounds {
+            if !existingNames.contains(seedCompound.name) {
+                createCompound(from: seedCompound, context: context)
+                addedCount += 1
+                print("Added missing compound: \(seedCompound.name)")
+            }
+        }
+
+        // Save context
+        if addedCount > 0 {
+            do {
+                try context.save()
+                print("Successfully added \(addedCount) missing compounds")
+            } catch {
+                print("Error saving new compounds: \(error)")
+            }
+        } else {
+            print("No missing compounds to add")
+        }
     }
 }

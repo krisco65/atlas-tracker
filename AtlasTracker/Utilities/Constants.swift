@@ -62,7 +62,7 @@ struct AppConstants {
     }
 
     // MARK: - Seed Data
-    static let seedDataVersion = 1
+    static let seedDataVersion = 2  // Bumped to add GLOW, MOTS-C, Retatrutide
 }
 
 // MARK: - Weight Unit

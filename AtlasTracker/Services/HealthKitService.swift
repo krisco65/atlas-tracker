@@ -6,37 +6,57 @@ final class HealthKitService {
 
     static let shared = HealthKitService()
 
-    private let healthStore = HKHealthStore()
+    // Lazy initialization to prevent crashes on devices without HealthKit
+    private var _healthStore: HKHealthStore?
+    private var healthStore: HKHealthStore? {
+        if _healthStore == nil && isHealthKitAvailable {
+            _healthStore = HKHealthStore()
+        }
+        return _healthStore
+    }
 
     private init() {}
 
     // MARK: - Availability
 
     var isHealthKitAvailable: Bool {
-        HKHealthStore.isHealthDataAvailable()
+        // Check if HealthKit is available on this device
+        guard HKHealthStore.isHealthDataAvailable() else {
+            return false
+        }
+        return true
     }
 
     // MARK: - Authorization
 
     func requestAuthorization() async -> Bool {
-        guard isHealthKitAvailable else { return false }
+        guard isHealthKitAvailable, let store = healthStore else {
+            print("HealthKit not available on this device")
+            return false
+        }
 
-        let weightType = HKQuantityType(.bodyMass)
+        guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else {
+            print("HealthKit bodyMass type not available")
+            return false
+        }
 
         do {
-            try await healthStore.requestAuthorization(toShare: [weightType], read: [weightType])
+            try await store.requestAuthorization(toShare: [weightType], read: [weightType])
             return true
         } catch {
-            print("HealthKit authorization failed: \(error)")
+            print("HealthKit authorization failed: \(error.localizedDescription)")
             return false
         }
     }
 
     func isAuthorized() -> Bool {
-        guard isHealthKitAvailable else { return false }
+        guard isHealthKitAvailable, let store = healthStore else { return false }
 
-        let weightType = HKQuantityType(.bodyMass)
-        let status = healthStore.authorizationStatus(for: weightType)
+        guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else {
+            return false
+        }
+
+        let status = store.authorizationStatus(for: weightType)
         return status == .sharingAuthorized
     }
 
@@ -44,9 +64,12 @@ final class HealthKitService {
 
     /// Fetches weight entries from Apple Health within the given date range
     func fetchWeightEntries(from startDate: Date, to endDate: Date) async -> [HealthWeightEntry] {
-        guard isHealthKitAvailable else { return [] }
+        guard isHealthKitAvailable, let store = healthStore else { return [] }
 
-        let weightType = HKQuantityType(.bodyMass)
+        guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else {
+            return []
+        }
+
         let predicate = HKQuery.predicateForSamples(withStart: startDate, end: endDate, options: .strictStartDate)
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
@@ -84,15 +107,18 @@ final class HealthKitService {
                 continuation.resume(returning: entries)
             }
 
-            healthStore.execute(query)
+            store.execute(query)
         }
     }
 
     /// Fetches the most recent weight entry from Apple Health
     func fetchLatestWeight() async -> HealthWeightEntry? {
-        guard isHealthKitAvailable else { return nil }
+        guard isHealthKitAvailable, let store = healthStore else { return nil }
 
-        let weightType = HKQuantityType(.bodyMass)
+        guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else {
+            return nil
+        }
+
         let sortDescriptor = NSSortDescriptor(key: HKSampleSortIdentifierStartDate, ascending: false)
 
         return await withCheckedContinuation { continuation in
@@ -123,7 +149,7 @@ final class HealthKitService {
                 continuation.resume(returning: entry)
             }
 
-            healthStore.execute(query)
+            store.execute(query)
         }
     }
 
@@ -131,9 +157,11 @@ final class HealthKitService {
 
     /// Saves a weight entry to Apple Health
     func saveWeight(_ weight: Double, unit: WeightUnit, date: Date) async -> Bool {
-        guard isHealthKitAvailable else { return false }
+        guard isHealthKitAvailable, let store = healthStore else { return false }
 
-        let weightType = HKQuantityType(.bodyMass)
+        guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else {
+            return false
+        }
 
         // Convert to HKUnit
         let hkUnit: HKUnit = unit == .lbs ? .pound() : .gramUnit(with: .kilo)
@@ -147,7 +175,7 @@ final class HealthKitService {
         )
 
         do {
-            try await healthStore.save(sample)
+            try await store.save(sample)
             return true
         } catch {
             print("HealthKit save failed: \(error)")

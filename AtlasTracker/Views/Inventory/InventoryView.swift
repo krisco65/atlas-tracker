@@ -2,6 +2,7 @@ import SwiftUI
 
 struct InventoryView: View {
     @StateObject private var viewModel = InventoryViewModel()
+    @Environment(\.dismiss) private var dismiss
 
     var body: some View {
         NavigationStack {
@@ -9,26 +10,18 @@ struct InventoryView: View {
                 Color.backgroundPrimary
                     .ignoresSafeArea()
 
-                if viewModel.inventoryItems.isEmpty {
-                    emptyStateView
-                } else {
-                    inventoryList
-                }
-            }
-            .navigationTitle("Inventory")
-            .navigationBarTitleDisplayMode(.large)
-            .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    if !viewModel.compoundsWithoutInventory.isEmpty {
-                        Button {
-                            viewModel.prepareForAdd()
-                        } label: {
-                            Image(systemName: "plus.circle.fill")
-                                .foregroundColor(.accentPrimary)
-                        }
+                VStack(spacing: 0) {
+                    // PROMINENT CLOSE BUTTON HEADER
+                    closeButtonHeader
+
+                    if viewModel.inventoryItems.isEmpty {
+                        emptyStateView
+                    } else {
+                        inventoryList
                     }
                 }
             }
+            .navigationBarHidden(true)
             .sheet(isPresented: $viewModel.showAddSheet) {
                 AddInventorySheet(viewModel: viewModel)
             }
@@ -44,6 +37,49 @@ struct InventoryView: View {
                 Text(viewModel.errorMessage ?? "")
             }
         }
+    }
+
+    // MARK: - Close Button Header (ALWAYS VISIBLE)
+    private var closeButtonHeader: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                    Text("Close")
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.accentPrimary)
+            }
+
+            Spacer()
+
+            Text("Inventory")
+                .font(.headline)
+                .foregroundColor(.textPrimary)
+
+            Spacer()
+
+            if !viewModel.compoundsWithoutInventory.isEmpty {
+                Button {
+                    viewModel.prepareForAdd()
+                } label: {
+                    Image(systemName: "plus.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.accentPrimary)
+                }
+            } else {
+                // Spacer to keep title centered
+                Image(systemName: "plus.circle.fill")
+                    .font(.title2)
+                    .foregroundColor(.clear)
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+        .background(Color.backgroundSecondary)
     }
 
     // MARK: - Empty State

@@ -1,0 +1,14 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE plist PUBLIC "-//Apple//DTD PLIST 1.0//EN" "http://www.apple.com/DTDs/PropertyList-1.0.dtd">
+<plist version="1.0">
+<dict>
+	<key>NSHealthShareUsageDescription</key>
+	<string>Atlas Tracker needs access to read your weight data from Apple Health to track your progress alongside your supplement and compound usage.</string>
+	<key>NSHealthUpdateUsageDescription</key>
+	<string>Atlas Tracker needs access to save weight entries to Apple Health so your data stays synced across all your health apps.</string>
+	<key>UIBackgroundModes</key>
+	<array>
+		<string>processing</string>
+	</array>
+</dict>
+</plist>

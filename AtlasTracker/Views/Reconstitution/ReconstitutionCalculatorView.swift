@@ -14,10 +14,14 @@ struct ReconstitutionCalculatorView: View {
                         hideKeyboard()
                     }
 
-                ScrollView {
-                    VStack(spacing: 24) {
-                        // Header info
-                        headerSection
+                VStack(spacing: 0) {
+                    // PROMINENT CLOSE BUTTON HEADER - Always visible at top
+                    closeButtonHeader
+
+                    ScrollView {
+                        VStack(spacing: 24) {
+                            // Header info
+                            headerSection
 
                         // Presets
                         presetsSection
@@ -53,31 +57,18 @@ struct ReconstitutionCalculatorView: View {
                             saveSection
                         }
 
+                        // BOTTOM CLOSE BUTTON - ALWAYS VISIBLE
+                        bottomCloseButton
+
                         Spacer(minLength: 40)
+                        }
+                        .padding()
                     }
-                    .padding()
+                    .scrollDismissesKeyboard(.interactively)
                 }
-                .scrollDismissesKeyboard(.interactively)
             }
-            .navigationTitle("Reconstitution Calculator")
-            .navigationBarTitleDisplayMode(.large)
+            .navigationBarHidden(true)
             .toolbar {
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button {
-                        viewModel.showBeginnerGuide = true
-                    } label: {
-                        Image(systemName: "questionmark.circle")
-                            .foregroundColor(.accentPrimary)
-                    }
-                }
-
-                ToolbarItem(placement: .topBarLeading) {
-                    Button("Reset") {
-                        viewModel.reset()
-                    }
-                    .foregroundColor(.textSecondary)
-                }
-
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
                     Button("Done") {
@@ -95,6 +86,72 @@ struct ReconstitutionCalculatorView: View {
                 BeginnerGuideView()
             }
         }
+    }
+
+    // MARK: - Close Button Header (ALWAYS VISIBLE)
+    private var closeButtonHeader: some View {
+        HStack {
+            Button {
+                dismiss()
+            } label: {
+                HStack(spacing: 6) {
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                    Text("Close")
+                        .fontWeight(.semibold)
+                }
+                .foregroundColor(.accentPrimary)
+            }
+
+            Spacer()
+
+            Text("Reconstitution Calculator")
+                .font(.headline)
+                .foregroundColor(.textPrimary)
+
+            Spacer()
+
+            HStack(spacing: 12) {
+                Button {
+                    viewModel.reset()
+                } label: {
+                    Image(systemName: "arrow.counterclockwise")
+                        .font(.title3)
+                        .foregroundColor(.textSecondary)
+                }
+
+                Button {
+                    viewModel.showBeginnerGuide = true
+                } label: {
+                    Image(systemName: "questionmark.circle")
+                        .font(.title3)
+                        .foregroundColor(.textSecondary)
+                }
+            }
+        }
+        .padding(.horizontal)
+        .padding(.vertical, 12)
+        .background(Color.backgroundSecondary)
+    }
+
+    // MARK: - Bottom Close Button (FAILSAFE - ALWAYS VISIBLE)
+    private var bottomCloseButton: some View {
+        Button {
+            dismiss()
+        } label: {
+            HStack {
+                Image(systemName: "xmark.circle.fill")
+                    .font(.title2)
+                Text("Close Calculator")
+                    .fontWeight(.bold)
+            }
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, 16)
+            .background(Color.statusError)
+            .cornerRadius(12)
+        }
+        .padding(.top, 20)
     }
 
     // MARK: - Auto-Suggest Button

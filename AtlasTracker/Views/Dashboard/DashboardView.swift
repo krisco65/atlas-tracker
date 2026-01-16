@@ -429,17 +429,50 @@ struct ActiveCompoundsSheet: View {
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {
-        NavigationStack {
-            ZStack {
-                Color.backgroundPrimary
-                    .ignoresSafeArea()
+        ZStack {
+            Color.backgroundPrimary
+                .ignoresSafeArea()
+
+            VStack(spacing: 0) {
+                // PROMINENT CLOSE BUTTON HEADER
+                HStack {
+                    Button {
+                        dismiss()
+                    } label: {
+                        HStack(spacing: 6) {
+                            Image(systemName: "xmark.circle.fill")
+                                .font(.title2)
+                            Text("Close")
+                                .fontWeight(.semibold)
+                        }
+                        .foregroundColor(.accentPrimary)
+                    }
+
+                    Spacer()
+
+                    Text("Active Compounds")
+                        .font(.headline)
+                        .foregroundColor(.textPrimary)
+
+                    Spacer()
+
+                    // Invisible spacer for centering
+                    Image(systemName: "xmark.circle.fill")
+                        .font(.title2)
+                        .foregroundColor(.clear)
+                }
+                .padding(.horizontal)
+                .padding(.vertical, 12)
+                .background(Color.backgroundSecondary)
 
                 if trackedCompounds.isEmpty {
+                    Spacer()
                     EmptyStateView(
                         icon: "pills",
                         title: "No Active Compounds",
                         message: "Start tracking compounds in the Library"
                     )
+                    Spacer()
                 } else {
                     ScrollView {
                         LazyVStack(spacing: 12) {
@@ -448,15 +481,6 @@ struct ActiveCompoundsSheet: View {
                             }
                         }
                         .padding()
-                    }
-                }
-            }
-            .navigationTitle("Active Compounds")
-            .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarTrailing) {
-                    Button("Done") {
-                        dismiss()
                     }
                 }
             }
