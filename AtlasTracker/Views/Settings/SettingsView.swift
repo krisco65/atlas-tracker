@@ -34,7 +34,7 @@ struct SettingsView: View {
                             Label("Enable Notifications", systemImage: "bell.fill")
                         }
                         .tint(.accentPrimary)
-                        .onChange(of: notificationsEnabled) { _, newValue in
+                        .onChange(of: notificationsEnabled) { newValue in
                             if newValue {
                                 Task {
                                     await NotificationService.shared.requestAuthorization()

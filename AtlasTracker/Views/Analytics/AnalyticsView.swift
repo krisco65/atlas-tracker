@@ -186,7 +186,7 @@ struct AnalyticsView: View {
             .onAppear {
                 viewModel.loadData()
             }
-            .onChange(of: viewModel.selectedPeriod) { _, _ in
+            .onChange(of: viewModel.selectedPeriod) { _ in
                 viewModel.loadData()
             }
             .sheet(isPresented: $viewModel.showAddWeight) {
@@ -420,7 +420,7 @@ struct AnalyticsView: View {
                             .fontWeight(.bold)
                             .foregroundColor(.textPrimary)
 
-                        Text(viewModel.latestWeight?.unit ?? "lbs")
+                        Text(viewModel.latestWeight?.unit.rawValue ?? "lbs")
                             .font(.caption)
                             .foregroundColor(.textSecondary)
 
@@ -452,7 +452,7 @@ struct AnalyticsView: View {
                                 .foregroundColor(.textTertiary)
                         }
 
-                        Text(viewModel.latestWeight?.unit ?? "lbs")
+                        Text(viewModel.latestWeight?.unit.rawValue ?? "lbs")
                             .font(.caption)
                             .foregroundColor(.textSecondary)
 
@@ -621,7 +621,7 @@ struct AddWeightSheet: View {
             .onAppear {
                 // Pre-fill with latest weight if available
                 if let latest = viewModel.latestWeight {
-                    selectedUnit = WeightUnit(rawValue: latest.unit ?? "lbs") ?? .lbs
+                    selectedUnit = latest.unit
                 }
             }
         }
