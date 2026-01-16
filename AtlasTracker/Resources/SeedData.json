@@ -482,7 +482,15 @@
       "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right", "love_handle_left", "love_handle_right", "thigh_left", "thigh_right"]
     },
     {
-      "name": "Glow (SS-31/Elamipretide)",
+      "name": "GLOW (BPC-157 + TB-500 + GHK-Cu)",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["belly_upper_left", "belly_upper_right", "belly_lower_left", "belly_lower_right"]
+    },
+    {
+      "name": "MOTS-C",
       "category": "peptide",
       "supportedUnits": ["mg", "mcg", "ml"],
       "defaultUnit": "mg",

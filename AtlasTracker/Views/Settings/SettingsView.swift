@@ -8,6 +8,10 @@ struct SettingsView: View {
     @State private var showResetConfirmation = false
     @State private var notificationCount = 0
     @State private var showReconstitutionCalculator = false
+    @State private var isHealthKitAuthorized = false
+    @State private var isImportingFromHealth = false
+    @State private var healthImportCount = 0
+    @State private var showHealthImportResult = false
 
     var body: some View {
         NavigationStack {
@@ -78,6 +82,50 @@ struct SettingsView: View {
                         Text("Calculate peptide dosing from reconstituted vials")
                     }
 
+                    // Apple Health Section
+                    if HealthKitService.shared.isHealthKitAvailable {
+                        Section {
+                            HStack {
+                                Label("Apple Health", systemImage: "heart.fill")
+                                    .foregroundColor(.pink)
+                                Spacer()
+                                if isHealthKitAuthorized {
+                                    Text("Connected")
+                                        .font(.caption)
+                                        .foregroundColor(.statusSuccess)
+                                } else {
+                                    Button("Connect") {
+                                        Task {
+                                            isHealthKitAuthorized = await HealthKitService.shared.requestAuthorization()
+                                        }
+                                    }
+                                    .font(.caption)
+                                    .foregroundColor(.accentPrimary)
+                                }
+                            }
+
+                            if isHealthKitAuthorized {
+                                Button {
+                                    importFromHealth()
+                                } label: {
+                                    HStack {
+                                        Label("Import Weight Data", systemImage: "arrow.down.circle")
+                                        Spacer()
+                                        if isImportingFromHealth {
+                                            ProgressView()
+                                                .scaleEffect(0.8)
+                                        }
+                                    }
+                                }
+                                .disabled(isImportingFromHealth)
+                            }
+                        } header: {
+                            Text("Apple Health")
+                        } footer: {
+                            Text("Sync weight entries from Apple Health to track your progress alongside your compounds.")
+                        }
+                    }
+
                     // Data Section
                     Section {
                         NavigationLink {
@@ -100,12 +148,29 @@ struct SettingsView: View {
 
                     // About Section
                     Section {
-                        HStack {
-                            Label("Version", systemImage: "info.circle")
+                        // App Logo and Name
+                        HStack(spacing: 16) {
+                            Image("AppLogo")
+                                .resizable()
+                                .scaledToFit()
+                                .frame(width: 60, height: 60)
+                                .cornerRadius(12)
+
+                            VStack(alignment: .leading, spacing: 4) {
+                                Text("Atlas Tracker")
+                                    .font(.headline)
+                                    .foregroundColor(.textPrimary)
+                                Text("Compound & Peptide Tracking")
+                                    .font(.caption)
+                                    .foregroundColor(.textSecondary)
+                                Text("Version \(AppConstants.appVersion)")
+                                    .font(.caption2)
+                                    .foregroundColor(.textTertiary)
+                            }
+
                             Spacer()
-                            Text(AppConstants.appVersion)
-                                .foregroundColor(.textSecondary)
                         }
+                        .padding(.vertical, 8)
 
                         Link(destination: URL(string: "https://github.com")!) {
                             Label("Report Issue", systemImage: "ant")
@@ -121,6 +186,12 @@ struct SettingsView: View {
             .navigationBarTitleDisplayMode(.large)
             .onAppear {
                 loadNotificationCount()
+                isHealthKitAuthorized = HealthKitService.shared.isAuthorized()
+            }
+            .alert("Import Complete", isPresented: $showHealthImportResult) {
+                Button("OK") { }
+            } message: {
+                Text("Imported \(healthImportCount) weight entries from Apple Health.")
             }
             .alert("Reset All Data?", isPresented: $showResetConfirmation) {
                 Button("Cancel", role: .cancel) { }
@@ -140,6 +211,25 @@ struct SettingsView: View {
     private func loadNotificationCount() {
         NotificationService.shared.getPendingNotificationsCount { count in
             notificationCount = count
+        }
+    }
+
+    private func importFromHealth() {
+        isImportingFromHealth = true
+
+        Task {
+            // Import last 90 days of weight data
+            let startDate = Calendar.current.date(byAdding: .day, value: -90, to: Date()) ?? Date()
+            let count = await HealthKitService.shared.importWeightEntriesToCoreData(from: startDate, to: Date())
+
+            await MainActor.run {
+                isImportingFromHealth = false
+                healthImportCount = count
+                showHealthImportResult = true
+
+                let generator = UINotificationFeedbackGenerator()
+                generator.notificationOccurred(.success)
+            }
         }
     }
 }

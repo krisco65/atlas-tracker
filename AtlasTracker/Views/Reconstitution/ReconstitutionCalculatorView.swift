@@ -10,6 +10,9 @@ struct ReconstitutionCalculatorView: View {
             ZStack {
                 Color.backgroundPrimary
                     .ignoresSafeArea()
+                    .onTapGesture {
+                        hideKeyboard()
+                    }
 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -22,12 +25,22 @@ struct ReconstitutionCalculatorView: View {
                         // Input Fields
                         inputSection
 
+                        // Auto-Suggest Button (prominent)
+                        if viewModel.suggestBacWater() != nil && viewModel.bacWaterMl.isEmpty {
+                            autoSuggestButton
+                        }
+
                         // Calculate Button
                         calculateButton
 
                         // Results
                         if let result = viewModel.result {
                             resultsSection(result)
+
+                            // Human-readable explanation
+                            if let explanation = viewModel.explanationText {
+                                explanationCard(explanation)
+                            }
                         }
 
                         // Error Message
@@ -44,6 +57,7 @@ struct ReconstitutionCalculatorView: View {
                     }
                     .padding()
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
             .navigationTitle("Reconstitution Calculator")
             .navigationBarTitleDisplayMode(.large)
@@ -63,6 +77,14 @@ struct ReconstitutionCalculatorView: View {
                     }
                     .foregroundColor(.textSecondary)
                 }
+
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        hideKeyboard()
+                    }
+                    .foregroundColor(.accentPrimary)
+                }
             }
             .onAppear {
                 if let compound = preselectedCompound {
@@ -73,6 +95,50 @@ struct ReconstitutionCalculatorView: View {
                 BeginnerGuideView()
             }
         }
+    }
+
+    // MARK: - Auto-Suggest Button
+    private var autoSuggestButton: some View {
+        Button {
+            viewModel.autoCalculate()
+            let generator = UIImpactFeedbackGenerator(style: .medium)
+            generator.impactOccurred()
+        } label: {
+            HStack {
+                Image(systemName: "wand.and.stars")
+                Text("Auto-Calculate for 25 Units/Dose")
+            }
+            .font(.subheadline)
+            .fontWeight(.semibold)
+            .foregroundColor(.white)
+            .frame(maxWidth: .infinity)
+            .padding()
+            .background(Color.categoryPeptide)
+            .cornerRadius(12)
+        }
+    }
+
+    // MARK: - Explanation Card
+    private func explanationCard(_ text: String) -> some View {
+        VStack(alignment: .leading, spacing: 8) {
+            HStack {
+                Image(systemName: "text.bubble")
+                    .foregroundColor(.accentPrimary)
+                Text("Summary")
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.textPrimary)
+            }
+
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(.textSecondary)
+                .lineSpacing(4)
+        }
+        .padding()
+        .frame(maxWidth: .infinity, alignment: .leading)
+        .background(Color.backgroundSecondary)
+        .cornerRadius(12)
     }
 
     // MARK: - Header Section

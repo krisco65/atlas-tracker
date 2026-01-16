@@ -15,6 +15,9 @@ struct LogDoseView: View {
         ZStack {
             Color.backgroundPrimary
                 .ignoresSafeArea()
+                .onTapGesture {
+                    hideKeyboard()
+                }
 
             if viewModel.showSuccess {
                 successView
@@ -47,10 +50,20 @@ struct LogDoseView: View {
                     }
                     .padding()
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
         }
         .navigationTitle("Log Dose")
         .navigationBarTitleDisplayMode(.large)
+        .toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    hideKeyboard()
+                }
+                .foregroundColor(.accentPrimary)
+            }
+        }
         .onAppear {
             viewModel.loadTrackedCompounds()
             if let compound = preselectedCompound {
@@ -175,24 +188,9 @@ struct LogDoseView: View {
     // MARK: - Injection Site Section
     private var injectionSiteSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Text("Injection Site")
-                    .font(.headline)
-                    .foregroundColor(.textPrimary)
-
-                Spacer()
-
-                Button {
-                    showBodyDiagram = true
-                } label: {
-                    HStack(spacing: 4) {
-                        Image(systemName: "figure.stand")
-                        Text("Body Diagram")
-                    }
-                    .font(.caption)
-                    .foregroundColor(.accentPrimary)
-                }
-            }
+            Text("Injection Site")
+                .font(.headline)
+                .foregroundColor(.textPrimary)
 
             // Recommendation Card
             if let recommended = viewModel.recommendedSite {
@@ -248,25 +246,31 @@ struct LogDoseView: View {
                 }
             }
 
-            // Injection site picker
-            ForEach(viewModel.injectionSiteOptions, id: \.name) { group in
-                VStack(alignment: .leading, spacing: 8) {
-                    Text(group.name)
-                        .font(.subheadline)
-                        .foregroundColor(.textSecondary)
+            // Visual Body Diagram - directly inline
+            if let compound = viewModel.selectedCompound {
+                let injectionType: BodyDiagramView.InjectionType = compound.category == .ped ? .intramuscular : .subcutaneous
+                BodyDiagramView(
+                    injectionType: injectionType,
+                    selectedSite: $viewModel.selectedInjectionSite,
+                    lastUsedSite: viewModel.lastUsedSiteRawValue,
+                    recommendedSite: viewModel.recommendedSiteRawValue
+                )
+            }
 
-                    LazyVGrid(columns: [GridItem(.flexible()), GridItem(.flexible())], spacing: 8) {
-                        ForEach(group.sites, id: \.rawValue) { site in
-                            InjectionSiteButton(
-                                name: site.displayName,
-                                isSelected: viewModel.selectedInjectionSite == site.rawValue,
-                                isRecommended: viewModel.recommendedSiteRawValue == site.rawValue
-                            ) {
-                                viewModel.selectedInjectionSite = site.rawValue
-                            }
-                        }
-                    }
+            // Selected site confirmation
+            if let site = viewModel.selectedInjectionSite {
+                HStack {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.accentPrimary)
+                    Text("Selected: \(viewModel.selectedSiteDisplayName)")
+                        .font(.subheadline)
+                        .fontWeight(.medium)
+                        .foregroundColor(.textPrimary)
                 }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.accentPrimary.opacity(0.1))
+                .cornerRadius(10)
             }
         }
     }

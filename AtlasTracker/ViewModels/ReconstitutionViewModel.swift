@@ -221,18 +221,18 @@ final class ReconstitutionViewModel: ObservableObject {
     // MARK: - Suggested BAC Water
 
     /// Suggests optimal BAC water based on vial size and desired dose
+    /// Targets 25 units on insulin syringe for easy measurement
     func suggestBacWater() -> String? {
         guard let vialMg = Double(vialSizeMg), vialMg > 0,
               let doseMg = desiredDoseInMg, doseMg > 0 else {
             return nil
         }
 
-        // Target: easy-to-measure syringe units (5-50 units per dose)
-        // Ideal range: 10-30 units for precision
+        // Target: 25 units per dose for easy measurement
+        let targetUnits = 25.0
+        let targetVolume = targetUnits / 100 // ml (0.25 ml)
 
-        // Calculate BAC water that would give ~20 units per dose
-        let targetUnits = 20.0
-        let targetVolume = targetUnits / 100 // ml
+        // Formula: BAC water = (vialMg * targetVolume) / doseMg
         let suggestedBac = (vialMg * targetVolume) / doseMg
 
         // Round to practical amounts (0.5, 1.0, 1.5, 2.0, etc.)
@@ -242,5 +242,30 @@ final class ReconstitutionViewModel: ObservableObject {
         let clampedBac = max(0.5, min(3.0, roundedBac))
 
         return String(format: "%.1f", clampedBac)
+    }
+
+    /// Auto-calculates with suggested BAC water
+    func autoCalculate() {
+        guard let suggestion = suggestBacWater() else { return }
+        bacWaterMl = suggestion
+        calculate()
+    }
+
+    /// Human-readable explanation of the math
+    var explanationText: String? {
+        guard let result = result,
+              let vialMg = Double(vialSizeMg),
+              let bacMl = Double(bacWaterMl),
+              let doseMg = desiredDoseInMg else { return nil }
+
+        let doseString = doseUnitIsMcg ? "\(desiredDoseMg) mcg" : "\(desiredDoseMg) mg"
+
+        return """
+        Add \(String(format: "%.1f", bacMl)) ml of BAC water to your \(String(format: "%.0f", vialMg)) mg vial.
+
+        For your \(doseString) dose, draw \(result.syringeUnitsString) (\(result.volumeToDrawString)).
+
+        This vial will give you \(result.dosesPerVialString).
+        """
     }
 }

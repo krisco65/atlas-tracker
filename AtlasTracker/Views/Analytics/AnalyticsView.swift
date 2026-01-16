@@ -549,6 +549,9 @@ struct AddWeightSheet: View {
             ZStack {
                 Color.backgroundPrimary
                     .ignoresSafeArea()
+                    .onTapGesture {
+                        hideKeyboard()
+                    }
 
                 ScrollView {
                     VStack(spacing: 24) {
@@ -607,6 +610,7 @@ struct AddWeightSheet: View {
                     }
                     .padding()
                 }
+                .scrollDismissesKeyboard(.interactively)
             }
             .navigationTitle("Log Weight")
             .navigationBarTitleDisplayMode(.inline)
@@ -616,6 +620,13 @@ struct AddWeightSheet: View {
                         dismiss()
                     }
                     .foregroundColor(.textSecondary)
+                }
+                ToolbarItemGroup(placement: .keyboard) {
+                    Spacer()
+                    Button("Done") {
+                        hideKeyboard()
+                    }
+                    .foregroundColor(.accentPrimary)
                 }
             }
             .onAppear {

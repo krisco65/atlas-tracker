@@ -5,6 +5,7 @@ struct DashboardView: View {
     @State private var selectedTracked: TrackedCompound?
     @State private var showActiveCompounds = false
     @State private var showInventory = false
+    @State private var showReconstitutionCalculator = false
 
     var body: some View {
         NavigationStack {
@@ -21,6 +22,9 @@ struct DashboardView: View {
 
                         // Today's Doses
                         todaysDosesSection
+
+                        // Quick Tools (Calculator)
+                        quickToolsCard
 
                         // Low Stock Alerts
                         if viewModel.hasLowStock {
@@ -41,6 +45,15 @@ struct DashboardView: View {
             }
             .navigationTitle("Dashboard")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Image("AppLogo")
+                        .resizable()
+                        .scaledToFit()
+                        .frame(width: 32, height: 32)
+                        .cornerRadius(8)
+                }
+            }
             .refreshable {
                 viewModel.loadData()
             }
@@ -60,7 +73,45 @@ struct DashboardView: View {
             .sheet(isPresented: $showInventory) {
                 InventoryView()
             }
+            .sheet(isPresented: $showReconstitutionCalculator) {
+                ReconstitutionCalculatorView()
+            }
         }
+    }
+
+    // MARK: - Quick Tools Card
+    private var quickToolsCard: some View {
+        Button {
+            showReconstitutionCalculator = true
+        } label: {
+            HStack(spacing: 12) {
+                Image(systemName: "function")
+                    .font(.title2)
+                    .foregroundColor(.white)
+                    .frame(width: 44, height: 44)
+                    .background(Color.categoryPeptide)
+                    .cornerRadius(10)
+
+                VStack(alignment: .leading, spacing: 2) {
+                    Text("Reconstitution Calculator")
+                        .font(.headline)
+                        .foregroundColor(.textPrimary)
+                    Text("Calculate BAC water & dosing")
+                        .font(.caption)
+                        .foregroundColor(.textSecondary)
+                }
+
+                Spacer()
+
+                Image(systemName: "chevron.right")
+                    .foregroundColor(.textTertiary)
+                    .font(.caption)
+            }
+            .padding()
+            .background(Color.backgroundSecondary)
+            .cornerRadius(12)
+        }
+        .buttonStyle(.plain)
     }
 
     // MARK: - Today Progress Card

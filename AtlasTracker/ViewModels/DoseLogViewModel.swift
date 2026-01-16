@@ -41,6 +41,23 @@ final class DoseLogViewModel: ObservableObject {
         return InjectionSiteRecommendationService.shared.lastUsedSiteDisplayName(for: compound)
     }
 
+    var lastUsedSiteRawValue: String? {
+        guard let compound = selectedCompound else { return nil }
+        return InjectionSiteRecommendationService.shared.lastUsedSiteRawValue(for: compound)
+    }
+
+    var selectedSiteDisplayName: String {
+        guard let site = selectedInjectionSite, let compound = selectedCompound else {
+            return "None selected"
+        }
+
+        if compound.category == .ped {
+            return PEDInjectionSite(rawValue: site)?.displayName ?? site
+        } else {
+            return PeptideInjectionSite(rawValue: site)?.displayName ?? site
+        }
+    }
+
     var canLogDose: Bool {
         guard selectedCompound != nil else { return false }
         guard let amount = Double(dosageAmount), amount > 0 else { return false }

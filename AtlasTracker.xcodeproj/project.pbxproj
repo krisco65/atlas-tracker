@@ -41,6 +41,7 @@
 		A1000005002 /* SeedDataService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005002 /* SeedDataService.swift */; };
 		A1000005003 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005003 /* NotificationService.swift */; };
 		A1000005004 /* InjectionSiteRecommendationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005004 /* InjectionSiteRecommendationService.swift */; };
+		A1000005005 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005005 /* HealthKitService.swift */; };
 
 		/* Utilities */
 		A1000006001 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006001 /* Constants.swift */; };
@@ -142,6 +143,7 @@
 		A1100005002 /* SeedDataService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SeedDataService.swift; sourceTree = "<group>"; };
 		A1100005003 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		A1100005004 /* InjectionSiteRecommendationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSiteRecommendationService.swift; sourceTree = "<group>"; };
+		A1100005005 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
 
 		/* Utilities */
 		A1100006001 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
@@ -421,6 +423,7 @@
 				A1100005002 /* SeedDataService.swift */,
 				A1100005003 /* NotificationService.swift */,
 				A1100005004 /* InjectionSiteRecommendationService.swift */,
+				A1100005005 /* HealthKitService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -567,6 +570,7 @@
 				A1000005002 /* SeedDataService.swift in Sources */,
 				A1000005003 /* NotificationService.swift in Sources */,
 				A1000005004 /* InjectionSiteRecommendationService.swift in Sources */,
+				A1000005005 /* HealthKitService.swift in Sources */,
 
 				/* Utilities */
 				A1000006001 /* Constants.swift in Sources */,

@@ -49,6 +49,31 @@ extension View {
         UIApplication.shared.sendAction(#selector(UIResponder.resignFirstResponder), to: nil, from: nil, for: nil)
     }
 
+    // MARK: - Keyboard Done Toolbar
+    func keyboardDoneButton() -> some View {
+        self.toolbar {
+            ToolbarItemGroup(placement: .keyboard) {
+                Spacer()
+                Button("Done") {
+                    hideKeyboard()
+                }
+                .foregroundColor(.accentPrimary)
+            }
+        }
+    }
+
+    // MARK: - Tap to Dismiss Keyboard
+    func dismissKeyboardOnTap() -> some View {
+        self.onTapGesture {
+            hideKeyboard()
+        }
+    }
+
+    // MARK: - Scrollable with Tap to Dismiss
+    func scrollDismissesKeyboard() -> some View {
+        self.scrollDismissesKeyboard(.interactively)
+    }
+
     // MARK: - Conditional Modifier
     @ViewBuilder
     func `if`<Content: View>(_ condition: Bool, transform: (Self) -> Content) -> some View {
