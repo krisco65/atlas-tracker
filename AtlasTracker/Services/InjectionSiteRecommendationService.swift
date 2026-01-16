@@ -80,9 +80,9 @@ final class InjectionSiteRecommendationService {
             return PeptideInjectionSite(rawValue: rawValue)
         }
 
-        // If no history, start with belly upper left
+        // If no history, start with left belly upper
         guard !recentSites.isEmpty else {
-            return .bellyUpperLeft
+            return .leftBellyUpper
         }
 
         // Get last used site
@@ -120,7 +120,7 @@ final class InjectionSiteRecommendationService {
             candidates = bellySites
         }
 
-        return candidates.first ?? .bellyUpperLeft
+        return candidates.first ?? .leftBellyUpper
     }
 
     // MARK: - Recommend Next Site (Generic)
