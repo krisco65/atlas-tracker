@@ -11,7 +11,7 @@ struct ContentView: View {
                 }
                 .tag(0)
 
-            LibraryView()
+            LibraryView(onClose: { selectedTab = 0 })
                 .tabItem {
                     Label("Library", systemImage: "books.vertical.fill")
                 }

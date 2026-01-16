@@ -4,6 +4,11 @@ struct LibraryView: View {
     @StateObject private var viewModel = LibraryViewModel()
     @State private var showAddCompound = false
     @State private var selectedCompound: Compound?
+    var onClose: (() -> Void)?
+
+    init(onClose: (() -> Void)? = nil) {
+        self.onClose = onClose
+    }
 
     var body: some View {
         NavigationStack {
@@ -102,6 +107,20 @@ struct LibraryView: View {
             .navigationTitle("Library")
             .navigationBarTitleDisplayMode(.large)
             .toolbar {
+                ToolbarItem(placement: .navigationBarLeading) {
+                    if let onClose = onClose {
+                        Button {
+                            onClose()
+                        } label: {
+                            HStack(spacing: 4) {
+                                Image(systemName: "house.fill")
+                                Text("Home")
+                            }
+                            .font(.subheadline)
+                            .foregroundColor(.accentPrimary)
+                        }
+                    }
+                }
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button {
                         showAddCompound = true

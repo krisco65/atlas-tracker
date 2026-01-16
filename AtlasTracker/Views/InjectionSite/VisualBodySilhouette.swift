@@ -1,8 +1,8 @@
 import SwiftUI
 
 // MARK: - Visual Body Silhouette
-/// Professional body silhouette for injection site selection
-/// Uses anatomically correct 8-head proportion system
+/// Clean, modern regional injection site picker
+/// Uses card-based layout instead of body drawing for professional appearance
 struct VisualBodySilhouette: View {
     let injectionType: BodyDiagramView.InjectionType
     @Binding var selectedSite: String?
@@ -10,104 +10,32 @@ struct VisualBodySilhouette: View {
     let recommendedSite: String?
 
     var body: some View {
-        VStack(spacing: 12) {
-            // Legend - compact horizontal layout
-            HStack(spacing: 20) {
-                LegendDot(color: .accentPrimary, label: "Selected")
-                LegendDot(color: .statusSuccess, label: "Recommended")
-                LegendDot(color: .statusWarning, label: "Last Used")
+        VStack(spacing: 16) {
+            // Legend
+            HStack(spacing: 16) {
+                LegendIndicator(color: .accentPrimary, label: "Selected")
+                LegendIndicator(color: .statusSuccess, label: "Recommended")
+                LegendIndicator(color: .statusWarning, label: "Last Used")
             }
             .font(.caption2)
+            .padding(.horizontal)
 
-            // Body diagram with injection sites
-            GeometryReader { geometry in
-                let bodyWidth = min(geometry.size.width * 0.85, 280)
-                let bodyHeight = bodyWidth * 2.4 // Proper human proportion ratio
-                let offsetX = (geometry.size.width - bodyWidth) / 2
-                let offsetY = (geometry.size.height - bodyHeight) / 2
-
-                ZStack {
-                    // Professional body silhouette
-                    ProfessionalBodyShape()
-                        .fill(
-                            LinearGradient(
-                                colors: [
-                                    Color.backgroundSecondary.opacity(0.8),
-                                    Color.backgroundSecondary.opacity(0.4)
-                                ],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            )
-                        )
-                        .frame(width: bodyWidth, height: bodyHeight)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-
-                    // Body outline
-                    ProfessionalBodyShape()
-                        .stroke(
-                            LinearGradient(
-                                colors: [Color.textTertiary.opacity(0.6), Color.textTertiary.opacity(0.3)],
-                                startPoint: .top,
-                                endPoint: .bottom
-                            ),
-                            lineWidth: 1.5
-                        )
-                        .frame(width: bodyWidth, height: bodyHeight)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
-
-                    // Injection site markers
-                    if injectionType == .intramuscular {
-                        ForEach(PEDInjectionSite.allCases, id: \.self) { site in
-                            InjectionSiteMarker(
-                                site: site.rawValue,
-                                label: site.shortName,
-                                position: calculatePosition(
-                                    for: site.bodyMapPosition,
-                                    bodyWidth: bodyWidth,
-                                    bodyHeight: bodyHeight,
-                                    offsetX: offsetX,
-                                    offsetY: offsetY
-                                ),
-                                isSelected: selectedSite == site.rawValue,
-                                isLastUsed: lastUsedSite == site.rawValue,
-                                isRecommended: recommendedSite == site.rawValue
-                            ) {
-                                withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
-                                    selectedSite = site.rawValue
-                                }
-                                let generator = UIImpactFeedbackGenerator(style: .light)
-                                generator.impactOccurred()
-                            }
-                        }
-                    } else {
-                        ForEach(PeptideInjectionSite.allCases, id: \.self) { site in
-                            InjectionSiteMarker(
-                                site: site.rawValue,
-                                label: site.shortName,
-                                position: calculatePosition(
-                                    for: site.bodyMapPosition,
-                                    bodyWidth: bodyWidth,
-                                    bodyHeight: bodyHeight,
-                                    offsetX: offsetX,
-                                    offsetY: offsetY
-                                ),
-                                isSelected: selectedSite == site.rawValue,
-                                isLastUsed: lastUsedSite == site.rawValue,
-                                isRecommended: recommendedSite == site.rawValue
-                            ) {
-                                withAnimation(.spring(response: 0.25, dampingFraction: 0.7)) {
-                                    selectedSite = site.rawValue
-                                }
-                                let generator = UIImpactFeedbackGenerator(style: .light)
-                                generator.impactOccurred()
-                            }
-                        }
-                    }
-                }
+            // Regional site picker
+            if injectionType == .intramuscular {
+                PEDSitesPicker(
+                    selectedSite: $selectedSite,
+                    lastUsedSite: lastUsedSite,
+                    recommendedSite: recommendedSite
+                )
+            } else {
+                PeptideSitesPicker(
+                    selectedSite: $selectedSite,
+                    lastUsedSite: lastUsedSite,
+                    recommendedSite: recommendedSite
+                )
             }
-            .frame(height: 380)
 
-            // Selected site display
+            // Selected site confirmation
             if let selected = selectedSite {
                 let displayName = getDisplayName(for: selected)
                 HStack(spacing: 8) {
@@ -116,29 +44,14 @@ struct VisualBodySilhouette: View {
                     Text(displayName)
                         .font(.subheadline)
                         .fontWeight(.semibold)
-                        .foregroundColor(.textPrimary)
                 }
+                .foregroundColor(.textPrimary)
                 .padding(.horizontal, 16)
                 .padding(.vertical, 10)
                 .background(Color.accentPrimary.opacity(0.15))
                 .cornerRadius(20)
             }
         }
-        .padding(.horizontal, 8)
-        .padding(.vertical, 12)
-    }
-
-    private func calculatePosition(
-        for relativePos: (x: CGFloat, y: CGFloat),
-        bodyWidth: CGFloat,
-        bodyHeight: CGFloat,
-        offsetX: CGFloat,
-        offsetY: CGFloat
-    ) -> CGPoint {
-        CGPoint(
-            x: offsetX + bodyWidth * relativePos.x,
-            y: offsetY + bodyHeight * relativePos.y
-        )
     }
 
     private func getDisplayName(for site: String) -> String {
@@ -150,67 +63,361 @@ struct VisualBodySilhouette: View {
     }
 }
 
-// MARK: - Injection Site Marker
-struct InjectionSiteMarker: View {
-    let site: String
+// MARK: - PED Sites Picker (Intramuscular)
+struct PEDSitesPicker: View {
+    @Binding var selectedSite: String?
+    let lastUsedSite: String?
+    let recommendedSite: String?
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // Shoulders (Delts)
+            RegionCard(
+                title: "Shoulders",
+                icon: "figure.arms.open",
+                sites: [
+                    (.deltLeft, "Left Deltoid"),
+                    (.deltRight, "Right Deltoid")
+                ],
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite
+            )
+
+            // Glutes
+            RegionCard(
+                title: "Glutes",
+                icon: "figure.stand",
+                sites: [
+                    (.gluteLeft, "Left Glute"),
+                    (.gluteRight, "Right Glute")
+                ],
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite
+            )
+
+            // Ventrogluteal
+            RegionCard(
+                title: "Ventrogluteal",
+                icon: "figure.walk",
+                sites: [
+                    (.vgLeft, "Left VG"),
+                    (.vgRight, "Right VG")
+                ],
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite
+            )
+
+            // Quads
+            RegionCard(
+                title: "Quadriceps",
+                icon: "figure.run",
+                sites: [
+                    (.quadLeft, "Left Quad"),
+                    (.quadRight, "Right Quad")
+                ],
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite
+            )
+        }
+    }
+}
+
+// MARK: - Peptide Sites Picker (Subcutaneous)
+struct PeptideSitesPicker: View {
+    @Binding var selectedSite: String?
+    let lastUsedSite: String?
+    let recommendedSite: String?
+
+    var body: some View {
+        VStack(spacing: 12) {
+            // Abdomen - Left of Navel
+            RegionCardPeptide(
+                title: "Left Abdomen",
+                icon: "square.lefthalf.filled",
+                sites: [
+                    (.leftBellyUpper, "Upper"),
+                    (.leftBellyLower, "Lower")
+                ],
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite
+            )
+
+            // Abdomen - Right of Navel
+            RegionCardPeptide(
+                title: "Right Abdomen",
+                icon: "square.righthalf.filled",
+                sites: [
+                    (.rightBellyUpper, "Upper"),
+                    (.rightBellyLower, "Lower")
+                ],
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite
+            )
+
+            // Love Handles
+            HStack(spacing: 12) {
+                RegionCardPeptide(
+                    title: "Left Side",
+                    icon: "arrow.left.square",
+                    sites: [
+                        (.leftLoveHandleUpper, "Upper"),
+                        (.leftLoveHandleLower, "Lower")
+                    ],
+                    selectedSite: $selectedSite,
+                    lastUsedSite: lastUsedSite,
+                    recommendedSite: recommendedSite,
+                    compact: true
+                )
+
+                RegionCardPeptide(
+                    title: "Right Side",
+                    icon: "arrow.right.square",
+                    sites: [
+                        (.rightLoveHandleUpper, "Upper"),
+                        (.rightLoveHandleLower, "Lower")
+                    ],
+                    selectedSite: $selectedSite,
+                    lastUsedSite: lastUsedSite,
+                    recommendedSite: recommendedSite,
+                    compact: true
+                )
+            }
+
+            // Glutes (SubQ)
+            HStack(spacing: 12) {
+                RegionCardPeptide(
+                    title: "Left Glute",
+                    icon: "circle.lefthalf.filled",
+                    sites: [
+                        (.gluteLeftUpper, "Upper"),
+                        (.gluteLeftLower, "Lower")
+                    ],
+                    selectedSite: $selectedSite,
+                    lastUsedSite: lastUsedSite,
+                    recommendedSite: recommendedSite,
+                    compact: true
+                )
+
+                RegionCardPeptide(
+                    title: "Right Glute",
+                    icon: "circle.righthalf.filled",
+                    sites: [
+                        (.gluteRightUpper, "Upper"),
+                        (.gluteRightLower, "Lower")
+                    ],
+                    selectedSite: $selectedSite,
+                    lastUsedSite: lastUsedSite,
+                    recommendedSite: recommendedSite,
+                    compact: true
+                )
+            }
+
+            // Thighs
+            RegionCardPeptide(
+                title: "Thighs",
+                icon: "figure.stand",
+                sites: [
+                    (.thighLeft, "Left Thigh"),
+                    (.thighRight, "Right Thigh")
+                ],
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite
+            )
+        }
+    }
+}
+
+// MARK: - Region Card (PED)
+struct RegionCard: View {
+    let title: String
+    let icon: String
+    let sites: [(PEDInjectionSite, String)]
+    @Binding var selectedSite: String?
+    let lastUsedSite: String?
+    let recommendedSite: String?
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 10) {
+            // Header
+            HStack(spacing: 8) {
+                Image(systemName: icon)
+                    .font(.subheadline)
+                    .foregroundColor(.accentPrimary)
+                Text(title)
+                    .font(.subheadline)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.textPrimary)
+                Spacer()
+            }
+
+            // Site buttons
+            HStack(spacing: 10) {
+                ForEach(sites, id: \.0) { site, label in
+                    SiteButton(
+                        label: label,
+                        isSelected: selectedSite == site.rawValue,
+                        isLastUsed: lastUsedSite == site.rawValue,
+                        isRecommended: recommendedSite == site.rawValue
+                    ) {
+                        withAnimation(.easeInOut(duration: 0.2)) {
+                            selectedSite = site.rawValue
+                        }
+                        UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                    }
+                }
+            }
+        }
+        .padding(14)
+        .background(Color.backgroundSecondary)
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Region Card (Peptide)
+struct RegionCardPeptide: View {
+    let title: String
+    let icon: String
+    let sites: [(PeptideInjectionSite, String)]
+    @Binding var selectedSite: String?
+    let lastUsedSite: String?
+    let recommendedSite: String?
+    var compact: Bool = false
+
+    var body: some View {
+        VStack(alignment: .leading, spacing: 8) {
+            // Header
+            HStack(spacing: 6) {
+                Image(systemName: icon)
+                    .font(.caption)
+                    .foregroundColor(.categoryPeptide)
+                Text(title)
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.textPrimary)
+                Spacer()
+            }
+
+            // Site buttons
+            if compact {
+                VStack(spacing: 6) {
+                    ForEach(sites, id: \.0) { site, label in
+                        SiteButton(
+                            label: label,
+                            isSelected: selectedSite == site.rawValue,
+                            isLastUsed: lastUsedSite == site.rawValue,
+                            isRecommended: recommendedSite == site.rawValue,
+                            compact: true
+                        ) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selectedSite = site.rawValue
+                            }
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
+                    }
+                }
+            } else {
+                HStack(spacing: 8) {
+                    ForEach(sites, id: \.0) { site, label in
+                        SiteButton(
+                            label: label,
+                            isSelected: selectedSite == site.rawValue,
+                            isLastUsed: lastUsedSite == site.rawValue,
+                            isRecommended: recommendedSite == site.rawValue
+                        ) {
+                            withAnimation(.easeInOut(duration: 0.2)) {
+                                selectedSite = site.rawValue
+                            }
+                            UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                        }
+                    }
+                }
+            }
+        }
+        .padding(compact ? 10 : 14)
+        .background(Color.backgroundSecondary)
+        .cornerRadius(12)
+    }
+}
+
+// MARK: - Site Button
+struct SiteButton: View {
     let label: String
-    let position: CGPoint
     let isSelected: Bool
     let isLastUsed: Bool
     let isRecommended: Bool
+    var compact: Bool = false
     let onTap: () -> Void
-
-    private var markerColor: Color {
-        if isSelected { return .accentPrimary }
-        if isRecommended { return .statusSuccess }
-        if isLastUsed { return .statusWarning }
-        return .textTertiary.opacity(0.6)
-    }
 
     private var backgroundColor: Color {
         if isSelected { return .accentPrimary }
-        if isRecommended { return .statusSuccess.opacity(0.25) }
-        if isLastUsed { return .statusWarning.opacity(0.25) }
-        return .backgroundTertiary.opacity(0.8)
+        if isRecommended { return .statusSuccess.opacity(0.2) }
+        if isLastUsed { return .statusWarning.opacity(0.2) }
+        return .backgroundTertiary
+    }
+
+    private var borderColor: Color {
+        if isSelected { return .accentPrimary }
+        if isRecommended { return .statusSuccess }
+        if isLastUsed { return .statusWarning }
+        return .clear
+    }
+
+    private var textColor: Color {
+        if isSelected { return .white }
+        return .textPrimary
     }
 
     var body: some View {
         Button(action: onTap) {
-            ZStack {
-                // Glow effect for recommended
+            HStack(spacing: 4) {
                 if isRecommended && !isSelected {
-                    Circle()
-                        .fill(Color.statusSuccess.opacity(0.3))
-                        .frame(width: 44, height: 44)
-                        .blur(radius: 6)
+                    Image(systemName: "star.fill")
+                        .font(.system(size: 8))
+                        .foregroundColor(.statusSuccess)
                 }
-
-                // Main marker
-                Circle()
-                    .fill(backgroundColor)
-                    .frame(width: isSelected ? 36 : 32, height: isSelected ? 36 : 32)
-                    .overlay(
-                        Circle()
-                            .stroke(markerColor, lineWidth: isSelected ? 2.5 : 1.5)
-                    )
-                    .shadow(color: isSelected ? .accentPrimary.opacity(0.4) : .clear, radius: 6)
-
-                // Label
                 Text(label)
-                    .font(.system(size: 7, weight: .bold, design: .rounded))
-                    .foregroundColor(isSelected ? .white : .textPrimary)
-                    .multilineTextAlignment(.center)
-                    .lineLimit(2)
-                    .frame(width: 30)
+                    .font(compact ? .caption : .subheadline)
+                    .fontWeight(isSelected ? .semibold : .medium)
             }
+            .foregroundColor(textColor)
+            .frame(maxWidth: .infinity)
+            .padding(.vertical, compact ? 8 : 10)
+            .padding(.horizontal, 8)
+            .background(backgroundColor)
+            .cornerRadius(8)
+            .overlay(
+                RoundedRectangle(cornerRadius: 8)
+                    .stroke(borderColor, lineWidth: isSelected ? 0 : 1.5)
+            )
         }
         .buttonStyle(.plain)
-        .position(position)
-        .scaleEffect(isSelected ? 1.15 : 1.0)
     }
 }
 
-// MARK: - Legend Dot
+// MARK: - Legend Indicator
+struct LegendIndicator: View {
+    let color: Color
+    let label: String
+
+    var body: some View {
+        HStack(spacing: 4) {
+            RoundedRectangle(cornerRadius: 3)
+                .fill(color)
+                .frame(width: 12, height: 12)
+            Text(label)
+                .foregroundColor(.textSecondary)
+        }
+    }
+}
+
+// Keep LegendDot for backward compatibility
 struct LegendDot: View {
     let color: Color
     let label: String
@@ -226,255 +433,38 @@ struct LegendDot: View {
     }
 }
 
-// MARK: - Professional Body Shape
-/// Anatomically proportioned human silhouette using the classical 8-head system
-struct ProfessionalBodyShape: Shape {
-    func path(in rect: CGRect) -> Path {
-        var path = Path()
-        let w = rect.width
-        let h = rect.height
-
-        // Proportions based on classical 8-head figure
-        // Head unit = h / 8
-        let headUnit = h / 8
-
-        // Key measurements
-        let centerX = w / 2
-        let shoulderWidth = w * 0.46
-        let waistWidth = w * 0.30
-        let hipWidth = w * 0.38
-        let neckWidth = w * 0.12
-
-        // Vertical positions (from top)
-        let headTop: CGFloat = 0
-        let headBottom = headUnit * 1.0
-        let neckBottom = headUnit * 1.25
-        let shoulderY = headUnit * 1.5
-        let chestY = headUnit * 2.2
-        let waistY = headUnit * 3.2
-        let hipY = headUnit * 4.0
-        let crotchY = headUnit * 4.3
-        let kneeY = headUnit * 6.0
-        let ankleY = headUnit * 7.6
-        let footY = h
-
-        // HEAD - Oval shape
-        let headCenterY = headUnit * 0.5
-        let headRadiusX = w * 0.11
-        let headRadiusY = headUnit * 0.48
-
-        path.addEllipse(in: CGRect(
-            x: centerX - headRadiusX,
-            y: headTop + headUnit * 0.04,
-            width: headRadiusX * 2,
-            height: headRadiusY * 2
-        ))
-
-        // BODY - Start from left neck
-        path.move(to: CGPoint(x: centerX - neckWidth / 2, y: headBottom))
-
-        // Left side of neck
-        path.addLine(to: CGPoint(x: centerX - neckWidth / 2, y: neckBottom))
-
-        // Left shoulder curve
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - shoulderWidth / 2, y: shoulderY),
-            control: CGPoint(x: centerX - shoulderWidth / 2.5, y: neckBottom)
-        )
-
-        // Left arm - upper
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.06, y: chestY + headUnit * 0.3),
-            control: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.02, y: shoulderY + headUnit * 0.4)
-        )
-
-        // Left arm - forearm
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.08, y: waistY + headUnit * 0.2),
-            control: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.08, y: chestY + headUnit * 0.6)
-        )
-
-        // Left hand
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.04, y: waistY + headUnit * 0.5),
-            control: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.10, y: waistY + headUnit * 0.35)
-        )
-
-        // Inner left arm back to torso
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - waistWidth / 2 - w * 0.04, y: chestY + headUnit * 0.2),
-            control: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.02, y: waistY)
-        )
-
-        // Left torso - chest to waist
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - waistWidth / 2, y: waistY),
-            control: CGPoint(x: centerX - waistWidth / 2 - w * 0.02, y: chestY + headUnit * 0.8)
-        )
-
-        // Left hip curve
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - hipWidth / 2, y: hipY),
-            control: CGPoint(x: centerX - hipWidth / 2, y: waistY + headUnit * 0.4)
-        )
-
-        // Left leg - outer thigh
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.14, y: kneeY),
-            control: CGPoint(x: centerX - hipWidth / 2 + w * 0.02, y: crotchY + headUnit * 0.8)
-        )
-
-        // Left leg - outer calf
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.11, y: ankleY),
-            control: CGPoint(x: centerX - w * 0.15, y: kneeY + headUnit * 0.8)
-        )
-
-        // Left foot
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.06, y: footY),
-            control: CGPoint(x: centerX - w * 0.13, y: ankleY + headUnit * 0.2)
-        )
-
-        // Inner left leg - foot to crotch
-        path.addLine(to: CGPoint(x: centerX - w * 0.02, y: footY))
-
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.06, y: ankleY),
-            control: CGPoint(x: centerX - w * 0.04, y: ankleY + headUnit * 0.1)
-        )
-
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.05, y: kneeY),
-            control: CGPoint(x: centerX - w * 0.07, y: kneeY + headUnit * 0.6)
-        )
-
-        path.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.02, y: crotchY),
-            control: CGPoint(x: centerX - w * 0.06, y: crotchY + headUnit * 0.5)
-        )
-
-        // Crotch curve
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.02, y: crotchY),
-            control: CGPoint(x: centerX, y: crotchY + headUnit * 0.15)
-        )
-
-        // Inner right leg - crotch to foot
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.05, y: kneeY),
-            control: CGPoint(x: centerX + w * 0.06, y: crotchY + headUnit * 0.5)
-        )
-
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.06, y: ankleY),
-            control: CGPoint(x: centerX + w * 0.07, y: kneeY + headUnit * 0.6)
-        )
-
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.02, y: footY),
-            control: CGPoint(x: centerX + w * 0.04, y: ankleY + headUnit * 0.1)
-        )
-
-        // Right foot
-        path.addLine(to: CGPoint(x: centerX + w * 0.06, y: footY))
-
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.11, y: ankleY),
-            control: CGPoint(x: centerX + w * 0.13, y: ankleY + headUnit * 0.2)
-        )
-
-        // Right leg - outer calf
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.14, y: kneeY),
-            control: CGPoint(x: centerX + w * 0.15, y: kneeY + headUnit * 0.8)
-        )
-
-        // Right leg - outer thigh
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + hipWidth / 2, y: hipY),
-            control: CGPoint(x: centerX + hipWidth / 2 - w * 0.02, y: crotchY + headUnit * 0.8)
-        )
-
-        // Right hip curve
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + waistWidth / 2, y: waistY),
-            control: CGPoint(x: centerX + hipWidth / 2, y: waistY + headUnit * 0.4)
-        )
-
-        // Right torso - waist to chest
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + waistWidth / 2 + w * 0.04, y: chestY + headUnit * 0.2),
-            control: CGPoint(x: centerX + waistWidth / 2 + w * 0.02, y: chestY + headUnit * 0.8)
-        )
-
-        // Inner right arm from torso
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.04, y: waistY + headUnit * 0.5),
-            control: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.02, y: waistY)
-        )
-
-        // Right hand
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.08, y: waistY + headUnit * 0.2),
-            control: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.10, y: waistY + headUnit * 0.35)
-        )
-
-        // Right arm - forearm
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.06, y: chestY + headUnit * 0.3),
-            control: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.08, y: chestY + headUnit * 0.6)
-        )
-
-        // Right arm - upper
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + shoulderWidth / 2, y: shoulderY),
-            control: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.02, y: shoulderY + headUnit * 0.4)
-        )
-
-        // Right shoulder curve
-        path.addQuadCurve(
-            to: CGPoint(x: centerX + neckWidth / 2, y: neckBottom),
-            control: CGPoint(x: centerX + shoulderWidth / 2.5, y: neckBottom)
-        )
-
-        // Right side of neck
-        path.addLine(to: CGPoint(x: centerX + neckWidth / 2, y: headBottom))
-
-        path.closeSubpath()
-
-        return path
-    }
-}
-
 #Preview("Peptide Sites") {
-    VStack {
-        Text("Peptide Injection Sites")
-            .font(.headline)
-        VisualBodySilhouette(
-            injectionType: .subcutaneous,
-            selectedSite: .constant("left_belly_upper"),
-            lastUsedSite: "right_belly_lower",
-            recommendedSite: "left_love_handle_upper"
-        )
+    ScrollView {
+        VStack {
+            Text("Peptide Injection Sites")
+                .font(.headline)
+            VisualBodySilhouette(
+                injectionType: .subcutaneous,
+                selectedSite: .constant("left_belly_upper"),
+                lastUsedSite: "right_belly_lower",
+                recommendedSite: "left_love_handle_upper"
+            )
+        }
+        .padding()
     }
-    .padding()
     .background(Color.backgroundPrimary)
     .preferredColorScheme(.dark)
 }
 
 #Preview("PED Sites") {
-    VStack {
-        Text("PED Injection Sites")
-            .font(.headline)
-        VisualBodySilhouette(
-            injectionType: .intramuscular,
-            selectedSite: .constant("glute_left"),
-            lastUsedSite: "delt_right",
-            recommendedSite: "glute_right"
-        )
+    ScrollView {
+        VStack {
+            Text("PED Injection Sites")
+                .font(.headline)
+            VisualBodySilhouette(
+                injectionType: .intramuscular,
+                selectedSite: .constant("glute_left"),
+                lastUsedSite: "delt_right",
+                recommendedSite: "glute_right"
+            )
+        }
+        .padding()
     }
-    .padding()
     .background(Color.backgroundPrimary)
     .preferredColorScheme(.dark)
 }
