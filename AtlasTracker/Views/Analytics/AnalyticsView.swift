@@ -13,6 +13,7 @@ final class AnalyticsViewModel: ObservableObject {
     @Published var doseLogs: [DoseLog] = []
     @Published var weightEntries: [WeightEntry] = []
     @Published var trackedCompounds: [TrackedCompound] = []
+    @Published var showAddWeight = false
 
     var dateRange: (start: Date, end: Date) {
         let end = Date()
@@ -60,6 +61,19 @@ final class AnalyticsViewModel: ObservableObject {
         return min(100, Double(totalDoses) / Double(expectedDoses) * 100)
     }
 
+    var adherenceDescription: String {
+        let percentage = adherencePercentage
+        if percentage >= 90 {
+            return "Excellent"
+        } else if percentage >= 75 {
+            return "Good"
+        } else if percentage >= 50 {
+            return "Fair"
+        } else {
+            return "Needs Improvement"
+        }
+    }
+
     var dosesByDay: [(date: Date, count: Int)] {
         let grouped = Dictionary(grouping: doseLogs) { log in
             Calendar.current.startOfDay(for: log.timestamp ?? Date())
@@ -87,11 +101,36 @@ final class AnalyticsViewModel: ObservableObject {
         .sorted { $0.count > $1.count }
     }
 
+    var weightChange: Double? {
+        guard weightEntries.count >= 2 else { return nil }
+        let sorted = weightEntries.sorted { ($0.date ?? Date()) < ($1.date ?? Date()) }
+        guard let first = sorted.first, let last = sorted.last else { return nil }
+        return last.weight - first.weight
+    }
+
+    var latestWeight: WeightEntry? {
+        return weightEntries.max { ($0.date ?? Date()) < ($1.date ?? Date()) }
+    }
+
+    var averageDosesPerDay: Double {
+        let range = dateRange
+        let daysInPeriod = max(1, Calendar.current.dateComponents([.day], from: range.start, to: range.end).day ?? 1)
+        return Double(totalDoses) / Double(daysInPeriod)
+    }
+
     func loadData() {
         let range = dateRange
         doseLogs = CoreDataManager.shared.fetchDoseLogs(from: range.start, to: range.end)
         weightEntries = CoreDataManager.shared.fetchWeightEntries(from: range.start, to: range.end)
         trackedCompounds = CoreDataManager.shared.fetchTrackedCompounds(activeOnly: true)
+    }
+
+    func addWeightEntry(weight: Double, unit: WeightUnit, notes: String?) {
+        CoreDataManager.shared.logWeight(weight: weight, unit: unit, date: Date(), notes: notes)
+        loadData()
+
+        let generator = UINotificationFeedbackGenerator()
+        generator.notificationOccurred(.success)
     }
 }
 
@@ -112,19 +151,20 @@ struct AnalyticsView: View {
                         // Summary Cards
                         summaryCards
 
+                        // Adherence Card
+                        adherenceCard
+
                         // Dose Frequency Chart
                         if !viewModel.doseLogs.isEmpty {
                             doseFrequencyChart
                         }
 
+                        // Weight Tracking Section
+                        weightSection
+
                         // Compounds Breakdown
                         if !viewModel.dosesByCompound.isEmpty {
                             compoundsBreakdown
-                        }
-
-                        // Weight Chart (if data exists)
-                        if !viewModel.weightEntries.isEmpty {
-                            weightChart
                         }
                     }
                     .padding()
@@ -133,11 +173,24 @@ struct AnalyticsView: View {
             }
             .navigationTitle("Analytics")
             .navigationBarTitleDisplayMode(.large)
+            .toolbar {
+                ToolbarItem(placement: .topBarTrailing) {
+                    Button {
+                        viewModel.showAddWeight = true
+                    } label: {
+                        Image(systemName: "scalemass")
+                            .foregroundColor(.accentPrimary)
+                    }
+                }
+            }
             .onAppear {
                 viewModel.loadData()
             }
             .onChange(of: viewModel.selectedPeriod) { _, _ in
                 viewModel.loadData()
+            }
+            .sheet(isPresented: $viewModel.showAddWeight) {
+                AddWeightSheet(viewModel: viewModel)
             }
         }
     }
@@ -170,11 +223,84 @@ struct AnalyticsView: View {
             )
 
             SummaryCard(
-                title: "Adherence",
-                value: String(format: "%.0f%%", viewModel.adherencePercentage),
-                icon: "checkmark.circle.fill",
-                color: viewModel.adherencePercentage >= 80 ? .statusSuccess : .statusWarning
+                title: "Avg/Day",
+                value: String(format: "%.1f", viewModel.averageDosesPerDay),
+                icon: "chart.line.uptrend.xyaxis",
+                color: .categoryMedicine
             )
+        }
+    }
+
+    // MARK: - Adherence Card
+    private var adherenceCard: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Text("Adherence")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+
+                Spacer()
+
+                Text(viewModel.adherenceDescription)
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(adherenceColor)
+            }
+
+            // Circular Progress
+            HStack(spacing: 24) {
+                ZStack {
+                    Circle()
+                        .stroke(Color.backgroundTertiary, lineWidth: 10)
+                        .frame(width: 80, height: 80)
+
+                    Circle()
+                        .trim(from: 0, to: min(viewModel.adherencePercentage / 100, 1.0))
+                        .stroke(adherenceColor, style: StrokeStyle(lineWidth: 10, lineCap: .round))
+                        .frame(width: 80, height: 80)
+                        .rotationEffect(.degrees(-90))
+
+                    Text(String(format: "%.0f%%", viewModel.adherencePercentage))
+                        .font(.headline)
+                        .fontWeight(.bold)
+                        .foregroundColor(.textPrimary)
+                }
+
+                VStack(alignment: .leading, spacing: 8) {
+                    adherenceStatRow(title: "Logged", value: "\(viewModel.totalDoses) doses")
+                    adherenceStatRow(title: "Active Compounds", value: "\(viewModel.trackedCompounds.count)")
+                    adherenceStatRow(title: "Period", value: viewModel.selectedPeriod.rawValue)
+                }
+
+                Spacer()
+            }
+        }
+        .padding()
+        .background(Color.backgroundSecondary)
+        .cornerRadius(16)
+    }
+
+    private var adherenceColor: Color {
+        let percentage = viewModel.adherencePercentage
+        if percentage >= 80 {
+            return .statusSuccess
+        } else if percentage >= 50 {
+            return .statusWarning
+        } else {
+            return .statusError
+        }
+    }
+
+    private func adherenceStatRow(title: String, value: String) -> some View {
+        HStack {
+            Text(title)
+                .font(.caption)
+                .foregroundColor(.textSecondary)
+            Spacer()
+            Text(value)
+                .font(.caption)
+                .fontWeight(.medium)
+                .foregroundColor(.textPrimary)
         }
     }
 
@@ -244,14 +370,140 @@ struct AnalyticsView: View {
         .cornerRadius(16)
     }
 
+    // MARK: - Weight Section
+    private var weightSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Weight Tracking")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+
+                Spacer()
+
+                Button {
+                    viewModel.showAddWeight = true
+                } label: {
+                    HStack(spacing: 4) {
+                        Image(systemName: "plus")
+                        Text("Log")
+                    }
+                    .font(.caption)
+                    .fontWeight(.medium)
+                    .foregroundColor(.accentPrimary)
+                }
+            }
+
+            if viewModel.weightEntries.isEmpty {
+                VStack(spacing: 12) {
+                    Image(systemName: "scalemass")
+                        .font(.largeTitle)
+                        .foregroundColor(.textTertiary)
+
+                    Text("No weight entries yet")
+                        .font(.subheadline)
+                        .foregroundColor(.textSecondary)
+
+                    Text("Track your weight to see trends over time")
+                        .font(.caption)
+                        .foregroundColor(.textTertiary)
+                        .multilineTextAlignment(.center)
+                }
+                .frame(maxWidth: .infinity)
+                .padding(.vertical, 24)
+            } else {
+                // Current Weight Stats
+                HStack(spacing: 16) {
+                    // Latest Weight
+                    VStack(spacing: 4) {
+                        Text(String(format: "%.1f", viewModel.latestWeight?.weight ?? 0))
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.textPrimary)
+
+                        Text(viewModel.latestWeight?.unit ?? "lbs")
+                            .font(.caption)
+                            .foregroundColor(.textSecondary)
+
+                        Text("Current")
+                            .font(.caption2)
+                            .foregroundColor(.textTertiary)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    Divider()
+                        .frame(height: 50)
+                        .background(Color.backgroundTertiary)
+
+                    // Change
+                    VStack(spacing: 4) {
+                        if let change = viewModel.weightChange {
+                            HStack(spacing: 2) {
+                                Image(systemName: change >= 0 ? "arrow.up" : "arrow.down")
+                                    .font(.caption)
+                                Text(String(format: "%.1f", abs(change)))
+                                    .font(.title)
+                                    .fontWeight(.bold)
+                            }
+                            .foregroundColor(change >= 0 ? .statusSuccess : .accentPrimary)
+                        } else {
+                            Text("--")
+                                .font(.title)
+                                .fontWeight(.bold)
+                                .foregroundColor(.textTertiary)
+                        }
+
+                        Text(viewModel.latestWeight?.unit ?? "lbs")
+                            .font(.caption)
+                            .foregroundColor(.textSecondary)
+
+                        Text("Change")
+                            .font(.caption2)
+                            .foregroundColor(.textTertiary)
+                    }
+                    .frame(maxWidth: .infinity)
+
+                    Divider()
+                        .frame(height: 50)
+                        .background(Color.backgroundTertiary)
+
+                    // Entries
+                    VStack(spacing: 4) {
+                        Text("\(viewModel.weightEntries.count)")
+                            .font(.title)
+                            .fontWeight(.bold)
+                            .foregroundColor(.textPrimary)
+
+                        Text("entries")
+                            .font(.caption)
+                            .foregroundColor(.textSecondary)
+
+                        Text("Logged")
+                            .font(.caption2)
+                            .foregroundColor(.textTertiary)
+                    }
+                    .frame(maxWidth: .infinity)
+                }
+                .padding(.vertical, 8)
+
+                // Weight Chart
+                if viewModel.weightEntries.count >= 2 {
+                    weightChart
+                }
+            }
+        }
+        .padding()
+        .background(Color.backgroundSecondary)
+        .cornerRadius(16)
+    }
+
     // MARK: - Weight Chart
     private var weightChart: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            Text("Weight Trend")
-                .font(.headline)
-                .foregroundColor(.textPrimary)
+        VStack(alignment: .leading, spacing: 8) {
+            Text("Trend")
+                .font(.subheadline)
+                .foregroundColor(.textSecondary)
 
-            Chart(viewModel.weightEntries, id: \.id) { entry in
+            Chart(viewModel.weightEntries.sorted { ($0.date ?? Date()) < ($1.date ?? Date()) }, id: \.id) { entry in
                 LineMark(
                     x: .value("Date", entry.date ?? Date()),
                     y: .value("Weight", entry.weight)
@@ -265,14 +517,129 @@ struct AnalyticsView: View {
                 )
                 .foregroundStyle(Color.accentSecondary)
             }
-            .frame(height: 200)
+            .frame(height: 150)
+            .chartXAxis {
+                AxisMarks(values: .automatic(desiredCount: 5)) { value in
+                    if let date = value.as(Date.self) {
+                        AxisValueLabel {
+                            Text(date.shortDateString)
+                                .font(.caption2)
+                        }
+                    }
+                }
+            }
             .chartYAxis {
                 AxisMarks(position: .leading)
             }
         }
-        .padding()
-        .background(Color.backgroundSecondary)
-        .cornerRadius(16)
+    }
+}
+
+// MARK: - Add Weight Sheet
+struct AddWeightSheet: View {
+    @ObservedObject var viewModel: AnalyticsViewModel
+    @Environment(\.dismiss) private var dismiss
+
+    @State private var weightString = ""
+    @State private var selectedUnit: WeightUnit = .lbs
+    @State private var notes = ""
+
+    var body: some View {
+        NavigationStack {
+            ZStack {
+                Color.backgroundPrimary
+                    .ignoresSafeArea()
+
+                ScrollView {
+                    VStack(spacing: 24) {
+                        // Weight Input
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Weight")
+                                .font(.headline)
+                                .foregroundColor(.textPrimary)
+
+                            HStack(spacing: 12) {
+                                TextField("0.0", text: $weightString)
+                                    .keyboardType(.decimalPad)
+                                    .font(.system(size: 40, weight: .bold))
+                                    .foregroundColor(.textPrimary)
+                                    .multilineTextAlignment(.center)
+                                    .frame(maxWidth: .infinity)
+                                    .padding()
+                                    .background(Color.backgroundSecondary)
+                                    .cornerRadius(12)
+
+                                // Unit Picker
+                                Picker("Unit", selection: $selectedUnit) {
+                                    ForEach(WeightUnit.allCases, id: \.self) { unit in
+                                        Text(unit.rawValue).tag(unit)
+                                    }
+                                }
+                                .pickerStyle(.segmented)
+                                .frame(width: 100)
+                            }
+                        }
+
+                        // Notes
+                        VStack(alignment: .leading, spacing: 12) {
+                            Text("Notes (Optional)")
+                                .font(.headline)
+                                .foregroundColor(.textPrimary)
+
+                            TextField("e.g., Morning weight, post-workout", text: $notes)
+                                .padding()
+                                .background(Color.backgroundSecondary)
+                                .cornerRadius(10)
+                                .foregroundColor(.textPrimary)
+                        }
+
+                        // Save Button
+                        Button {
+                            saveWeight()
+                        } label: {
+                            Text("Log Weight")
+                                .primaryButtonStyle()
+                        }
+                        .disabled(!canSave)
+                        .opacity(canSave ? 1 : 0.5)
+
+                        Spacer()
+                    }
+                    .padding()
+                }
+            }
+            .navigationTitle("Log Weight")
+            .navigationBarTitleDisplayMode(.inline)
+            .toolbar {
+                ToolbarItem(placement: .topBarLeading) {
+                    Button("Cancel") {
+                        dismiss()
+                    }
+                    .foregroundColor(.textSecondary)
+                }
+            }
+            .onAppear {
+                // Pre-fill with latest weight if available
+                if let latest = viewModel.latestWeight {
+                    selectedUnit = WeightUnit(rawValue: latest.unit ?? "lbs") ?? .lbs
+                }
+            }
+        }
+    }
+
+    private var canSave: Bool {
+        guard let weight = Double(weightString), weight > 0 else { return false }
+        return true
+    }
+
+    private func saveWeight() {
+        guard let weight = Double(weightString) else { return }
+        viewModel.addWeightEntry(
+            weight: weight,
+            unit: selectedUnit,
+            notes: notes.isEmpty ? nil : notes
+        )
+        dismiss()
     }
 }
 
