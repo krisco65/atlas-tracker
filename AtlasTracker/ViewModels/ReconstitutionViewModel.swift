@@ -256,7 +256,7 @@ final class ReconstitutionViewModel: ObservableObject {
         guard let result = result,
               let vialMg = Double(vialSizeMg),
               let bacMl = Double(bacWaterMl),
-              let doseMg = desiredDoseInMg else { return nil }
+              desiredDoseInMg != nil else { return nil }
 
         let doseString = doseUnitIsMcg ? "\(desiredDoseMg) mcg" : "\(desiredDoseMg) mg"
 

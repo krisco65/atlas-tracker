@@ -258,7 +258,7 @@ struct LogDoseView: View {
             }
 
             // Selected site confirmation
-            if let site = viewModel.selectedInjectionSite {
+            if viewModel.selectedInjectionSite != nil {
                 HStack {
                     Image(systemName: "checkmark.circle.fill")
                         .foregroundColor(.accentPrimary)

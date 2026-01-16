@@ -2,7 +2,7 @@ import SwiftUI
 
 // MARK: - Peptide Body Diagram View
 /// Interactive body diagram for subcutaneous (SubQ) injection sites
-/// Used for Peptides: belly quadrants, love handles, thighs
+/// Used for Peptides: belly quadrants, love handles, glutes, thighs
 struct PeptideBodyDiagramView: View {
     @Binding var selectedSite: String?
     let lastUsedSite: String?
@@ -18,6 +18,19 @@ struct PeptideBodyDiagramView: View {
                     .foregroundColor(.textSecondary)
 
                 torsoView
+            }
+
+            Divider()
+                .background(Color.backgroundTertiary)
+
+            // Glutes View
+            VStack(spacing: 8) {
+                Text("GLUTES")
+                    .font(.caption)
+                    .fontWeight(.semibold)
+                    .foregroundColor(.textSecondary)
+
+                glutesView
             }
 
             Divider()
@@ -41,22 +54,30 @@ struct PeptideBodyDiagramView: View {
     // MARK: - Torso View
     private var torsoView: some View {
         HStack(spacing: 8) {
-            // Left love handle
-            siteButton(
-                site: .loveHandleLeft,
-                label: "L Side",
-                width: 50,
-                height: 80
-            )
+            // Left love handle (upper/lower)
+            VStack(spacing: 4) {
+                siteButton(
+                    site: .leftLoveHandleUpper,
+                    label: "L Side U",
+                    width: 50,
+                    height: 38
+                )
+                siteButton(
+                    site: .leftLoveHandleLower,
+                    label: "L Side L",
+                    width: 50,
+                    height: 38
+                )
+            }
 
             // Belly grid (2x2)
-            VStack(spacing: 8) {
+            VStack(spacing: 4) {
                 HStack(spacing: 8) {
                     siteButton(
-                        site: .bellyUpperLeft,
+                        site: .leftBellyUpper,
                         label: "UL",
-                        width: 60,
-                        height: 50
+                        width: 55,
+                        height: 38
                     )
 
                     // Navel indicator
@@ -65,40 +86,85 @@ struct PeptideBodyDiagramView: View {
                         .frame(width: 12, height: 12)
 
                     siteButton(
-                        site: .bellyUpperRight,
+                        site: .rightBellyUpper,
                         label: "UR",
-                        width: 60,
-                        height: 50
+                        width: 55,
+                        height: 38
                     )
                 }
 
                 HStack(spacing: 8) {
                     siteButton(
-                        site: .bellyLowerLeft,
+                        site: .leftBellyLower,
                         label: "LL",
-                        width: 60,
-                        height: 50
+                        width: 55,
+                        height: 38
                     )
 
                     Spacer()
                         .frame(width: 12)
 
                     siteButton(
-                        site: .bellyLowerRight,
+                        site: .rightBellyLower,
                         label: "LR",
-                        width: 60,
-                        height: 50
+                        width: 55,
+                        height: 38
                     )
                 }
             }
 
-            // Right love handle
-            siteButton(
-                site: .loveHandleRight,
-                label: "R Side",
-                width: 50,
-                height: 80
-            )
+            // Right love handle (upper/lower)
+            VStack(spacing: 4) {
+                siteButton(
+                    site: .rightLoveHandleUpper,
+                    label: "R Side U",
+                    width: 50,
+                    height: 38
+                )
+                siteButton(
+                    site: .rightLoveHandleLower,
+                    label: "R Side L",
+                    width: 50,
+                    height: 38
+                )
+            }
+        }
+    }
+
+    // MARK: - Glutes View
+    private var glutesView: some View {
+        HStack(spacing: 20) {
+            // Left glute (upper/lower)
+            VStack(spacing: 4) {
+                siteButton(
+                    site: .gluteLeftUpper,
+                    label: "L Upper",
+                    width: 70,
+                    height: 35
+                )
+                siteButton(
+                    site: .gluteLeftLower,
+                    label: "L Lower",
+                    width: 70,
+                    height: 35
+                )
+            }
+
+            // Right glute (upper/lower)
+            VStack(spacing: 4) {
+                siteButton(
+                    site: .gluteRightUpper,
+                    label: "R Upper",
+                    width: 70,
+                    height: 35
+                )
+                siteButton(
+                    site: .gluteRightLower,
+                    label: "R Lower",
+                    width: 70,
+                    height: 35
+                )
+            }
         }
     }
 
@@ -109,14 +175,14 @@ struct PeptideBodyDiagramView: View {
                 site: .thighLeft,
                 label: "L Thigh",
                 width: 80,
-                height: 60
+                height: 50
             )
 
             siteButton(
                 site: .thighRight,
                 label: "R Thigh",
                 width: 80,
-                height: 60
+                height: 50
             )
         }
     }
@@ -135,7 +201,7 @@ struct PeptideBodyDiagramView: View {
         } label: {
             VStack(spacing: 2) {
                 Text(label)
-                    .font(.caption)
+                    .font(.caption2)
                     .fontWeight(isSelected ? .bold : .medium)
 
                 if isRecommended && !isSelected {
@@ -157,9 +223,9 @@ struct PeptideBodyDiagramView: View {
 
 #Preview {
     PeptideBodyDiagramView(
-        selectedSite: .constant("belly_upper_left"),
-        lastUsedSite: "belly_lower_right",
-        recommendedSite: "love_handle_left"
+        selectedSite: .constant("left_belly_upper"),
+        lastUsedSite: "right_belly_lower",
+        recommendedSite: "left_love_handle_upper"
     )
     .padding()
     .background(Color.backgroundPrimary)
