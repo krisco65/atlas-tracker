@@ -4,6 +4,7 @@ struct CompoundDetailView: View {
     @StateObject private var viewModel: CompoundDetailViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteAlert = false
+    @State private var showReconstitutionCalculator = false
 
     init(compound: Compound) {
         _viewModel = StateObject(wrappedValue: CompoundDetailViewModel(compound: compound))
@@ -25,6 +26,11 @@ struct CompoundDetailView: View {
                     // Injection Site Info (if applicable)
                     if viewModel.requiresInjection {
                         injectionSiteCard
+                    }
+
+                    // Reconstitution Calculator (for peptides)
+                    if viewModel.compound.category == .peptide && viewModel.isTracked {
+                        reconstitutionCard
                     }
 
                     // Recent Dose History
@@ -65,6 +71,9 @@ struct CompoundDetailView: View {
             }
         } message: {
             Text("This will permanently delete this custom compound and all its data.")
+        }
+        .sheet(isPresented: $showReconstitutionCalculator) {
+            ReconstitutionCalculatorView(preselectedCompound: viewModel.trackedCompound)
         }
     }
 
@@ -238,6 +247,63 @@ struct CompoundDetailView: View {
                         .fontWeight(.medium)
                         .foregroundColor(.accentPrimary)
                 }
+            }
+        }
+        .padding()
+        .background(Color.backgroundSecondary)
+        .cornerRadius(16)
+    }
+
+    // MARK: - Reconstitution Card
+    private var reconstitutionCard: some View {
+        VStack(spacing: 12) {
+            HStack {
+                Image(systemName: "eyedropper")
+                    .foregroundColor(.categoryPeptide)
+
+                Text("Reconstitution Calculator")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+
+                Spacer()
+            }
+
+            if let tracked = viewModel.trackedCompound,
+               tracked.reconstitutionConcentration > 0 {
+                // Show saved reconstitution info
+                HStack {
+                    VStack(alignment: .leading, spacing: 4) {
+                        Text("Concentration")
+                            .font(.caption)
+                            .foregroundColor(.textSecondary)
+                        Text(String(format: "%.2f mg/ml", tracked.reconstitutionConcentration))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.textPrimary)
+                    }
+
+                    Spacer()
+
+                    VStack(alignment: .trailing, spacing: 4) {
+                        Text("BAC Water")
+                            .font(.caption)
+                            .foregroundColor(.textSecondary)
+                        Text(String(format: "%.1f ml", tracked.reconstitutionBAC))
+                            .font(.subheadline)
+                            .fontWeight(.medium)
+                            .foregroundColor(.textPrimary)
+                    }
+                }
+            }
+
+            Button {
+                showReconstitutionCalculator = true
+            } label: {
+                HStack {
+                    Image(systemName: "function")
+                    Text("Open Calculator")
+                }
+                .secondaryButtonStyle()
             }
         }
         .padding()

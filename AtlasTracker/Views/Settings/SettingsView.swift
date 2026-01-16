@@ -7,6 +7,7 @@ struct SettingsView: View {
 
     @State private var showResetConfirmation = false
     @State private var notificationCount = 0
+    @State private var showReconstitutionCalculator = false
 
     var body: some View {
         NavigationStack {
@@ -64,6 +65,19 @@ struct SettingsView: View {
                         Text("Units")
                     }
 
+                    // Tools Section
+                    Section {
+                        Button {
+                            showReconstitutionCalculator = true
+                        } label: {
+                            Label("Reconstitution Calculator", systemImage: "eyedropper")
+                        }
+                    } header: {
+                        Text("Tools")
+                    } footer: {
+                        Text("Calculate peptide dosing from reconstituted vials")
+                    }
+
                     // Data Section
                     Section {
                         NavigationLink {
@@ -116,6 +130,9 @@ struct SettingsView: View {
                 }
             } message: {
                 Text("This will permanently delete all your compounds, dose logs, and settings. This action cannot be undone.")
+            }
+            .sheet(isPresented: $showReconstitutionCalculator) {
+                ReconstitutionCalculatorView()
             }
         }
     }
