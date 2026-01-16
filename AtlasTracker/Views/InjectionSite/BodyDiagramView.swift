@@ -23,22 +23,6 @@ struct BodyDiagramView: View {
     }
 }
 
-// MARK: - Legend Item
-struct LegendItem: View {
-    let color: Color
-    let label: String
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(color)
-                .frame(width: 10, height: 10)
-            Text(label)
-                .foregroundColor(.textSecondary)
-        }
-    }
-}
-
 // MARK: - Site Button Style
 struct InjectionSiteButtonStyle: ViewModifier {
     let isSelected: Bool
