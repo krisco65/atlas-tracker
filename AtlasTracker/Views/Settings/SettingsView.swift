@@ -91,7 +91,11 @@ struct SettingsView: View {
                             Label("Apple Health", systemImage: "heart.fill")
                                 .foregroundColor(.pink)
                             Spacer()
-                            if isHealthKitAuthorized {
+                            if !HealthKitService.shared.isHealthKitAvailable {
+                                Text("Not Available")
+                                    .font(.caption)
+                                    .foregroundColor(.textTertiary)
+                            } else if isHealthKitAuthorized {
                                 Text("Connected")
                                     .font(.caption)
                                     .foregroundColor(.statusSuccess)
@@ -128,7 +132,7 @@ struct SettingsView: View {
                         if HealthKitService.shared.isHealthKitAvailable {
                             Text("Sync weight entries from Apple Health to track your progress alongside your compounds.")
                         } else {
-                            Text("Apple Health is not available on this device.")
+                            Text("Apple Health integration requires the HealthKit capability. This feature will be available in App Store builds.")
                         }
                     }
 
