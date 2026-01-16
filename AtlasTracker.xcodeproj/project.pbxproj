@@ -86,8 +86,14 @@
 		/* Views - Reconstitution */
 		A1000018001 /* ReconstitutionCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100018001 /* ReconstitutionCalculatorView.swift */; };
 
+		/* Views - Inventory */
+		A1000019001 /* InventoryView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100019001 /* InventoryView.swift */; };
+
 		/* ViewModels - Reconstitution */
 		A1000004005 /* ReconstitutionViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100004005 /* ReconstitutionViewModel.swift */; };
+
+		/* ViewModels - Inventory */
+		A1000004006 /* InventoryViewModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100004006 /* InventoryViewModel.swift */; };
 
 		/* Preview Content */
 		A1000017001 /* PreviewData.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100017001 /* PreviewData.swift */; };
@@ -129,6 +135,7 @@
 		A1100004003 /* DoseLogViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DoseLogViewModel.swift; sourceTree = "<group>"; };
 		A1100004004 /* CompoundDetailViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CompoundDetailViewModel.swift; sourceTree = "<group>"; };
 		A1100004005 /* ReconstitutionViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconstitutionViewModel.swift; sourceTree = "<group>"; };
+		A1100004006 /* InventoryViewModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryViewModel.swift; sourceTree = "<group>"; };
 
 		/* Services */
 		A1100005001 /* CoreDataManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataManager.swift; sourceTree = "<group>"; };
@@ -179,6 +186,9 @@
 
 		/* Views - Reconstitution */
 		A1100018001 /* ReconstitutionCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconstitutionCalculatorView.swift; sourceTree = "<group>"; };
+
+		/* Views - Inventory */
+		A1100019001 /* InventoryView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InventoryView.swift; sourceTree = "<group>"; };
 
 		/* Preview Content */
 		A1100017001 /* PreviewData.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PreviewData.swift; sourceTree = "<group>"; };
@@ -285,6 +295,7 @@
 				A1100004003 /* DoseLogViewModel.swift */,
 				A1100004004 /* CompoundDetailViewModel.swift */,
 				A1100004005 /* ReconstitutionViewModel.swift */,
+				A1100004006 /* InventoryViewModel.swift */,
 			);
 			path = ViewModels;
 			sourceTree = "<group>";
@@ -302,6 +313,7 @@
 				A1400005008 /* Settings */,
 				A1400005009 /* InjectionSite */,
 				A1400005010 /* Reconstitution */,
+				A1400005011 /* Inventory */,
 			);
 			path = Views;
 			sourceTree = "<group>";
@@ -392,6 +404,14 @@
 				A1100018001 /* ReconstitutionCalculatorView.swift */,
 			);
 			path = Reconstitution;
+			sourceTree = "<group>";
+		};
+		A1400005011 /* Inventory */ = {
+			isa = PBXGroup;
+			children = (
+				A1100019001 /* InventoryView.swift */,
+			);
+			path = Inventory;
 			sourceTree = "<group>";
 		};
 		A1400006000 /* Services */ = {
@@ -540,6 +560,7 @@
 				A1000004003 /* DoseLogViewModel.swift in Sources */,
 				A1000004004 /* CompoundDetailViewModel.swift in Sources */,
 				A1000004005 /* ReconstitutionViewModel.swift in Sources */,
+				A1000004006 /* InventoryViewModel.swift in Sources */,
 
 				/* Services */
 				A1000005001 /* CoreDataManager.swift in Sources */,
@@ -590,6 +611,9 @@
 
 				/* Views - Reconstitution */
 				A1000018001 /* ReconstitutionCalculatorView.swift in Sources */,
+
+				/* Views - Inventory */
+				A1000019001 /* InventoryView.swift in Sources */,
 
 				/* Preview Content */
 				A1000017001 /* PreviewData.swift in Sources */,

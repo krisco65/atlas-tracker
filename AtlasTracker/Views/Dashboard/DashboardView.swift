@@ -4,6 +4,7 @@ struct DashboardView: View {
     @StateObject private var viewModel = DashboardViewModel()
     @State private var selectedTracked: TrackedCompound?
     @State private var showActiveCompounds = false
+    @State private var showInventory = false
 
     var body: some View {
         NavigationStack {
@@ -55,6 +56,9 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $showActiveCompounds) {
                 ActiveCompoundsSheet(trackedCompounds: viewModel.activeTrackedCompounds)
+            }
+            .sheet(isPresented: $showInventory) {
+                InventoryView()
             }
         }
     }
@@ -133,33 +137,41 @@ struct DashboardView: View {
 
     // MARK: - Low Stock Section
     private var lowStockSection: some View {
-        VStack(alignment: .leading, spacing: 12) {
-            HStack {
-                Image(systemName: "exclamationmark.triangle.fill")
-                    .foregroundColor(.statusWarning)
-                Text("Low Stock")
-                    .font(.headline)
-                    .foregroundColor(.textPrimary)
-                Spacer()
-            }
-
-            ForEach(viewModel.lowStockItems, id: \.id) { inventory in
+        Button {
+            showInventory = true
+        } label: {
+            VStack(alignment: .leading, spacing: 12) {
                 HStack {
-                    Text(inventory.compound?.name ?? "Unknown")
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.statusWarning)
+                    Text("Low Stock")
+                        .font(.headline)
                         .foregroundColor(.textPrimary)
                     Spacer()
-                    Text(inventory.stockStatusString)
-                        .font(.subheadline)
-                        .foregroundColor(.statusWarning)
+                    Image(systemName: "chevron.right")
+                        .foregroundColor(.textTertiary)
+                        .font(.caption)
                 }
-                .padding()
-                .background(Color.backgroundTertiary)
-                .cornerRadius(10)
+
+                ForEach(viewModel.lowStockItems, id: \.id) { inventory in
+                    HStack {
+                        Text(inventory.compound?.name ?? "Unknown")
+                            .foregroundColor(.textPrimary)
+                        Spacer()
+                        Text(inventory.stockStatusString)
+                            .font(.subheadline)
+                            .foregroundColor(.statusWarning)
+                    }
+                    .padding()
+                    .background(Color.backgroundTertiary)
+                    .cornerRadius(10)
+                }
             }
+            .padding()
+            .background(Color.backgroundSecondary)
+            .cornerRadius(16)
         }
-        .padding()
-        .background(Color.backgroundSecondary)
-        .cornerRadius(16)
+        .buttonStyle(.plain)
     }
 
     // MARK: - Quick Stats Card
