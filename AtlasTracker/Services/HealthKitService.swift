@@ -31,12 +31,12 @@ final class HealthKitService {
 
     func requestAuthorization() async -> Bool {
         guard isHealthKitAvailable, let store = healthStore else {
-            print("HealthKit not available on this device")
+            Logger.healthKit("HealthKit not available on this device")
             return false
         }
 
         guard let weightType = HKQuantityType.quantityType(forIdentifier: .bodyMass) else {
-            print("HealthKit bodyMass type not available")
+            Logger.healthKit("HealthKit bodyMass type not available")
             return false
         }
 
@@ -44,7 +44,7 @@ final class HealthKitService {
             try await store.requestAuthorization(toShare: [weightType], read: [weightType])
             return true
         } catch {
-            print("HealthKit authorization failed: \(error.localizedDescription)")
+            Logger.healthKit("HealthKit authorization failed", error: error)
             return false
         }
     }
@@ -81,7 +81,7 @@ final class HealthKitService {
                 sortDescriptors: [sortDescriptor]
             ) { _, samples, error in
                 if let error = error {
-                    print("HealthKit query failed: \(error)")
+                    Logger.healthKit("HealthKit query failed", error: error)
                     continuation.resume(returning: [])
                     return
                 }
@@ -129,7 +129,7 @@ final class HealthKitService {
                 sortDescriptors: [sortDescriptor]
             ) { _, samples, error in
                 if let error = error {
-                    print("HealthKit query failed: \(error)")
+                    Logger.healthKit("HealthKit query failed", error: error)
                     continuation.resume(returning: nil)
                     return
                 }
@@ -178,7 +178,7 @@ final class HealthKitService {
             try await store.save(sample)
             return true
         } catch {
-            print("HealthKit save failed: \(error)")
+            Logger.healthKit("HealthKit save failed", error: error)
             return false
         }
     }

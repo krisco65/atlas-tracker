@@ -12,6 +12,15 @@ final class CoreDataManager: ObservableObject {
     @Published var compounds: [Compound] = []
     @Published var trackedCompounds: [TrackedCompound] = []
 
+    // MARK: - Error State
+    @Published private(set) var initializationError: Error?
+    @Published private(set) var isStoreLoaded: Bool = false
+
+    /// Returns true if Core Data is ready to use
+    var isReady: Bool {
+        return isStoreLoaded && initializationError == nil
+    }
+
     // MARK: - Persistent Container
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: AppConstants.coreDataModelName, managedObjectModel: CoreDataModelCreator.createModel())
@@ -22,19 +31,83 @@ final class CoreDataManager: ObservableObject {
                 FileProtectionType.complete as NSObject,
                 forKey: NSPersistentStoreFileProtectionKey
             )
+
+            // Enable lightweight migration
+            storeDescription.setOption(true as NSNumber, forKey: NSMigratePersistentStoresAutomaticallyOption)
+            storeDescription.setOption(true as NSNumber, forKey: NSInferMappingModelAutomaticallyOption)
         }
 
-        container.loadPersistentStores { description, error in
+        container.loadPersistentStores { [weak self] description, error in
             if let error = error {
-                fatalError("Unable to load persistent stores: \(error)")
+                // Log the error instead of crashing
+                Logger.error("Failed to load persistent store", error: error)
+
+                // Store the error for UI to display
+                DispatchQueue.main.async {
+                    self?.initializationError = error
+                    self?.isStoreLoaded = false
+                }
+
+                // Attempt recovery: delete and recreate store if corrupted
+                if let storeURL = description.url {
+                    self?.attemptStoreRecovery(at: storeURL, container: container)
+                }
+                return
             }
 
             container.viewContext.automaticallyMergesChangesFromParent = true
             container.viewContext.mergePolicy = NSMergeByPropertyObjectTrumpMergePolicy
+
+            DispatchQueue.main.async {
+                self?.isStoreLoaded = true
+                self?.initializationError = nil
+            }
+
+            Logger.coreData("Persistent store loaded successfully")
         }
 
         return container
     }()
+
+    /// Attempt to recover from a corrupted store by deleting and recreating it
+    private func attemptStoreRecovery(at url: URL, container: NSPersistentContainer) {
+        Logger.warning("Attempting store recovery at: \(url.path)")
+
+        do {
+            // Remove the corrupted store files
+            let fileManager = FileManager.default
+            let storeDirectory = url.deletingLastPathComponent()
+            let storeName = url.deletingPathExtension().lastPathComponent
+
+            // Remove all related store files
+            let storeFiles = try fileManager.contentsOfDirectory(at: storeDirectory, includingPropertiesForKeys: nil)
+            for file in storeFiles where file.lastPathComponent.hasPrefix(storeName) {
+                try fileManager.removeItem(at: file)
+                Logger.coreData("Removed corrupted file: \(file.lastPathComponent)")
+            }
+
+            // Attempt to reload the store
+            container.loadPersistentStores { [weak self] _, retryError in
+                DispatchQueue.main.async {
+                    if let retryError = retryError {
+                        Logger.error("Recovery failed", error: retryError)
+                        self?.initializationError = retryError
+                        self?.isStoreLoaded = false
+                    } else {
+                        Logger.coreData("Store recovery successful - data has been reset")
+                        self?.isStoreLoaded = true
+                        self?.initializationError = nil
+                    }
+                }
+            }
+        } catch {
+            Logger.error("Store recovery failed", error: error)
+            DispatchQueue.main.async {
+                self.initializationError = error
+                self.isStoreLoaded = false
+            }
+        }
+    }
 
     // MARK: - View Context
     var viewContext: NSManagedObjectContext {
@@ -57,7 +130,7 @@ final class CoreDataManager: ObservableObject {
                 try context.save()
             } catch {
                 let nsError = error as NSError
-                print("Core Data save error: \(nsError), \(nsError.userInfo)")
+                Logger.coreData("Core Data save error: \(nsError), \(nsError.userInfo)")
             }
         }
     }
@@ -74,7 +147,7 @@ final class CoreDataManager: ObservableObject {
             self.compounds = compounds
             return compounds
         } catch {
-            print("Error fetching compounds: \(error)")
+            Logger.coreData("Error fetching compounds: \(error)")
             return []
         }
     }
@@ -88,7 +161,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching compounds by category: \(error)")
+            Logger.coreData("Error fetching compounds by category: \(error)")
             return []
         }
     }
@@ -104,7 +177,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error searching compounds: \(error)")
+            Logger.coreData("Error searching compounds: \(error)")
             return []
         }
     }
@@ -118,7 +191,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching favorites: \(error)")
+            Logger.coreData("Error fetching favorites: \(error)")
             return []
         }
     }
@@ -133,7 +206,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching frequently used: \(error)")
+            Logger.coreData("Error fetching frequently used: \(error)")
             return []
         }
     }
@@ -147,7 +220,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request).first
         } catch {
-            print("Error fetching compound by ID: \(error)")
+            Logger.coreData("Error fetching compound by ID: \(error)")
             return nil
         }
     }
@@ -208,7 +281,7 @@ final class CoreDataManager: ObservableObject {
             self.trackedCompounds = tracked
             return tracked
         } catch {
-            print("Error fetching tracked compounds: \(error)")
+            Logger.coreData("Error fetching tracked compounds: \(error)")
             return []
         }
     }
@@ -318,7 +391,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching dose logs: \(error)")
+            Logger.coreData("Error fetching dose logs: \(error)")
             return []
         }
     }
@@ -332,7 +405,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching dose logs by date range: \(error)")
+            Logger.coreData("Error fetching dose logs by date range: \(error)")
             return []
         }
     }
@@ -350,7 +423,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching injection history: \(error)")
+            Logger.coreData("Error fetching injection history: \(error)")
             return []
         }
     }
@@ -402,7 +475,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching low stock items: \(error)")
+            Logger.coreData("Error fetching low stock items: \(error)")
             return []
         }
     }
@@ -447,7 +520,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching weight entries: \(error)")
+            Logger.coreData("Error fetching weight entries: \(error)")
             return []
         }
     }
@@ -470,7 +543,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.fetch(request)
         } catch {
-            print("Error fetching weight entries by date range: \(error)")
+            Logger.coreData("Error fetching weight entries by date range: \(error)")
             return []
         }
     }
@@ -485,7 +558,7 @@ final class CoreDataManager: ObservableObject {
         do {
             return try viewContext.count(for: request)
         } catch {
-            print("Error counting doses: \(error)")
+            Logger.coreData("Error counting doses: \(error)")
             return 0
         }
     }
@@ -510,7 +583,7 @@ final class CoreDataManager: ObservableObject {
             do {
                 try viewContext.execute(deleteRequest)
             } catch {
-                print("Error deleting \(entityName): \(error)")
+                Logger.coreData("Error deleting \(entityName): \(error)")
             }
         }
 

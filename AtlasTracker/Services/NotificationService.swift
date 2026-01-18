@@ -30,7 +30,7 @@ final class NotificationService: ObservableObject {
             }
             return granted
         } catch {
-            print("Notification authorization error: \(error)")
+            Logger.error("Notification authorization error", error: error)
             return false
         }
     }
@@ -125,9 +125,9 @@ final class NotificationService: ObservableObject {
         // Schedule
         notificationCenter.add(request) { error in
             if let error = error {
-                print("Error scheduling notification: \(error)")
+                Logger.error("Error scheduling notification", error: error)
             } else {
-                print("Scheduled notification for \(compoundName) at \(nextDoseDate)")
+                Logger.notification("Scheduled notification for \(compoundName) at \(nextDoseDate)")
             }
         }
     }

@@ -1,6 +1,70 @@
 import Foundation
 
+// MARK: - Cached Date Formatters
+
+enum DateFormat {
+    case time           // "2:30 PM"
+    case shortDate      // "Jan 15"
+    case mediumDate     // "Jan 15, 2026"
+    case fullDate       // "Wednesday, January 15, 2026"
+    case compact        // "1/15/26"
+    case dateTime       // "Jan 15, 2:30 PM"
+    case iso8601        // "2026-01-15T14:30:00Z"
+
+    fileprivate var formatter: DateFormatter {
+        DateFormatters.shared.formatter(for: self)
+    }
+}
+
+private final class DateFormatters {
+    static let shared = DateFormatters()
+
+    private var formatters: [DateFormat: DateFormatter] = [:]
+    private let lock = NSLock()
+
+    private init() {}
+
+    func formatter(for format: DateFormat) -> DateFormatter {
+        lock.lock()
+        defer { lock.unlock() }
+
+        if let cached = formatters[format] {
+            return cached
+        }
+
+        let formatter = DateFormatter()
+
+        switch format {
+        case .time:
+            formatter.dateFormat = "h:mm a"
+        case .shortDate:
+            formatter.dateFormat = "MMM d"
+        case .mediumDate:
+            formatter.dateFormat = "MMM d, yyyy"
+        case .fullDate:
+            formatter.dateFormat = "EEEE, MMMM d, yyyy"
+        case .compact:
+            formatter.dateStyle = .short
+            formatter.timeStyle = .none
+        case .dateTime:
+            formatter.dateFormat = "MMM d, h:mm a"
+        case .iso8601:
+            formatter.dateFormat = "yyyy-MM-dd'T'HH:mm:ss'Z'"
+            formatter.timeZone = TimeZone(identifier: "UTC")
+        }
+
+        formatters[format] = formatter
+        return formatter
+    }
+}
+
 extension Date {
+    // MARK: - Consistent Formatting
+
+    func format(_ format: DateFormat) -> String {
+        format.formatter.string(from: self)
+    }
+
     // MARK: - Start of Day
     var startOfDay: Date {
         return Calendar.current.startOfDay(for: self)
@@ -11,21 +75,21 @@ extension Date {
         var components = DateComponents()
         components.day = 1
         components.second = -1
-        return Calendar.current.date(byAdding: components, to: startOfDay)!
+        return Calendar.current.date(byAdding: components, to: startOfDay) ?? self
     }
 
     // MARK: - Start of Week
     var startOfWeek: Date {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: self)
-        return calendar.date(from: components)!
+        return calendar.date(from: components) ?? self
     }
 
     // MARK: - Start of Month
     var startOfMonth: Date {
         let calendar = Calendar.current
         let components = calendar.dateComponents([.year, .month], from: self)
-        return calendar.date(from: components)!
+        return calendar.date(from: components) ?? self
     }
 
     // MARK: - End of Month
@@ -33,17 +97,17 @@ extension Date {
         var components = DateComponents()
         components.month = 1
         components.second = -1
-        return Calendar.current.date(byAdding: components, to: startOfMonth)!
+        return Calendar.current.date(byAdding: components, to: startOfMonth) ?? self
     }
 
     // MARK: - Days Ago
     func daysAgo(_ days: Int) -> Date {
-        return Calendar.current.date(byAdding: .day, value: -days, to: self)!
+        return Calendar.current.date(byAdding: .day, value: -days, to: self) ?? self
     }
 
     // MARK: - Days From Now
     func daysFromNow(_ days: Int) -> Date {
-        return Calendar.current.date(byAdding: .day, value: days, to: self)!
+        return Calendar.current.date(byAdding: .day, value: days, to: self) ?? self
     }
 
     // MARK: - Is Today

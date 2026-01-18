@@ -57,16 +57,16 @@ final class SeedDataService {
         do {
             let existingCount = try context.count(for: request)
             if existingCount > 0 {
-                print("Database already seeded with \(existingCount) compounds")
+                Logger.seedData("Database already seeded with \(existingCount) compounds")
                 return
             }
         } catch {
-            print("Error checking existing compounds: \(error)")
+            Logger.seedData("Error checking existing compounds: \(error)")
         }
 
         // Load seed data from JSON
         guard let seedData = loadSeedData() else {
-            print("Failed to load seed data, using fallback")
+            Logger.seedData("Failed to load seed data, using fallback")
             seedWithFallbackData(context: context)
             return
         }
@@ -79,9 +79,9 @@ final class SeedDataService {
         // Save context
         do {
             try context.save()
-            print("Successfully seeded database with \(seedData.compounds.count) compounds")
+            Logger.seedData("Successfully seeded database with \(seedData.compounds.count) compounds")
         } catch {
-            print("Error saving seeded data: \(error)")
+            Logger.seedData("Error saving seeded data: \(error)")
         }
     }
 
@@ -89,7 +89,7 @@ final class SeedDataService {
     private func loadSeedData() -> SeedDataFile? {
         // Try to load from bundle
         guard let url = Bundle.main.url(forResource: "SeedData", withExtension: "json") else {
-            print("SeedData.json not found in bundle")
+            Logger.seedData("SeedData.json not found in bundle")
             return nil
         }
 
@@ -98,7 +98,7 @@ final class SeedDataService {
             let decoder = JSONDecoder()
             return try decoder.decode(SeedDataFile.self, from: data)
         } catch {
-            print("Error decoding seed data: \(error)")
+            Logger.seedData("Error decoding seed data: \(error)")
             return nil
         }
     }
@@ -106,13 +106,13 @@ final class SeedDataService {
     // MARK: - Create Compound from Seed
     private func createCompound(from seed: SeedCompound, context: NSManagedObjectContext) {
         guard let category = CompoundCategory(rawValue: seed.category) else {
-            print("Invalid category: \(seed.category)")
+            Logger.seedData("Invalid category: \(seed.category)")
             return
         }
 
         let supportedUnits = seed.supportedUnits.compactMap { DosageUnit(rawValue: $0) }
         guard let defaultUnit = DosageUnit(rawValue: seed.defaultUnit) else {
-            print("Invalid default unit: \(seed.defaultUnit)")
+            Logger.seedData("Invalid default unit: \(seed.defaultUnit)")
             return
         }
 
@@ -245,9 +245,9 @@ final class SeedDataService {
         // Save
         do {
             try context.save()
-            print("Successfully seeded database with fallback data")
+            Logger.seedData("Successfully seeded database with fallback data")
         } catch {
-            print("Error saving fallback seed data: \(error)")
+            Logger.seedData("Error saving fallback seed data: \(error)")
         }
     }
 
@@ -264,16 +264,16 @@ final class SeedDataService {
 
         do {
             let defaultCompounds = try context.fetch(request)
-            print("Deleting \(defaultCompounds.count) default compounds...")
+            Logger.seedData("Deleting \(defaultCompounds.count) default compounds...")
 
             for compound in defaultCompounds {
                 context.delete(compound)
             }
 
             try context.save()
-            print("Deleted all default compounds")
+            Logger.seedData("Deleted all default compounds")
         } catch {
-            print("Error deleting default compounds: \(error)")
+            Logger.seedData("Error deleting default compounds: \(error)")
         }
 
         // Reset the seed data version to force fresh import
@@ -285,13 +285,13 @@ final class SeedDataService {
         // Update version
         UserDefaults.standard.set(AppConstants.seedDataVersion, forKey: AppConstants.UserDefaultsKeys.lastSeedDataVersion)
 
-        print("Force reseed complete - database refreshed with latest compounds")
+        Logger.seedData("Force reseed complete - database refreshed with latest compounds")
     }
 
     // MARK: - Add Missing Compounds (non-destructive update)
     func addMissingCompounds(context: NSManagedObjectContext) {
         guard let seedData = loadSeedData() else {
-            print("Failed to load seed data")
+            Logger.seedData("Failed to load seed data")
             return
         }
 
@@ -304,7 +304,7 @@ final class SeedDataService {
             let existing = try context.fetch(request)
             existingNames = Set(existing.compactMap { $0.name })
         } catch {
-            print("Error fetching existing compounds: \(error)")
+            Logger.seedData("Error fetching existing compounds: \(error)")
         }
 
         // Add missing compounds
@@ -313,7 +313,7 @@ final class SeedDataService {
             if !existingNames.contains(seedCompound.name) {
                 createCompound(from: seedCompound, context: context)
                 addedCount += 1
-                print("Added missing compound: \(seedCompound.name)")
+                Logger.seedData("Added missing compound: \(seedCompound.name)")
             }
         }
 
@@ -321,12 +321,12 @@ final class SeedDataService {
         if addedCount > 0 {
             do {
                 try context.save()
-                print("Successfully added \(addedCount) missing compounds")
+                Logger.seedData("Successfully added \(addedCount) missing compounds")
             } catch {
-                print("Error saving new compounds: \(error)")
+                Logger.seedData("Error saving new compounds: \(error)")
             }
         } else {
-            print("No missing compounds to add")
+            Logger.seedData("No missing compounds to add")
         }
     }
 }
