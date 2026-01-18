@@ -21,18 +21,20 @@ struct VisualBodySilhouette: View {
             }
             .font(.caption2)
 
-            // Body image with overlay buttons
+            // Body diagram with overlay buttons
             GeometryReader { geometry in
-                let imageWidth = min(geometry.size.width * 0.95, 340)
-                let imageHeight = imageWidth * 2.2
+                let bodyWidth = min(geometry.size.width * 0.65, 220)
+                let bodyHeight = bodyWidth * 2.2
 
                 ZStack {
-                    // Body silhouette image - LARGER
-                    Image("Body")
-                        .resizable()
-                        .aspectRatio(contentMode: .fit)
-                        .frame(width: imageWidth, height: imageHeight)
-                        .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
+                    // Professional body silhouette shape
+                    BodySilhouetteView(
+                        fillColor: Color(white: 0.22),
+                        strokeColor: Color(white: 0.35),
+                        showGlow: true
+                    )
+                    .frame(width: bodyWidth, height: bodyHeight)
+                    .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 
                     // Injection site buttons with labels
                     if injectionType == .intramuscular {
@@ -40,8 +42,8 @@ struct VisualBodySilhouette: View {
                             selectedSite: $selectedSite,
                             lastUsedSite: lastUsedSite,
                             recommendedSite: recommendedSite,
-                            imageWidth: imageWidth,
-                            imageHeight: imageHeight,
+                            bodyWidth: bodyWidth,
+                            bodyHeight: bodyHeight,
                             containerSize: geometry.size
                         )
                     } else {
@@ -51,14 +53,14 @@ struct VisualBodySilhouette: View {
                             recommendedSite: recommendedSite,
                             showingSubOptions: $showingSubOptions,
                             selectedRegion: $selectedRegion,
-                            imageWidth: imageWidth,
-                            imageHeight: imageHeight,
+                            bodyWidth: bodyWidth,
+                            bodyHeight: bodyHeight,
                             containerSize: geometry.size
                         )
                     }
                 }
             }
-            .frame(height: 520)
+            .frame(height: 500)
             .background(Color.black) // Match body image background
 
             // Selected site display
@@ -159,17 +161,17 @@ enum InjectionRegion: String, CaseIterable {
         }
     }
 
-    // Position on body image
+    // Position on body shape (calibrated for ProfessionalBodyShape)
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .bellyLeft: return (0.38, 0.38)
-        case .bellyRight: return (0.62, 0.38)
-        case .loveHandleLeft: return (0.22, 0.38)
-        case .loveHandleRight: return (0.78, 0.38)
-        case .gluteLeft: return (0.30, 0.50)
-        case .gluteRight: return (0.70, 0.50)
-        case .thighLeft: return (0.36, 0.65)
-        case .thighRight: return (0.64, 0.65)
+        case .bellyLeft: return (0.38, 0.39)
+        case .bellyRight: return (0.62, 0.39)
+        case .loveHandleLeft: return (0.20, 0.39)
+        case .loveHandleRight: return (0.80, 0.39)
+        case .gluteLeft: return (0.30, 0.51)
+        case .gluteRight: return (0.70, 0.51)
+        case .thighLeft: return (0.38, 0.70)
+        case .thighRight: return (0.62, 0.70)
         }
     }
 
@@ -187,12 +189,12 @@ struct PeptideSiteOverlays: View {
     let recommendedSite: String?
     @Binding var showingSubOptions: Bool
     @Binding var selectedRegion: InjectionRegion?
-    let imageWidth: CGFloat
-    let imageHeight: CGFloat
+    let bodyWidth: CGFloat
+    let bodyHeight: CGFloat
     let containerSize: CGSize
 
-    private var offsetX: CGFloat { (containerSize.width - imageWidth) / 2 }
-    private var offsetY: CGFloat { (containerSize.height - imageHeight) / 2 }
+    private var offsetX: CGFloat { (containerSize.width - bodyWidth) / 2 }
+    private var offsetY: CGFloat { (containerSize.height - bodyHeight) / 2 }
 
     var body: some View {
         ForEach(InjectionRegion.allCases, id: \.self) { region in
@@ -213,8 +215,8 @@ struct PeptideSiteOverlays: View {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             }
             .position(
-                x: offsetX + imageWidth * region.position.x,
-                y: offsetY + imageHeight * region.position.y
+                x: offsetX + bodyWidth * region.position.x,
+                y: offsetY + bodyHeight * region.position.y
             )
         }
     }
@@ -225,12 +227,12 @@ struct PEDSiteOverlays: View {
     @Binding var selectedSite: String?
     let lastUsedSite: String?
     let recommendedSite: String?
-    let imageWidth: CGFloat
-    let imageHeight: CGFloat
+    let bodyWidth: CGFloat
+    let bodyHeight: CGFloat
     let containerSize: CGSize
 
-    private var offsetX: CGFloat { (containerSize.width - imageWidth) / 2 }
-    private var offsetY: CGFloat { (containerSize.height - imageHeight) / 2 }
+    private var offsetX: CGFloat { (containerSize.width - bodyWidth) / 2 }
+    private var offsetY: CGFloat { (containerSize.height - bodyHeight) / 2 }
 
     var body: some View {
         ForEach(PEDInjectionSite.allCases, id: \.self) { site in
@@ -246,8 +248,8 @@ struct PEDSiteOverlays: View {
                 UIImpactFeedbackGenerator(style: .light).impactOccurred()
             }
             .position(
-                x: offsetX + imageWidth * site.bodyMapPosition.x,
-                y: offsetY + imageHeight * site.bodyMapPosition.y
+                x: offsetX + bodyWidth * site.bodyMapPosition.x,
+                y: offsetY + bodyHeight * site.bodyMapPosition.y
             )
         }
     }
