@@ -16,6 +16,14 @@ final class CoreDataManager: ObservableObject {
     lazy var persistentContainer: NSPersistentContainer = {
         let container = NSPersistentContainer(name: AppConstants.coreDataModelName, managedObjectModel: CoreDataModelCreator.createModel())
 
+        // Enable Data Protection for encrypted storage at rest
+        if let storeDescription = container.persistentStoreDescriptions.first {
+            storeDescription.setOption(
+                FileProtectionType.complete as NSObject,
+                forKey: NSPersistentStoreFileProtectionKey
+            )
+        }
+
         container.loadPersistentStores { description, error in
             if let error = error {
                 fatalError("Unable to load persistent stores: \(error)")
