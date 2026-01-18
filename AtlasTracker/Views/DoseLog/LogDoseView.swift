@@ -172,6 +172,13 @@ struct LogDoseView: View {
                 .background(Color.backgroundSecondary)
                 .cornerRadius(10)
             }
+
+            // Validation error display
+            if let error = viewModel.dosageValidationError {
+                Text(error)
+                    .font(.caption)
+                    .foregroundColor(.red)
+            }
         }
     }
 
@@ -285,11 +292,19 @@ struct LogDoseView: View {
     }
 
     // MARK: - Notes Section
+    private let maxNotesLength = 500
+
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Notes (Optional)")
-                .font(.headline)
-                .foregroundColor(.textPrimary)
+            HStack {
+                Text("Notes (Optional)")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+                Spacer()
+                Text("\(viewModel.notes.count)/\(maxNotesLength)")
+                    .font(.caption)
+                    .foregroundColor(viewModel.notes.count > maxNotesLength ? .red : .textSecondary)
+            }
 
             TextField("Add any notes...", text: $viewModel.notes, axis: .vertical)
                 .lineLimit(3...6)
@@ -297,6 +312,11 @@ struct LogDoseView: View {
                 .background(Color.backgroundSecondary)
                 .cornerRadius(10)
                 .foregroundColor(.textPrimary)
+                .onChange(of: viewModel.notes) { _, newValue in
+                    if newValue.count > maxNotesLength {
+                        viewModel.notes = String(newValue.prefix(maxNotesLength))
+                    }
+                }
         }
     }
 

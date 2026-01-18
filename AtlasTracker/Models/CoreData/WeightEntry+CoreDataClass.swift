@@ -1,8 +1,45 @@
 import Foundation
 import CoreData
 
+// MARK: - Validation Error
+
+enum WeightEntryValidationError: LocalizedError {
+    case invalidWeight(String)
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidWeight(let message):
+            return "Invalid weight: \(message)"
+        }
+    }
+}
+
 @objc(WeightEntry)
 public class WeightEntry: NSManagedObject {
+
+    // MARK: - Validation
+
+    public override func validateForInsert() throws {
+        try super.validateForInsert()
+        try validateWeightEntry()
+    }
+
+    public override func validateForUpdate() throws {
+        try super.validateForUpdate()
+        try validateWeightEntry()
+    }
+
+    private func validateWeightEntry() throws {
+        // Validate weight is positive
+        guard weight > 0 else {
+            throw WeightEntryValidationError.invalidWeight("Weight must be greater than 0")
+        }
+
+        // Validate weight is reasonable (under 1000 lbs/kg)
+        guard weight <= 1000 else {
+            throw WeightEntryValidationError.invalidWeight("Weight exceeds maximum of 1000")
+        }
+    }
 
     // MARK: - Convenience Initializer
     convenience init(context: NSManagedObjectContext,

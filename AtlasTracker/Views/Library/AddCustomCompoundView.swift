@@ -10,8 +10,26 @@ struct AddCustomCompoundView: View {
     @State private var defaultUnit: DosageUnit = .mg
     @State private var requiresInjection = false
 
+    // MARK: - Validation Constants
+    private let maxNameLength = 100
+
+    // MARK: - Validation
+    private var trimmedName: String {
+        name.trimmingCharacters(in: .whitespacesAndNewlines)
+    }
+
+    private var nameValidationError: String? {
+        if trimmedName.isEmpty {
+            return "Name is required"
+        }
+        if trimmedName.count > maxNameLength {
+            return "Name must be \(maxNameLength) characters or less"
+        }
+        return nil
+    }
+
     var canSave: Bool {
-        !name.isEmpty && !selectedUnits.isEmpty
+        nameValidationError == nil && !selectedUnits.isEmpty
     }
 
     var body: some View {
@@ -24,15 +42,33 @@ struct AddCustomCompoundView: View {
                     VStack(spacing: 24) {
                         // Name
                         VStack(alignment: .leading, spacing: 8) {
-                            Text("Compound Name")
-                                .font(.subheadline)
-                                .foregroundColor(.textSecondary)
+                            HStack {
+                                Text("Compound Name")
+                                    .font(.subheadline)
+                                    .foregroundColor(.textSecondary)
+                                Spacer()
+                                Text("\(trimmedName.count)/\(maxNameLength)")
+                                    .font(.caption)
+                                    .foregroundColor(trimmedName.count > maxNameLength ? .red : .textSecondary)
+                            }
 
                             TextField("Enter name", text: $name)
                                 .padding()
                                 .background(Color.backgroundSecondary)
                                 .cornerRadius(10)
                                 .foregroundColor(.textPrimary)
+                                .onChange(of: name) { _, newValue in
+                                    // Limit to max length + some buffer for user experience
+                                    if newValue.count > maxNameLength + 10 {
+                                        name = String(newValue.prefix(maxNameLength + 10))
+                                    }
+                                }
+
+                            if let error = nameValidationError, !trimmedName.isEmpty {
+                                Text(error)
+                                    .font(.caption)
+                                    .foregroundColor(.red)
+                            }
                         }
 
                         // Category
@@ -138,7 +174,7 @@ struct AddCustomCompoundView: View {
                 ToolbarItem(placement: .navigationBarTrailing) {
                     Button("Save") {
                         viewModel.addCustomCompound(
-                            name: name,
+                            name: trimmedName,
                             category: selectedCategory,
                             supportedUnits: Array(selectedUnits),
                             defaultUnit: defaultUnit,

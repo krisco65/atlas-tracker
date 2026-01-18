@@ -58,9 +58,28 @@ final class DoseLogViewModel: ObservableObject {
         }
     }
 
+    // MARK: - Validation Constants
+    static let maxDosageAmount: Double = 10000
+    static let minDosageAmount: Double = 0.001
+
+    var dosageValidationError: String? {
+        guard let amount = Double(dosageAmount) else {
+            return dosageAmount.isEmpty ? nil : "Enter a valid number"
+        }
+        if amount <= 0 {
+            return "Dosage must be greater than 0"
+        }
+        if amount > Self.maxDosageAmount {
+            return "Dosage exceeds maximum (\(Int(Self.maxDosageAmount)))"
+        }
+        return nil
+    }
+
     var canLogDose: Bool {
         guard selectedCompound != nil else { return false }
-        guard let amount = Double(dosageAmount), amount > 0 else { return false }
+        guard let amount = Double(dosageAmount),
+              amount > Self.minDosageAmount,
+              amount <= Self.maxDosageAmount else { return false }
         if requiresInjectionSite && selectedInjectionSite == nil { return false }
         return true
     }

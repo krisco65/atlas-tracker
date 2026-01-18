@@ -1,8 +1,64 @@
 import Foundation
 import CoreData
 
+// MARK: - Validation Error
+
+enum InventoryValidationError: LocalizedError {
+    case invalidVialCount
+    case invalidVialSize
+    case invalidRemainingAmount
+    case missingCompound
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidVialCount:
+            return "Vial count cannot be negative"
+        case .invalidVialSize:
+            return "Vial size must be greater than 0"
+        case .invalidRemainingAmount:
+            return "Remaining amount cannot be negative"
+        case .missingCompound:
+            return "Inventory must be associated with a compound"
+        }
+    }
+}
+
 @objc(Inventory)
 public class Inventory: NSManagedObject {
+
+    // MARK: - Validation
+
+    public override func validateForInsert() throws {
+        try super.validateForInsert()
+        try validateInventory()
+    }
+
+    public override func validateForUpdate() throws {
+        try super.validateForUpdate()
+        try validateInventory()
+    }
+
+    private func validateInventory() throws {
+        // Validate vial count is non-negative
+        guard vialCount >= 0 else {
+            throw InventoryValidationError.invalidVialCount
+        }
+
+        // Validate vial size is positive
+        guard vialSizeMg > 0 else {
+            throw InventoryValidationError.invalidVialSize
+        }
+
+        // Validate remaining amount is non-negative
+        guard remainingInCurrentVial >= 0 else {
+            throw InventoryValidationError.invalidRemainingAmount
+        }
+
+        // Validate compound relationship exists
+        guard compound != nil else {
+            throw InventoryValidationError.missingCompound
+        }
+    }
 
     // MARK: - Convenience Initializer
     convenience init(context: NSManagedObjectContext,

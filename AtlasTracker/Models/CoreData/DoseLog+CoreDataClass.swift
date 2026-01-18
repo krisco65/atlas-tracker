@@ -1,8 +1,53 @@
 import Foundation
 import CoreData
 
+// MARK: - Validation Error
+
+enum DoseLogValidationError: LocalizedError {
+    case invalidDosage(String)
+    case missingCompound
+
+    var errorDescription: String? {
+        switch self {
+        case .invalidDosage(let message):
+            return "Invalid dosage: \(message)"
+        case .missingCompound:
+            return "Dose log must be associated with a compound"
+        }
+    }
+}
+
 @objc(DoseLog)
 public class DoseLog: NSManagedObject {
+
+    // MARK: - Validation
+
+    public override func validateForInsert() throws {
+        try super.validateForInsert()
+        try validateDoseLog()
+    }
+
+    public override func validateForUpdate() throws {
+        try super.validateForUpdate()
+        try validateDoseLog()
+    }
+
+    private func validateDoseLog() throws {
+        // Validate dosage amount is positive
+        guard dosageAmount > 0 else {
+            throw DoseLogValidationError.invalidDosage("Dosage must be greater than 0")
+        }
+
+        // Validate dosage amount is reasonable (under 10,000)
+        guard dosageAmount <= 10000 else {
+            throw DoseLogValidationError.invalidDosage("Dosage exceeds maximum of 10,000")
+        }
+
+        // Validate compound relationship exists
+        guard compound != nil else {
+            throw DoseLogValidationError.missingCompound
+        }
+    }
 
     // MARK: - Convenience Initializer
     convenience init(context: NSManagedObjectContext,
