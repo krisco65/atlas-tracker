@@ -58,7 +58,14 @@ struct AppConstants {
 
     // MARK: - Injection Site Rotation
     struct InjectionRotation {
-        static let historyLookback = 10 // Number of past injections to consider for recommendations
+        /// Number of past injections to consider for recommendations
+        static let historyLookback = 20
+
+        /// Number of past injections for analytics/stats view
+        static let statsLookback = 50
+
+        /// Weight decay rate for time-weighted scoring (higher = faster decay)
+        static let timeDecayFactor: Double = 1.0
     }
 
     // MARK: - Seed Data

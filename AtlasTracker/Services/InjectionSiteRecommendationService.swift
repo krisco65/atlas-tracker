@@ -2,6 +2,7 @@ import Foundation
 
 // MARK: - Injection Site Recommendation Service
 // Tracks rotation separately for PED (IM) vs Peptide (SubQ) sites
+// Uses time-weighted scoring and body part balancing for better rotation
 final class InjectionSiteRecommendationService {
 
     // MARK: - Singleton
@@ -9,99 +10,184 @@ final class InjectionSiteRecommendationService {
 
     private init() {}
 
+    // MARK: - Time-Weighted Scoring
+
+    /// Calculates a score for a site based on recent usage.
+    /// Lower score = better candidate (used less recently/frequently)
+    private func calculateTimeWeightedScore<T: Hashable>(
+        for site: T,
+        in history: [(site: T, date: Date)]
+    ) -> Double {
+        let now = Date()
+        var score = 0.0
+
+        for entry in history where entry.site == site {
+            let daysSince = max(0, now.daysBetween(entry.date))
+            // Recent usage adds more to the score (higher penalty)
+            // Score = 1 / (days + 1) so same-day = 1.0, 1 day ago = 0.5, etc.
+            score += 1.0 / Double(daysSince + 1)
+        }
+
+        return score
+    }
+
+    /// Gets the date a site was last used, returns distant past if never used
+    private func lastUsedDate<T: Hashable>(for site: T, in history: [(site: T, date: Date)]) -> Date {
+        for entry in history where entry.site == site {
+            return entry.date
+        }
+        return Date.distantPast
+    }
+
+    // MARK: - Body Part Balancing
+
+    /// Groups sites by body part and returns the least-used body part
+    private func leastUsedBodyPart(
+        for sites: [PEDInjectionSite],
+        history: [PEDInjectionSite]
+    ) -> String? {
+        var bodyPartUsage: [String: Int] = [:]
+
+        // Initialize all body parts
+        for site in PEDInjectionSite.allCases {
+            bodyPartUsage[site.bodyPart] = 0
+        }
+
+        // Count usage per body part
+        for site in history {
+            bodyPartUsage[site.bodyPart, default: 0] += 1
+        }
+
+        // Return the body part with minimum usage
+        return bodyPartUsage.min(by: { $0.value < $1.value })?.key
+    }
+
     // MARK: - Recommend Next Site for PEDs
 
     func recommendNextPEDSite() -> PEDInjectionSite {
-        let history = CoreDataManager.shared.fetchInjectionHistory(
+        let historyLogs = CoreDataManager.shared.fetchInjectionHistory(
             for: .ped,
             limit: AppConstants.InjectionRotation.historyLookback
         )
 
-        // Get recently used sites
-        let recentSites = history.compactMap { log -> PEDInjectionSite? in
-            guard let rawValue = log.injectionSiteRaw else { return nil }
-            return PEDInjectionSite(rawValue: rawValue)
+        // Convert to tuple array with dates for time-weighted scoring
+        let history: [(site: PEDInjectionSite, date: Date)] = historyLogs.compactMap { log in
+            guard let rawValue = log.injectionSiteRaw,
+                  let site = PEDInjectionSite(rawValue: rawValue),
+                  let date = log.timestamp else { return nil }
+            return (site: site, date: date)
         }
 
         // If no history, start with left glute
-        guard !recentSites.isEmpty else {
+        guard !history.isEmpty else {
             return .gluteLeft
         }
 
         // Get last used site
-        let lastSite = recentSites.first
+        let lastSite = history.first?.site
+        let recentSites = history.map { $0.site }
 
-        // Build usage frequency map
-        var usageCount: [PEDInjectionSite: Int] = [:]
-        for site in PEDInjectionSite.allCases {
-            usageCount[site] = 0
+        // STEP 1: Find the least-used body part first
+        let targetBodyPart = leastUsedBodyPart(for: PEDInjectionSite.allCases, history: recentSites)
+
+        // STEP 2: Get sites in the target body part
+        var candidates = PEDInjectionSite.allCases.filter { site in
+            targetBodyPart == nil || site.bodyPart == targetBodyPart
         }
-        for site in recentSites {
-            usageCount[site, default: 0] += 1
-        }
 
-        // Find least used sites
-        let minUsage = usageCount.values.min() ?? 0
-        var candidates = usageCount.filter { $0.value == minUsage }.map { $0.key }
-
-        // Exclude same side as last injection
+        // STEP 3: Exclude same side as last injection
         if let lastSite = lastSite {
-            candidates = candidates.filter { !isSameSide($0, as: lastSite) }
+            let oppositeSide = candidates.filter { !isSameSide($0, as: lastSite) }
+            if !oppositeSide.isEmpty {
+                candidates = oppositeSide
+            }
         }
 
-        // If no candidates after filtering, just avoid the exact same site
+        // STEP 4: If no candidates, fall back to all sites except last used
         if candidates.isEmpty {
             candidates = PEDInjectionSite.allCases.filter { $0 != lastSite }
         }
 
-        // Prefer alternating body parts
-        if let lastSite = lastSite {
-            let differentBodyPart = candidates.filter { $0.bodyPart != lastSite.bodyPart }
-            if !differentBodyPart.isEmpty {
-                candidates = differentBodyPart
-            }
+        // STEP 5: Calculate time-weighted scores for remaining candidates
+        let scoredCandidates = candidates.map { site -> (site: PEDInjectionSite, score: Double, lastUsed: Date) in
+            let score = calculateTimeWeightedScore(for: site, in: history)
+            let lastUsed = lastUsedDate(for: site, in: history)
+            return (site: site, score: score, lastUsed: lastUsed)
         }
 
-        // Return first candidate or default
-        return candidates.first ?? .gluteLeft
+        // STEP 6: Sort by score (lowest first), then by last used date (oldest first)
+        let sorted = scoredCandidates.sorted { a, b in
+            if a.score != b.score {
+                return a.score < b.score // Prefer lower score
+            }
+            return a.lastUsed < b.lastUsed // Tie-break: older = better
+        }
+
+        return sorted.first?.site ?? .gluteLeft
+    }
+
+    // MARK: - Body Part Balancing for Peptides
+
+    /// Groups peptide sites by body part and returns the least-used body part
+    private func leastUsedPeptideBodyPart(history: [PeptideInjectionSite]) -> String? {
+        var bodyPartUsage: [String: Int] = [:]
+
+        // Initialize all body parts
+        for site in PeptideInjectionSite.allCases {
+            bodyPartUsage[site.bodyPart] = 0
+        }
+
+        // Count usage per body part
+        for site in history {
+            bodyPartUsage[site.bodyPart, default: 0] += 1
+        }
+
+        // Prefer belly sites when equally used
+        let minUsage = bodyPartUsage.values.min() ?? 0
+        let leastUsedParts = bodyPartUsage.filter { $0.value == minUsage }.map { $0.key }
+
+        // If belly is among least used, prefer it
+        if leastUsedParts.contains("Belly") {
+            return "Belly"
+        }
+
+        return leastUsedParts.first
     }
 
     // MARK: - Recommend Next Site for Peptides
 
     func recommendNextPeptideSite() -> PeptideInjectionSite {
-        let history = CoreDataManager.shared.fetchInjectionHistory(
+        let historyLogs = CoreDataManager.shared.fetchInjectionHistory(
             for: .peptide,
             limit: AppConstants.InjectionRotation.historyLookback
         )
 
-        // Get recently used sites
-        let recentSites = history.compactMap { log -> PeptideInjectionSite? in
-            guard let rawValue = log.injectionSiteRaw else { return nil }
-            return PeptideInjectionSite(rawValue: rawValue)
+        // Convert to tuple array with dates for time-weighted scoring
+        let history: [(site: PeptideInjectionSite, date: Date)] = historyLogs.compactMap { log in
+            guard let rawValue = log.injectionSiteRaw,
+                  let site = PeptideInjectionSite(rawValue: rawValue),
+                  let date = log.timestamp else { return nil }
+            return (site: site, date: date)
         }
 
         // If no history, start with left belly upper
-        guard !recentSites.isEmpty else {
+        guard !history.isEmpty else {
             return .leftBellyUpper
         }
 
         // Get last used site
-        let lastSite = recentSites.first
+        let lastSite = history.first?.site
+        let recentSites = history.map { $0.site }
 
-        // Build usage frequency map
-        var usageCount: [PeptideInjectionSite: Int] = [:]
-        for site in PeptideInjectionSite.allCases {
-            usageCount[site] = 0
+        // STEP 1: Find the least-used body part first (with belly preference)
+        let targetBodyPart = leastUsedPeptideBodyPart(history: recentSites)
+
+        // STEP 2: Get sites in the target body part
+        var candidates = PeptideInjectionSite.allCases.filter { site in
+            targetBodyPart == nil || site.bodyPart == targetBodyPart
         }
-        for site in recentSites {
-            usageCount[site, default: 0] += 1
-        }
 
-        // Find least used sites
-        let minUsage = usageCount.values.min() ?? 0
-        var candidates = usageCount.filter { $0.value == minUsage }.map { $0.key }
-
-        // Exclude same side as last injection (for belly quadrants, alternate sides)
+        // STEP 3: Exclude same side as last injection
         if let lastSite = lastSite {
             let oppositeSide = candidates.filter { $0.isLeftSide != lastSite.isLeftSide }
             if !oppositeSide.isEmpty {
@@ -109,18 +195,27 @@ final class InjectionSiteRecommendationService {
             }
         }
 
-        // If no candidates after filtering, just avoid the exact same site
+        // STEP 4: If no candidates, fall back to all sites except last used
         if candidates.isEmpty {
             candidates = PeptideInjectionSite.allCases.filter { $0 != lastSite }
         }
 
-        // Prefer belly sites as primary
-        let bellySites = candidates.filter { $0.bodyPart == "Belly" }
-        if !bellySites.isEmpty {
-            candidates = bellySites
+        // STEP 5: Calculate time-weighted scores for remaining candidates
+        let scoredCandidates = candidates.map { site -> (site: PeptideInjectionSite, score: Double, lastUsed: Date) in
+            let score = calculateTimeWeightedScore(for: site, in: history)
+            let lastUsed = lastUsedDate(for: site, in: history)
+            return (site: site, score: score, lastUsed: lastUsed)
         }
 
-        return candidates.first ?? .leftBellyUpper
+        // STEP 6: Sort by score (lowest first), then by last used date (oldest first)
+        let sorted = scoredCandidates.sorted { a, b in
+            if a.score != b.score {
+                return a.score < b.score // Prefer lower score
+            }
+            return a.lastUsed < b.lastUsed // Tie-break: older = better
+        }
+
+        return sorted.first?.site ?? .leftBellyUpper
     }
 
     // MARK: - Recommend Next Site (Generic)
@@ -209,7 +304,7 @@ final class InjectionSiteRecommendationService {
     func siteUsageStats(for category: CompoundCategory) -> [(site: String, count: Int, lastUsed: Date?)] {
         let history = CoreDataManager.shared.fetchInjectionHistory(
             for: category,
-            limit: 50 // Get more history for stats
+            limit: AppConstants.InjectionRotation.statsLookback
         )
 
         var stats: [String: (count: Int, lastUsed: Date?)] = [:]
