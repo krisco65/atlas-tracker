@@ -525,21 +525,6 @@ struct LegendItem: View {
     }
 }
 
-// Keep LegendDot for backward compatibility
-struct LegendDot: View {
-    let color: Color
-    let label: String
-
-    var body: some View {
-        HStack(spacing: 4) {
-            Circle()
-                .fill(color)
-                .frame(width: 8, height: 8)
-            Text(label)
-                .foregroundColor(.textSecondary)
-        }
-    }
-}
 
 #Preview("Peptide Sites") {
     ScrollView {

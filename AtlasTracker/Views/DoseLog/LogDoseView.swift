@@ -2,7 +2,6 @@ import SwiftUI
 
 struct LogDoseView: View {
     @StateObject private var viewModel = DoseLogViewModel()
-    @State private var showBodyDiagram = false
     var onSuccess: (() -> Void)?
     var preselectedCompound: Compound?
 
@@ -79,15 +78,6 @@ struct LogDoseView: View {
             }
         } message: {
             Text(viewModel.errorMessage ?? "")
-        }
-        .sheet(isPresented: $showBodyDiagram) {
-            if let compound = viewModel.selectedCompound {
-                InjectionSitePickerView(
-                    compound: compound,
-                    selectedSite: $viewModel.selectedInjectionSite,
-                    onConfirm: {}
-                )
-            }
         }
     }
 

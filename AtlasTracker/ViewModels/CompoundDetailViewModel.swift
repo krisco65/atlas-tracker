@@ -1,5 +1,4 @@
 import Foundation
-import Combine
 
 // MARK: - Compound Detail View Model
 final class CompoundDetailViewModel: ObservableObject {
@@ -75,7 +74,6 @@ final class CompoundDetailViewModel: ObservableObject {
 
     // MARK: - Private Properties
     private let coreDataManager = CoreDataManager.shared
-    private var cancellables = Set<AnyCancellable>()
 
     // MARK: - Initialization
     init(compound: Compound) {

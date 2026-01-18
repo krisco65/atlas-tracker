@@ -80,8 +80,6 @@
 
 		/* Views - InjectionSite */
 		A1000016001 /* BodyDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016001 /* BodyDiagramView.swift */; };
-		A1000016002 /* PEDBodyDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016002 /* PEDBodyDiagramView.swift */; };
-		A1000016003 /* PeptideBodyDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016003 /* PeptideBodyDiagramView.swift */; };
 		A1000016004 /* InjectionSitePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016004 /* InjectionSitePickerView.swift */; };
 		A1000016005 /* VisualBodySilhouette.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016005 /* VisualBodySilhouette.swift */; };
 
@@ -183,8 +181,6 @@
 
 		/* Views - InjectionSite */
 		A1100016001 /* BodyDiagramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyDiagramView.swift; sourceTree = "<group>"; };
-		A1100016002 /* PEDBodyDiagramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PEDBodyDiagramView.swift; sourceTree = "<group>"; };
-		A1100016003 /* PeptideBodyDiagramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = PeptideBodyDiagramView.swift; sourceTree = "<group>"; };
 		A1100016005 /* VisualBodySilhouette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualBodySilhouette.swift; sourceTree = "<group>"; };
 		A1100016004 /* InjectionSitePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSitePickerView.swift; sourceTree = "<group>"; };
 
@@ -395,8 +391,6 @@
 			isa = PBXGroup;
 			children = (
 				A1100016001 /* BodyDiagramView.swift */,
-				A1100016002 /* PEDBodyDiagramView.swift */,
-				A1100016003 /* PeptideBodyDiagramView.swift */,
 				A1100016005 /* VisualBodySilhouette.swift */,
 				A1100016004 /* InjectionSitePickerView.swift */,
 			);
@@ -612,8 +606,6 @@
 
 				/* Views - InjectionSite */
 				A1000016001 /* BodyDiagramView.swift in Sources */,
-				A1000016002 /* PEDBodyDiagramView.swift in Sources */,
-				A1000016003 /* PeptideBodyDiagramView.swift in Sources */,
 				A1000016005 /* VisualBodySilhouette.swift in Sources */,
 				A1000016004 /* InjectionSitePickerView.swift in Sources */,
 
