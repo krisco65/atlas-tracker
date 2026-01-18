@@ -155,6 +155,19 @@ class CoreDataModelCreator {
         categoryRaw.attributeType = .stringAttributeType
         properties.append(categoryRaw)
 
+        // Add indexes for frequently queried fields
+        entity.indexes = [
+            NSFetchIndexDescription(name: "byName", elements: [
+                NSFetchIndexElementDescription(property: name, collationType: .binary)
+            ]),
+            NSFetchIndexDescription(name: "byCategory", elements: [
+                NSFetchIndexElementDescription(property: categoryRaw, collationType: .binary)
+            ])
+        ]
+
+        // Add unique constraint on name to prevent duplicates
+        entity.uniquenessConstraints = [[name]]
+
         let supportedUnitsRaw = NSAttributeDescription()
         supportedUnitsRaw.name = "supportedUnitsRaw"
         supportedUnitsRaw.attributeType = .transformableAttributeType
@@ -269,6 +282,13 @@ class CoreDataModelCreator {
         isActive.defaultValue = true
         properties.append(isActive)
 
+        // Add index for isActive (frequently filtered)
+        entity.indexes = [
+            NSFetchIndexDescription(name: "byIsActive", elements: [
+                NSFetchIndexElementDescription(property: isActive, collationType: .binary)
+            ])
+        ]
+
         let startDate = NSAttributeDescription()
         startDate.name = "startDate"
         startDate.attributeType = .dateAttributeType
@@ -322,6 +342,13 @@ class CoreDataModelCreator {
         timestamp.name = "timestamp"
         timestamp.attributeType = .dateAttributeType
         properties.append(timestamp)
+
+        // Add index for timestamp (frequently filtered and sorted)
+        entity.indexes = [
+            NSFetchIndexDescription(name: "byTimestamp", elements: [
+                NSFetchIndexElementDescription(property: timestamp, collationType: .binary)
+            ])
+        ]
 
         let injectionSiteRaw = NSAttributeDescription()
         injectionSiteRaw.name = "injectionSiteRaw"
