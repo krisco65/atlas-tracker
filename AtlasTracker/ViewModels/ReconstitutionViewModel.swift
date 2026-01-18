@@ -1,4 +1,5 @@
 import Foundation
+import Observation
 import SwiftUI
 
 // MARK: - Reconstitution Result
@@ -36,23 +37,24 @@ struct ReconstitutionResult {
 }
 
 // MARK: - Reconstitution View Model
-final class ReconstitutionViewModel: ObservableObject {
+@Observable
+final class ReconstitutionViewModel {
 
     // MARK: - Input Properties
-    @Published var vialSizeMg: String = ""
-    @Published var desiredDoseMg: String = ""
-    @Published var bacWaterMl: String = ""
+    var vialSizeMg: String = ""
+    var desiredDoseMg: String = ""
+    var bacWaterMl: String = ""
 
     // Toggle between mg and mcg for dose input
-    @Published var doseUnitIsMcg: Bool = false
+    var doseUnitIsMcg: Bool = false
 
     // MARK: - Output Properties
-    @Published var result: ReconstitutionResult?
-    @Published var errorMessage: String?
-    @Published var showBeginnerGuide: Bool = false
+    var result: ReconstitutionResult?
+    var errorMessage: String?
+    var showBeginnerGuide: Bool = false
 
     // MARK: - Selected Compound (for saving settings)
-    @Published var selectedCompound: TrackedCompound?
+    var selectedCompound: TrackedCompound?
 
     // MARK: - Common Presets
     struct Preset: Identifiable {

@@ -1,19 +1,21 @@
 import SwiftUI
 import Charts
+import Observation
 
 // MARK: - Analytics View Model
-final class AnalyticsViewModel: ObservableObject {
+@Observable
+final class AnalyticsViewModel {
     enum TimePeriod: String, CaseIterable {
         case week = "Week"
         case month = "Month"
         case allTime = "All Time"
     }
 
-    @Published var selectedPeriod: TimePeriod = .week
-    @Published var doseLogs: [DoseLog] = []
-    @Published var weightEntries: [WeightEntry] = []
-    @Published var trackedCompounds: [TrackedCompound] = []
-    @Published var showAddWeight = false
+    var selectedPeriod: TimePeriod = .week
+    var doseLogs: [DoseLog] = []
+    var weightEntries: [WeightEntry] = []
+    var trackedCompounds: [TrackedCompound] = []
+    var showAddWeight = false
 
     var dateRange: (start: Date, end: Date) {
         let end = Date()
@@ -135,7 +137,7 @@ final class AnalyticsViewModel: ObservableObject {
 }
 
 struct AnalyticsView: View {
-    @StateObject private var viewModel = AnalyticsViewModel()
+    @State private var viewModel = AnalyticsViewModel()
 
     var body: some View {
         NavigationStack {

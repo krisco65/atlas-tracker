@@ -1,26 +1,28 @@
 import Foundation
+import Observation
 import SwiftUI
 import CoreData
 
 // MARK: - Inventory View Model
-final class InventoryViewModel: ObservableObject {
+@Observable
+final class InventoryViewModel {
 
-    // MARK: - Published Properties
-    @Published var inventoryItems: [Inventory] = []
-    @Published var lowStockItems: [Inventory] = []
-    @Published var isLoading = false
-    @Published var errorMessage: String?
+    // MARK: - Observable Properties
+    var inventoryItems: [Inventory] = []
+    var lowStockItems: [Inventory] = []
+    var isLoading = false
+    var errorMessage: String?
 
     // MARK: - Add/Edit Sheet Properties
-    @Published var showAddSheet = false
-    @Published var editingInventory: Inventory?
+    var showAddSheet = false
+    var editingInventory: Inventory?
 
     // Form fields for add/edit
-    @Published var selectedCompound: Compound?
-    @Published var vialCountString = ""
-    @Published var vialSizeString = ""
-    @Published var lowStockThresholdString = "2"
-    @Published var autoDecrementEnabled = true
+    var selectedCompound: Compound?
+    var vialCountString = ""
+    var vialSizeString = ""
+    var lowStockThresholdString = "2"
+    var autoDecrementEnabled = true
 
     // MARK: - Initialization
 

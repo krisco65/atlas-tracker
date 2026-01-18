@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LogDoseView: View {
-    @StateObject private var viewModel = DoseLogViewModel()
+    @State private var viewModel = DoseLogViewModel()
     var onSuccess: (() -> Void)?
     var preselectedCompound: Compound?
 

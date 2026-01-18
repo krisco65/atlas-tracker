@@ -1,14 +1,16 @@
 import Foundation
+import Observation
 
 // MARK: - Dashboard View Model
-final class DashboardViewModel: ObservableObject {
+@Observable
+final class DashboardViewModel {
 
-    // MARK: - Published Properties
-    @Published var todaysDoses: [TrackedCompound] = []
-    @Published var upcomingDoses: [TrackedCompound] = []
-    @Published var recentLogs: [DoseLog] = []
-    @Published var lowStockItems: [Inventory] = []
-    @Published var isLoading = false
+    // MARK: - Observable Properties
+    var todaysDoses: [TrackedCompound] = []
+    var upcomingDoses: [TrackedCompound] = []
+    var recentLogs: [DoseLog] = []
+    var lowStockItems: [Inventory] = []
+    var isLoading = false
 
     // MARK: - Computed Properties
     var hasDosesToday: Bool {

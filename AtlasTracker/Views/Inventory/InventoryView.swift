@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct InventoryView: View {
-    @StateObject private var viewModel = InventoryViewModel()
+    @State private var viewModel = InventoryViewModel()
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

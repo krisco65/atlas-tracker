@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct DashboardView: View {
-    @StateObject private var viewModel = DashboardViewModel()
+    @State private var viewModel = DashboardViewModel()
     @State private var selectedTracked: TrackedCompound?
     @State private var showActiveCompounds = false
     @State private var showInventory = false

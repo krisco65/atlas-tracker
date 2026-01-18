@@ -1,21 +1,23 @@
 import Foundation
+import Observation
 
 // MARK: - Dose Log View Model
-final class DoseLogViewModel: ObservableObject {
+@Observable
+final class DoseLogViewModel {
 
-    // MARK: - Published Properties
-    @Published var selectedCompound: Compound?
-    @Published var dosageAmount: String = ""
-    @Published var selectedUnit: DosageUnit = .mg
-    @Published var selectedInjectionSite: String?
-    @Published var timestamp: Date = Date()
-    @Published var notes: String = ""
-    @Published var isLoading = false
-    @Published var showSuccess = false
-    @Published var errorMessage: String?
+    // MARK: - Observable Properties
+    var selectedCompound: Compound?
+    var dosageAmount: String = ""
+    var selectedUnit: DosageUnit = .mg
+    var selectedInjectionSite: String?
+    var timestamp: Date = Date()
+    var notes: String = ""
+    var isLoading = false
+    var showSuccess = false
+    var errorMessage: String?
 
     // MARK: - Tracked Compounds List
-    @Published var trackedCompounds: [TrackedCompound] = []
+    var trackedCompounds: [TrackedCompound] = []
 
     // MARK: - Computed Properties
     var availableUnits: [DosageUnit] {

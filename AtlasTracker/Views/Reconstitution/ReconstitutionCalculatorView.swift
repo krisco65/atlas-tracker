@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct ReconstitutionCalculatorView: View {
-    @StateObject private var viewModel = ReconstitutionViewModel()
+    @State private var viewModel = ReconstitutionViewModel()
     @Environment(\.dismiss) private var dismiss
     var preselectedCompound: TrackedCompound?
 

@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct LibraryView: View {
-    @StateObject private var viewModel = LibraryViewModel()
+    @State private var viewModel = LibraryViewModel()
     @State private var showAddCompound = false
     @State private var selectedCompound: Compound?
     var onClose: (() -> Void)?

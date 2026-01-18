@@ -1,26 +1,28 @@
 import Foundation
+import Observation
 
 // MARK: - Compound Detail View Model
-final class CompoundDetailViewModel: ObservableObject {
+@Observable
+final class CompoundDetailViewModel {
 
-    // MARK: - Published Properties
-    @Published var compound: Compound
-    @Published var recentDoseLogs: [DoseLog] = []
-    @Published var isTracked: Bool = false
-    @Published var trackedCompound: TrackedCompound?
+    // MARK: - Observable Properties
+    var compound: Compound
+    var recentDoseLogs: [DoseLog] = []
+    var isTracked: Bool = false
+    var trackedCompound: TrackedCompound?
 
     // Tracking Setup Properties
-    @Published var dosageAmount: String = ""
-    @Published var selectedUnit: DosageUnit = .mg
-    @Published var scheduleType: ScheduleType = .daily
-    @Published var scheduleInterval: String = "1"
-    @Published var selectedDays: Set<Int> = []
-    @Published var notificationEnabled: Bool = true
-    @Published var notificationTime: Date = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date()) ?? Date()
+    var dosageAmount: String = ""
+    var selectedUnit: DosageUnit = .mg
+    var scheduleType: ScheduleType = .daily
+    var scheduleInterval: String = "1"
+    var selectedDays: Set<Int> = []
+    var notificationEnabled: Bool = true
+    var notificationTime: Date = Calendar.current.date(bySettingHour: 8, minute: 0, second: 0, of: Date()) ?? Date()
 
-    @Published var isLoading = false
-    @Published var showTrackingSetup = false
-    @Published var errorMessage: String?
+    var isLoading = false
+    var showTrackingSetup = false
+    var errorMessage: String?
 
     // MARK: - Computed Properties
     var availableUnits: [DosageUnit] {
@@ -105,7 +107,7 @@ final class CompoundDetailViewModel: ObservableObject {
     // MARK: - Toggle Favorite
     func toggleFavorite() {
         coreDataManager.toggleFavorite(compound: compound)
-        objectWillChange.send()
+        // @Observable automatically tracks property changes
     }
 
     // MARK: - Start Tracking

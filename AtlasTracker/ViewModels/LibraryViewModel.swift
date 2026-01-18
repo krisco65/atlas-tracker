@@ -1,5 +1,6 @@
 import Foundation
 import Combine
+import Observation
 
 // MARK: - Sort Option
 enum CompoundSortOption: String, CaseIterable {
@@ -17,44 +18,46 @@ enum CompoundSortOption: String, CaseIterable {
 }
 
 // MARK: - Library View Model
-final class LibraryViewModel: ObservableObject {
+@Observable
+final class LibraryViewModel {
 
-    // MARK: - Published Properties
-    @Published var compounds: [Compound] = []
-    @Published var filteredCompounds: [Compound] = []
-    @Published var searchText: String = ""
-    @Published var selectedCategory: CompoundCategory? = nil
-    @Published var sortOption: CompoundSortOption = .alphabetical
-    @Published var isLoading = false
+    // MARK: - Observable Properties
+    var compounds: [Compound] = []
+    var filteredCompounds: [Compound] = []
+    var isLoading = false
+
+    var searchText: String = "" {
+        didSet {
+            searchTextSubject.send(searchText)
+        }
+    }
+
+    var selectedCategory: CompoundCategory? = nil {
+        didSet {
+            applyFilters()
+        }
+    }
+
+    var sortOption: CompoundSortOption = .alphabetical {
+        didSet {
+            applyFilters()
+        }
+    }
 
     // MARK: - Private Properties
     private var cancellables = Set<AnyCancellable>()
     private let coreDataManager = CoreDataManager.shared
+    private let searchTextSubject = PassthroughSubject<String, Never>()
 
     // MARK: - Initialization
     init() {
-        setupBindings()
+        setupSearchDebounce()
     }
 
-    // MARK: - Setup Bindings
-    private func setupBindings() {
-        // React to search text changes
-        $searchText
+    // MARK: - Setup Search Debounce
+    private func setupSearchDebounce() {
+        searchTextSubject
             .debounce(for: .milliseconds(300), scheduler: RunLoop.main)
-            .sink { [weak self] _ in
-                self?.applyFilters()
-            }
-            .store(in: &cancellables)
-
-        // React to category changes
-        $selectedCategory
-            .sink { [weak self] _ in
-                self?.applyFilters()
-            }
-            .store(in: &cancellables)
-
-        // React to sort option changes
-        $sortOption
             .sink { [weak self] _ in
                 self?.applyFilters()
             }

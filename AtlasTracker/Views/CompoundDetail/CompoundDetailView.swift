@@ -1,14 +1,14 @@
 import SwiftUI
 
 struct CompoundDetailView: View {
-    @StateObject private var viewModel: CompoundDetailViewModel
+    @State private var viewModel: CompoundDetailViewModel
     @Environment(\.dismiss) private var dismiss
     @State private var showDeleteAlert = false
     @State private var showReconstitutionCalculator = false
     @State private var showAddInventory = false
 
     init(compound: Compound) {
-        _viewModel = StateObject(wrappedValue: CompoundDetailViewModel(compound: compound))
+        _viewModel = State(wrappedValue: CompoundDetailViewModel(compound: compound))
     }
 
     var body: some View {
