@@ -1,45 +1,21 @@
 import SwiftUI
 
 // MARK: - Professional Body Silhouette Shape
-/// Anatomically proportioned human body silhouette using SwiftUI Paths
-/// Based on classical 8-head proportion model for realistic human figure
+/// Clean, medical-app style human silhouette
+/// Optimized for clarity at all sizes
 struct ProfessionalBodyShape: Shape {
     func path(in rect: CGRect) -> Path {
         var path = Path()
 
         let w = rect.width
         let h = rect.height
-
-        // Proportions based on 8-head model
-        let headHeight = h * 0.10
-        let headWidth = w * 0.14
-        let neckWidth = w * 0.08
-        let shoulderWidth = w * 0.42
-        let chestWidth = w * 0.36
-        let waistWidth = w * 0.28
-        let hipWidth = w * 0.34
-        let thighWidth = w * 0.14
-        let calfWidth = w * 0.10
-
         let centerX = w * 0.5
 
-        // Vertical positions
-        let headTop = h * 0.02
-        let headBottom = headTop + headHeight
-        let neckBottom = headBottom + h * 0.025
-        let shoulderY = neckBottom + h * 0.01
-        let armPitY = shoulderY + h * 0.05
-        let elbowY = h * 0.38
-        let wristY = h * 0.48
-        let handY = h * 0.52
-        let waistY = h * 0.40
-        let hipY = h * 0.48
-        let crotchY = h * 0.52
-        let kneeY = h * 0.72
-        let ankleY = h * 0.93
-        let footBottom = h * 0.98
+        // === HEAD ===
+        let headWidth = w * 0.18
+        let headHeight = h * 0.11
+        let headTop = h * 0.01
 
-        // ===== HEAD =====
         path.addEllipse(in: CGRect(
             x: centerX - headWidth / 2,
             y: headTop,
@@ -47,209 +23,167 @@ struct ProfessionalBodyShape: Shape {
             height: headHeight
         ))
 
-        // ===== BODY (Torso + Legs - single continuous path) =====
-        var bodyPath = Path()
+        // === NECK ===
+        let neckTop = headTop + headHeight - h * 0.01
+        let neckWidth = w * 0.10
 
-        // Start at left side of neck
-        bodyPath.move(to: CGPoint(x: centerX - neckWidth / 2, y: headBottom))
+        path.addRect(CGRect(
+            x: centerX - neckWidth / 2,
+            y: neckTop,
+            width: neckWidth,
+            height: h * 0.04
+        ))
 
-        // Neck to left shoulder
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - shoulderWidth / 2, y: shoulderY),
-            control: CGPoint(x: centerX - shoulderWidth / 3, y: neckBottom)
+        // === TORSO (shoulders to hips) ===
+        var torso = Path()
+
+        let shoulderY = neckTop + h * 0.03
+        let shoulderWidth = w * 0.50
+        let chestY = shoulderY + h * 0.08
+        let waistY = h * 0.42
+        let waistWidth = w * 0.32
+        let hipY = h * 0.50
+        let hipWidth = w * 0.38
+
+        // Start at left shoulder
+        torso.move(to: CGPoint(x: centerX - shoulderWidth / 2, y: shoulderY))
+
+        // Left shoulder curve
+        torso.addQuadCurve(
+            to: CGPoint(x: centerX - shoulderWidth / 2 - w * 0.02, y: chestY),
+            control: CGPoint(x: centerX - shoulderWidth / 2, y: shoulderY + h * 0.04)
         )
 
-        // Left shoulder to armpit
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - chestWidth / 2 - w * 0.02, y: armPitY),
-            control: CGPoint(x: centerX - shoulderWidth / 2, y: armPitY - h * 0.02)
+        // Left arm (simplified - slight outward bulge)
+        torso.addQuadCurve(
+            to: CGPoint(x: centerX - waistWidth / 2 - w * 0.04, y: waistY - h * 0.05),
+            control: CGPoint(x: centerX - shoulderWidth / 2, y: (chestY + waistY) / 2)
         )
 
-        // === LEFT ARM ===
-        let leftArmOuterX = centerX - shoulderWidth / 2 - w * 0.06
-        let leftArmInnerX = centerX - chestWidth / 2 - w * 0.02
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: leftArmOuterX - w * 0.02, y: elbowY),
-            control: CGPoint(x: leftArmOuterX, y: (armPitY + elbowY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: leftArmOuterX + w * 0.01, y: wristY),
-            control: CGPoint(x: leftArmOuterX - w * 0.01, y: (elbowY + wristY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: leftArmOuterX + w * 0.03, y: handY),
-            control: CGPoint(x: leftArmOuterX - w * 0.01, y: handY - h * 0.01)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: leftArmOuterX + w * 0.08, y: handY - h * 0.01),
-            control: CGPoint(x: leftArmOuterX + w * 0.06, y: handY + h * 0.015)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: leftArmInnerX + w * 0.04, y: wristY - h * 0.02),
-            control: CGPoint(x: leftArmOuterX + w * 0.08, y: wristY)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: leftArmInnerX + w * 0.02, y: elbowY + h * 0.01),
-            control: CGPoint(x: leftArmInnerX + w * 0.05, y: (wristY + elbowY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: leftArmInnerX, y: armPitY + h * 0.02),
-            control: CGPoint(x: leftArmInnerX, y: (armPitY + elbowY) / 2)
-        )
-
-        // === LEFT SIDE OF TORSO ===
-        bodyPath.addQuadCurve(
+        // Left waist curve
+        torso.addQuadCurve(
             to: CGPoint(x: centerX - waistWidth / 2, y: waistY),
-            control: CGPoint(x: centerX - chestWidth / 2, y: (armPitY + waistY) / 2)
+            control: CGPoint(x: centerX - waistWidth / 2 - w * 0.02, y: waistY - h * 0.02)
         )
 
-        bodyPath.addQuadCurve(
+        // Left hip curve
+        torso.addQuadCurve(
             to: CGPoint(x: centerX - hipWidth / 2, y: hipY),
-            control: CGPoint(x: centerX - waistWidth / 2 - w * 0.02, y: (waistY + hipY) / 2)
+            control: CGPoint(x: centerX - hipWidth / 2 - w * 0.02, y: (waistY + hipY) / 2)
         )
+
+        // Bottom of torso (straight line across hips)
+        torso.addLine(to: CGPoint(x: centerX + hipWidth / 2, y: hipY))
+
+        // Right hip curve
+        torso.addQuadCurve(
+            to: CGPoint(x: centerX + waistWidth / 2, y: waistY),
+            control: CGPoint(x: centerX + hipWidth / 2 + w * 0.02, y: (waistY + hipY) / 2)
+        )
+
+        // Right waist curve
+        torso.addQuadCurve(
+            to: CGPoint(x: centerX + waistWidth / 2 + w * 0.04, y: waistY - h * 0.05),
+            control: CGPoint(x: centerX + waistWidth / 2 + w * 0.02, y: waistY - h * 0.02)
+        )
+
+        // Right arm (simplified)
+        torso.addQuadCurve(
+            to: CGPoint(x: centerX + shoulderWidth / 2 + w * 0.02, y: chestY),
+            control: CGPoint(x: centerX + shoulderWidth / 2, y: (chestY + waistY) / 2)
+        )
+
+        // Right shoulder curve
+        torso.addQuadCurve(
+            to: CGPoint(x: centerX + shoulderWidth / 2, y: shoulderY),
+            control: CGPoint(x: centerX + shoulderWidth / 2, y: shoulderY + h * 0.04)
+        )
+
+        torso.closeSubpath()
+        path.addPath(torso)
 
         // === LEFT LEG ===
-        bodyPath.addLine(to: CGPoint(x: centerX - w * 0.06, y: crotchY))
+        let legTop = hipY - h * 0.01
+        let legWidth = w * 0.14
+        let legGap = w * 0.03
+        let kneeY = h * 0.72
+        let ankleY = h * 0.92
+        let footY = h * 0.98
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.07, y: kneeY),
-            control: CGPoint(x: centerX - w * 0.05, y: (crotchY + kneeY) / 2)
+        var leftLeg = Path()
+        leftLeg.move(to: CGPoint(x: centerX - legGap, y: legTop))
+
+        // Outer thigh
+        leftLeg.addQuadCurve(
+            to: CGPoint(x: centerX - legGap - legWidth * 0.6, y: kneeY),
+            control: CGPoint(x: centerX - legGap - legWidth * 0.7, y: (legTop + kneeY) / 2)
         )
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.06, y: ankleY),
-            control: CGPoint(x: centerX - w * 0.055, y: (kneeY + ankleY) / 2)
+        // Outer calf
+        leftLeg.addQuadCurve(
+            to: CGPoint(x: centerX - legGap - legWidth * 0.4, y: ankleY),
+            control: CGPoint(x: centerX - legGap - legWidth * 0.5, y: (kneeY + ankleY) / 2)
         )
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - w * 0.10, y: footBottom),
-            control: CGPoint(x: centerX - w * 0.08, y: ankleY + h * 0.03)
+        // Foot
+        leftLeg.addLine(to: CGPoint(x: centerX - legGap - legWidth * 0.6, y: footY))
+        leftLeg.addLine(to: CGPoint(x: centerX - legGap + legWidth * 0.1, y: footY))
+
+        // Inner ankle
+        leftLeg.addLine(to: CGPoint(x: centerX - legGap + legWidth * 0.1, y: ankleY))
+
+        // Inner calf
+        leftLeg.addQuadCurve(
+            to: CGPoint(x: centerX - legGap + legWidth * 0.15, y: kneeY),
+            control: CGPoint(x: centerX - legGap + legWidth * 0.1, y: (kneeY + ankleY) / 2)
         )
 
-        bodyPath.addLine(to: CGPoint(x: centerX - w * 0.18, y: footBottom))
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - thighWidth / 2 - w * 0.04, y: ankleY),
-            control: CGPoint(x: centerX - w * 0.20, y: footBottom - h * 0.02)
+        // Inner thigh
+        leftLeg.addQuadCurve(
+            to: CGPoint(x: centerX - legGap, y: legTop),
+            control: CGPoint(x: centerX - legGap + legWidth * 0.2, y: (legTop + kneeY) / 2)
         )
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - thighWidth / 2 - w * 0.03, y: kneeY),
-            control: CGPoint(x: centerX - calfWidth / 2 - w * 0.08, y: (ankleY + kneeY) / 2)
+        leftLeg.closeSubpath()
+        path.addPath(leftLeg)
+
+        // === RIGHT LEG ===
+        var rightLeg = Path()
+        rightLeg.move(to: CGPoint(x: centerX + legGap, y: legTop))
+
+        // Inner thigh
+        rightLeg.addQuadCurve(
+            to: CGPoint(x: centerX + legGap - legWidth * 0.15, y: kneeY),
+            control: CGPoint(x: centerX + legGap - legWidth * 0.2, y: (legTop + kneeY) / 2)
         )
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX - hipWidth / 2, y: hipY),
-            control: CGPoint(x: centerX - thighWidth / 2 - w * 0.06, y: (hipY + kneeY) / 2)
+        // Inner calf
+        rightLeg.addQuadCurve(
+            to: CGPoint(x: centerX + legGap - legWidth * 0.1, y: ankleY),
+            control: CGPoint(x: centerX + legGap - legWidth * 0.1, y: (kneeY + ankleY) / 2)
         )
 
-        // === CROSS TO RIGHT LEG ===
-        bodyPath.addLine(to: CGPoint(x: centerX + hipWidth / 2, y: hipY))
+        // Foot
+        rightLeg.addLine(to: CGPoint(x: centerX + legGap - legWidth * 0.1, y: footY))
+        rightLeg.addLine(to: CGPoint(x: centerX + legGap + legWidth * 0.6, y: footY))
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + thighWidth / 2 + w * 0.03, y: kneeY),
-            control: CGPoint(x: centerX + thighWidth / 2 + w * 0.06, y: (hipY + kneeY) / 2)
+        // Outer ankle
+        rightLeg.addLine(to: CGPoint(x: centerX + legGap + legWidth * 0.4, y: ankleY))
+
+        // Outer calf
+        rightLeg.addQuadCurve(
+            to: CGPoint(x: centerX + legGap + legWidth * 0.6, y: kneeY),
+            control: CGPoint(x: centerX + legGap + legWidth * 0.5, y: (kneeY + ankleY) / 2)
         )
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + thighWidth / 2 + w * 0.04, y: ankleY),
-            control: CGPoint(x: centerX + calfWidth / 2 + w * 0.08, y: (kneeY + ankleY) / 2)
+        // Outer thigh
+        rightLeg.addQuadCurve(
+            to: CGPoint(x: centerX + legGap, y: legTop),
+            control: CGPoint(x: centerX + legGap + legWidth * 0.7, y: (legTop + kneeY) / 2)
         )
 
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.18, y: footBottom),
-            control: CGPoint(x: centerX + w * 0.20, y: footBottom - h * 0.02)
-        )
-
-        bodyPath.addLine(to: CGPoint(x: centerX + w * 0.10, y: footBottom))
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.06, y: ankleY),
-            control: CGPoint(x: centerX + w * 0.08, y: ankleY + h * 0.03)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.07, y: kneeY),
-            control: CGPoint(x: centerX + w * 0.055, y: (ankleY + kneeY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + w * 0.06, y: crotchY),
-            control: CGPoint(x: centerX + w * 0.05, y: (kneeY + crotchY) / 2)
-        )
-
-        // === RIGHT SIDE OF TORSO ===
-        bodyPath.addLine(to: CGPoint(x: centerX + hipWidth / 2, y: hipY))
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + waistWidth / 2, y: waistY),
-            control: CGPoint(x: centerX + waistWidth / 2 + w * 0.02, y: (waistY + hipY) / 2)
-        )
-
-        let rightArmInnerX = centerX + chestWidth / 2 + w * 0.02
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: rightArmInnerX, y: armPitY + h * 0.02),
-            control: CGPoint(x: centerX + chestWidth / 2, y: (armPitY + waistY) / 2)
-        )
-
-        // === RIGHT ARM ===
-        let rightArmOuterX = centerX + shoulderWidth / 2 + w * 0.06
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: rightArmInnerX - w * 0.02, y: elbowY + h * 0.01),
-            control: CGPoint(x: rightArmInnerX, y: (armPitY + elbowY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: rightArmInnerX - w * 0.04, y: wristY - h * 0.02),
-            control: CGPoint(x: rightArmInnerX - w * 0.05, y: (wristY + elbowY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: rightArmOuterX - w * 0.08, y: handY - h * 0.01),
-            control: CGPoint(x: rightArmOuterX - w * 0.08, y: wristY)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: rightArmOuterX - w * 0.03, y: handY),
-            control: CGPoint(x: rightArmOuterX - w * 0.06, y: handY + h * 0.015)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: rightArmOuterX - w * 0.01, y: wristY),
-            control: CGPoint(x: rightArmOuterX + w * 0.01, y: handY - h * 0.01)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: rightArmOuterX + w * 0.02, y: elbowY),
-            control: CGPoint(x: rightArmOuterX + w * 0.01, y: (elbowY + wristY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + chestWidth / 2 + w * 0.02, y: armPitY),
-            control: CGPoint(x: rightArmOuterX, y: (armPitY + elbowY) / 2)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + shoulderWidth / 2, y: shoulderY),
-            control: CGPoint(x: centerX + shoulderWidth / 2, y: armPitY - h * 0.02)
-        )
-
-        bodyPath.addQuadCurve(
-            to: CGPoint(x: centerX + neckWidth / 2, y: headBottom),
-            control: CGPoint(x: centerX + shoulderWidth / 3, y: neckBottom)
-        )
-
-        bodyPath.closeSubpath()
-
-        path.addPath(bodyPath)
+        rightLeg.closeSubpath()
+        path.addPath(rightLeg)
 
         return path
     }

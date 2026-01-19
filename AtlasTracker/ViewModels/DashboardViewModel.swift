@@ -10,6 +10,7 @@ final class DashboardViewModel {
     var upcomingDoses: [TrackedCompound] = []
     var recentLogs: [DoseLog] = []
     var lowStockItems: [Inventory] = []
+    var activeTracked: [TrackedCompound] = []
     var isLoading = false
 
     // MARK: - Computed Properties
@@ -69,6 +70,9 @@ final class DashboardViewModel {
 
             // Fetch low stock items
             self.lowStockItems = self.coreDataManager.fetchLowStockItems()
+
+            // Fetch active tracked compounds (for count display)
+            self.activeTracked = self.coreDataManager.fetchTrackedCompounds(activeOnly: true)
 
             self.isLoading = false
         }
@@ -175,10 +179,10 @@ final class DashboardViewModel {
     }
 
     var activeCompoundsCount: Int {
-        return coreDataManager.fetchTrackedCompounds(activeOnly: true).count
+        return activeTracked.count
     }
 
     var activeTrackedCompounds: [TrackedCompound] {
-        return coreDataManager.fetchTrackedCompounds(activeOnly: true)
+        return activeTracked
     }
 }
