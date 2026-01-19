@@ -37,8 +37,10 @@ struct VisualBodySilhouette: View {
 
             // Body diagram with overlay buttons
             GeometryReader { geometry in
-                let bodyWidth = min(geometry.size.width * 0.65, 220)
-                let bodyHeight = bodyWidth * 2.2
+                // Make body fill most of screen height (2-3x larger than before)
+                let availableHeight = geometry.size.height * 0.95
+                let bodyHeight = availableHeight
+                let bodyWidth = bodyHeight / 2.2  // Maintain aspect ratio
 
                 ZStack {
                     // Professional body silhouette shape
@@ -74,7 +76,7 @@ struct VisualBodySilhouette: View {
                     }
                 }
             }
-            .frame(height: 500)
+            .frame(minHeight: 550, maxHeight: 700)
             .background(Color.black) // Match body image background
 
             // Selected site display
@@ -95,7 +97,7 @@ struct VisualBodySilhouette: View {
                     recommendedSite: recommendedSite,
                     isPresented: $showingSubOptions
                 )
-                .presentationDetents([.height(200)])
+                .presentationDetents([.height(region == .belly ? 280 : 200)])
                 .presentationDragIndicator(.visible)
             }
         }
@@ -112,8 +114,7 @@ struct VisualBodySilhouette: View {
 
 // MARK: - Injection Region (for two-step selection)
 enum InjectionRegion: String, CaseIterable {
-    case bellyLeft = "belly_left"
-    case bellyRight = "belly_right"
+    case belly = "belly"              // Single belly region - drills down to 4-zone grid
     case loveHandleLeft = "love_handle_left"
     case loveHandleRight = "love_handle_right"
     case gluteLeft = "glute_left"
@@ -123,8 +124,7 @@ enum InjectionRegion: String, CaseIterable {
 
     var displayName: String {
         switch self {
-        case .bellyLeft: return "Left Belly"
-        case .bellyRight: return "Right Belly"
+        case .belly: return "Belly"
         case .loveHandleLeft: return "Left Side"
         case .loveHandleRight: return "Right Side"
         case .gluteLeft: return "Left Glute"
@@ -136,8 +136,7 @@ enum InjectionRegion: String, CaseIterable {
 
     var shortLabel: String {
         switch self {
-        case .bellyLeft: return "Belly"
-        case .bellyRight: return "Belly"
+        case .belly: return "Belly"
         case .loveHandleLeft: return "Side"
         case .loveHandleRight: return "Side"
         case .gluteLeft: return "Glute"
@@ -156,8 +155,12 @@ enum InjectionRegion: String, CaseIterable {
 
     var subOptions: [(PeptideInjectionSite, String)] {
         switch self {
-        case .bellyLeft: return [(.leftBellyUpper, "Upper"), (.leftBellyLower, "Lower")]
-        case .bellyRight: return [(.rightBellyUpper, "Upper"), (.rightBellyLower, "Lower")]
+        case .belly: return [
+            (.leftBellyUpper, "Upper Left"),
+            (.rightBellyUpper, "Upper Right"),
+            (.leftBellyLower, "Lower Left"),
+            (.rightBellyLower, "Lower Right")
+        ]
         case .loveHandleLeft: return [(.leftLoveHandleUpper, "Upper"), (.leftLoveHandleLower, "Lower")]
         case .loveHandleRight: return [(.rightLoveHandleUpper, "Upper"), (.rightLoveHandleLower, "Lower")]
         case .gluteLeft: return [(.gluteLeftUpper, "Upper"), (.gluteLeftLower, "Lower")]
@@ -175,17 +178,16 @@ enum InjectionRegion: String, CaseIterable {
         }
     }
 
-    // Position on body shape (calibrated for ProfessionalBodyShape)
+    // Position on body (calibrated for Body.png image)
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .bellyLeft: return (0.38, 0.39)
-        case .bellyRight: return (0.62, 0.39)
-        case .loveHandleLeft: return (0.20, 0.39)
-        case .loveHandleRight: return (0.80, 0.39)
-        case .gluteLeft: return (0.30, 0.51)
-        case .gluteRight: return (0.70, 0.51)
-        case .thighLeft: return (0.38, 0.70)
-        case .thighRight: return (0.62, 0.70)
+        case .belly: return (0.50, 0.38)         // Center of belly
+        case .loveHandleLeft: return (0.22, 0.38)
+        case .loveHandleRight: return (0.78, 0.38)
+        case .gluteLeft: return (0.35, 0.52)
+        case .gluteRight: return (0.65, 0.52)
+        case .thighLeft: return (0.38, 0.72)
+        case .thighRight: return (0.62, 0.72)
         }
     }
 
@@ -277,7 +279,7 @@ struct RegionButton: View {
     let isLastUsed: Bool
     let onTap: () -> Void
 
-    private let buttonSize: CGFloat = 40
+    private let buttonSize: CGFloat = 54  // Larger for bigger body
 
     private var backgroundColor: Color {
         if isSelected { return .accentPrimary }
@@ -323,7 +325,7 @@ struct RegionButton: View {
 
                 // Label
                 Text(region.shortLabel)
-                    .font(.system(size: 10, weight: .semibold))
+                    .font(.system(size: 12, weight: .semibold))
                     .foregroundColor(.white)
                     .shadow(color: .black, radius: 2)
             }
@@ -342,7 +344,7 @@ struct PEDSiteButton: View {
     let isLastUsed: Bool
     let onTap: () -> Void
 
-    private let buttonSize: CGFloat = 36
+    private let buttonSize: CGFloat = 50  // Larger for bigger body
 
     private var backgroundColor: Color {
         if isSelected { return .accentPrimary }
@@ -388,7 +390,7 @@ struct PEDSiteButton: View {
 
                 // Label
                 Text(site.shortName)
-                    .font(.system(size: 9, weight: .semibold))
+                    .font(.system(size: 11, weight: .semibold))
                     .foregroundColor(.white)
                     .shadow(color: .black, radius: 2)
             }
@@ -426,32 +428,68 @@ struct SubOptionSheet: View {
             .padding(.horizontal)
             .padding(.top, 8)
 
-            // Options
-            HStack(spacing: 16) {
-                ForEach(region.subOptions, id: \.0) { site, label in
-                    SubOptionButton(
-                        label: label,
-                        isSelected: selectedSite == site.rawValue,
-                        isRecommended: recommendedSite == site.rawValue,
-                        isLastUsed: lastUsedSite == site.rawValue
-                    ) {
-                        withAnimation(.easeOut(duration: 0.15)) {
-                            selectedSite = site.rawValue
+            // Options - Grid for belly (4 zones), Row for others (2 zones)
+            if region == .belly {
+                // 2x2 Grid for belly zones
+                VStack(spacing: 12) {
+                    HStack(spacing: 12) {
+                        ForEach(region.subOptions.prefix(2), id: \.0) { site, label in
+                            SubOptionButton(
+                                label: label,
+                                isSelected: selectedSite == site.rawValue,
+                                isRecommended: recommendedSite == site.rawValue,
+                                isLastUsed: lastUsedSite == site.rawValue
+                            ) {
+                                selectSite(site)
+                            }
                         }
-                        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-
-                        // Dismiss after short delay
-                        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                            isPresented = false
+                    }
+                    HStack(spacing: 12) {
+                        ForEach(region.subOptions.suffix(2), id: \.0) { site, label in
+                            SubOptionButton(
+                                label: label,
+                                isSelected: selectedSite == site.rawValue,
+                                isRecommended: recommendedSite == site.rawValue,
+                                isLastUsed: lastUsedSite == site.rawValue
+                            ) {
+                                selectSite(site)
+                            }
                         }
                     }
                 }
+                .padding(.horizontal)
+            } else {
+                // Row for 2-zone regions
+                HStack(spacing: 16) {
+                    ForEach(region.subOptions, id: \.0) { site, label in
+                        SubOptionButton(
+                            label: label,
+                            isSelected: selectedSite == site.rawValue,
+                            isRecommended: recommendedSite == site.rawValue,
+                            isLastUsed: lastUsedSite == site.rawValue
+                        ) {
+                            selectSite(site)
+                        }
+                    }
+                }
+                .padding(.horizontal)
             }
-            .padding(.horizontal)
 
             Spacer()
         }
         .background(Color.backgroundPrimary)
+    }
+
+    private func selectSite(_ site: PeptideInjectionSite) {
+        withAnimation(.easeOut(duration: 0.15)) {
+            selectedSite = site.rawValue
+        }
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+        // Dismiss after short delay
+        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+            isPresented = false
+        }
     }
 }
 
