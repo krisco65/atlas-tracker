@@ -390,4 +390,284 @@ final class InjectionSiteRecommendationService {
 
         return (true, "Good rotation pattern!")
     }
+
+    // MARK: - Rotation Quality Score
+
+    struct RotationQualityResult {
+        let score: Int  // 0-100
+        let rating: Rating
+        let factors: [QualityFactor]
+
+        enum Rating: String {
+            case excellent = "Excellent"
+            case good = "Good"
+            case fair = "Fair"
+            case poor = "Poor"
+            case insufficient = "Insufficient Data"
+
+            var color: String {
+                switch self {
+                case .excellent: return "statusSuccess"
+                case .good: return "accentSecondary"
+                case .fair: return "statusWarning"
+                case .poor: return "statusError"
+                case .insufficient: return "textTertiary"
+                }
+            }
+        }
+
+        struct QualityFactor {
+            let name: String
+            let score: Int  // 0-100 for this factor
+            let weight: Double
+            let feedback: String
+        }
+    }
+
+    /// Calculates a rotation quality score from 0-100 based on injection site rotation patterns.
+    /// Evaluates: site diversity, side alternation, body part distribution, and recovery time.
+    func calculateRotationQualityScore(for category: CompoundCategory) -> RotationQualityResult {
+        let historyLogs = CoreDataManager.shared.fetchInjectionHistory(
+            for: category,
+            limit: AppConstants.InjectionRotation.historyLookback
+        )
+
+        guard historyLogs.count >= 3 else {
+            return RotationQualityResult(
+                score: 0,
+                rating: .insufficient,
+                factors: []
+            )
+        }
+
+        var factors: [RotationQualityResult.QualityFactor] = []
+
+        // Factor 1: Site Diversity (30% weight)
+        let diversityResult = calculateDiversityScore(historyLogs, category: category)
+        factors.append(diversityResult)
+
+        // Factor 2: Side Alternation (25% weight)
+        let alternationResult = calculateAlternationScore(historyLogs, category: category)
+        factors.append(alternationResult)
+
+        // Factor 3: Body Part Distribution (25% weight)
+        let distributionResult = calculateDistributionScore(historyLogs, category: category)
+        factors.append(distributionResult)
+
+        // Factor 4: Recovery Time (20% weight)
+        let recoveryResult = calculateRecoveryScore(historyLogs, category: category)
+        factors.append(recoveryResult)
+
+        // Calculate weighted total score
+        let totalScore = factors.reduce(0.0) { $0 + Double($1.score) * $1.weight }
+        let finalScore = Int(min(100, max(0, totalScore)))
+
+        let rating: RotationQualityResult.Rating
+        switch finalScore {
+        case 85...100: rating = .excellent
+        case 70..<85: rating = .good
+        case 50..<70: rating = .fair
+        default: rating = .poor
+        }
+
+        return RotationQualityResult(score: finalScore, rating: rating, factors: factors)
+    }
+
+    // MARK: - Quality Factor Calculations
+
+    private func calculateDiversityScore(
+        _ logs: [DoseLog],
+        category: CompoundCategory
+    ) -> RotationQualityResult.QualityFactor {
+        let sites = logs.compactMap { $0.injectionSiteRaw }
+        let uniqueSites = Set(sites)
+        let totalPossibleSites = category == .ped ? PEDInjectionSite.allCases.count : PeptideInjectionSite.allCases.count
+
+        // Score based on percentage of available sites used
+        let usageRatio = Double(uniqueSites.count) / Double(totalPossibleSites)
+        let score = Int(min(100, usageRatio * 150))  // Using 150% allows partial use to still score well
+
+        let feedback: String
+        if score >= 80 {
+            feedback = "Using a wide variety of injection sites"
+        } else if score >= 50 {
+            feedback = "Good variety, consider exploring more sites"
+        } else {
+            feedback = "Try using more different injection sites"
+        }
+
+        return RotationQualityResult.QualityFactor(
+            name: "Site Diversity",
+            score: score,
+            weight: 0.30,
+            feedback: feedback
+        )
+    }
+
+    private func calculateAlternationScore(
+        _ logs: [DoseLog],
+        category: CompoundCategory
+    ) -> RotationQualityResult.QualityFactor {
+        guard logs.count >= 2 else {
+            return RotationQualityResult.QualityFactor(
+                name: "Side Alternation",
+                score: 100,
+                weight: 0.25,
+                feedback: "Not enough data"
+            )
+        }
+
+        var alternations = 0
+        var total = 0
+
+        for i in 1..<logs.count {
+            guard let currentRaw = logs[i].injectionSiteRaw,
+                  let previousRaw = logs[i-1].injectionSiteRaw else { continue }
+
+            let currentIsLeft: Bool
+            let previousIsLeft: Bool
+
+            if category == .ped {
+                currentIsLeft = PEDInjectionSite(rawValue: currentRaw)?.isLeftSide ?? false
+                previousIsLeft = PEDInjectionSite(rawValue: previousRaw)?.isLeftSide ?? false
+            } else {
+                currentIsLeft = PeptideInjectionSite(rawValue: currentRaw)?.isLeftSide ?? false
+                previousIsLeft = PeptideInjectionSite(rawValue: previousRaw)?.isLeftSide ?? false
+            }
+
+            total += 1
+            if currentIsLeft != previousIsLeft {
+                alternations += 1
+            }
+        }
+
+        let score = total > 0 ? Int((Double(alternations) / Double(total)) * 100) : 100
+
+        let feedback: String
+        if score >= 80 {
+            feedback = "Excellent left/right alternation"
+        } else if score >= 50 {
+            feedback = "Consider alternating sides more consistently"
+        } else {
+            feedback = "Alternate between left and right sides"
+        }
+
+        return RotationQualityResult.QualityFactor(
+            name: "Side Alternation",
+            score: score,
+            weight: 0.25,
+            feedback: feedback
+        )
+    }
+
+    private func calculateDistributionScore(
+        _ logs: [DoseLog],
+        category: CompoundCategory
+    ) -> RotationQualityResult.QualityFactor {
+        var bodyPartCounts: [String: Int] = [:]
+
+        for log in logs {
+            guard let rawValue = log.injectionSiteRaw else { continue }
+
+            let bodyPart: String?
+            if category == .ped {
+                bodyPart = PEDInjectionSite(rawValue: rawValue)?.bodyPart
+            } else {
+                bodyPart = PeptideInjectionSite(rawValue: rawValue)?.bodyPart
+            }
+
+            if let part = bodyPart {
+                bodyPartCounts[part, default: 0] += 1
+            }
+        }
+
+        guard !bodyPartCounts.isEmpty else {
+            return RotationQualityResult.QualityFactor(
+                name: "Body Part Distribution",
+                score: 0,
+                weight: 0.25,
+                feedback: "No injection data available"
+            )
+        }
+
+        // Calculate standard deviation to measure balance
+        let values = Array(bodyPartCounts.values)
+        let mean = Double(values.reduce(0, +)) / Double(values.count)
+        let variance = values.map { pow(Double($0) - mean, 2) }.reduce(0, +) / Double(values.count)
+        let stdDev = sqrt(variance)
+
+        // Lower stdDev = more balanced = higher score
+        // Normalize: if stdDev is 0, score is 100; increases reduce score
+        let normalizedStdDev = stdDev / mean  // Coefficient of variation
+        let score = Int(max(0, 100 - normalizedStdDev * 100))
+
+        let feedback: String
+        if score >= 80 {
+            feedback = "Well-balanced across body parts"
+        } else if score >= 50 {
+            feedback = "Some body parts used more than others"
+        } else {
+            feedback = "Distribute injections more evenly"
+        }
+
+        return RotationQualityResult.QualityFactor(
+            name: "Body Part Balance",
+            score: score,
+            weight: 0.25,
+            feedback: feedback
+        )
+    }
+
+    private func calculateRecoveryScore(
+        _ logs: [DoseLog],
+        category: CompoundCategory
+    ) -> RotationQualityResult.QualityFactor {
+        // Track minimum days between same-site injections
+        var siteLastUsed: [String: Date] = [:]
+        var minRecoveryDays: [Int] = []
+
+        // Process logs oldest to newest
+        let sortedLogs = logs.sorted { ($0.timestamp ?? .distantPast) < ($1.timestamp ?? .distantPast) }
+
+        for log in sortedLogs {
+            guard let site = log.injectionSiteRaw,
+                  let timestamp = log.timestamp else { continue }
+
+            if let lastUsed = siteLastUsed[site] {
+                let daysBetween = Calendar.current.dateComponents([.day], from: lastUsed, to: timestamp).day ?? 0
+                minRecoveryDays.append(daysBetween)
+            }
+            siteLastUsed[site] = timestamp
+        }
+
+        guard !minRecoveryDays.isEmpty else {
+            return RotationQualityResult.QualityFactor(
+                name: "Recovery Time",
+                score: 100,
+                weight: 0.20,
+                feedback: "No repeat sites yet"
+            )
+        }
+
+        // Ideal minimum recovery: 7 days for same site
+        let idealRecoveryDays = 7
+        let avgRecovery = minRecoveryDays.reduce(0, +) / minRecoveryDays.count
+        let score = Int(min(100, (Double(avgRecovery) / Double(idealRecoveryDays)) * 100))
+
+        let feedback: String
+        if score >= 80 {
+            feedback = "Good recovery time between same-site uses"
+        } else if score >= 50 {
+            feedback = "Allow more time before reusing sites"
+        } else {
+            feedback = "Wait longer before reusing injection sites"
+        }
+
+        return RotationQualityResult.QualityFactor(
+            name: "Recovery Time",
+            score: score,
+            weight: 0.20,
+            feedback: feedback
+        )
+    }
 }
