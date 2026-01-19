@@ -66,6 +66,15 @@ struct AppConstants {
 
         /// Weight decay rate for time-weighted scoring (higher = faster decay)
         static let timeDecayFactor: Double = 1.0
+
+        /// Minimum hours between same-site PED (IM) injections
+        static let pedMinimumIntervalHours = 48
+
+        /// Minimum hours between same-site peptide (SubQ) injections
+        static let peptideMinimumIntervalHours = 24
+
+        /// Ideal recovery days between same-site injections
+        static let idealRecoveryDays = 7
     }
 
     // MARK: - Seed Data

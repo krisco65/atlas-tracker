@@ -346,6 +346,123 @@ final class InjectionSiteRecommendationService {
         return site1.isLeftSide == site2.isLeftSide
     }
 
+    // MARK: - Minimum Interval Enforcement
+
+    struct IntervalCheckResult {
+        let isAllowed: Bool
+        let site: String
+        let hoursRemaining: Int?
+        let warning: String?
+
+        var formattedTimeRemaining: String? {
+            guard let hours = hoursRemaining else { return nil }
+            if hours < 1 {
+                return "less than 1 hour"
+            } else if hours == 1 {
+                return "1 hour"
+            } else if hours < 24 {
+                return "\(hours) hours"
+            } else {
+                let days = hours / 24
+                let remainingHours = hours % 24
+                if remainingHours == 0 {
+                    return days == 1 ? "1 day" : "\(days) days"
+                } else {
+                    return days == 1 ? "1 day, \(remainingHours)h" : "\(days) days, \(remainingHours)h"
+                }
+            }
+        }
+    }
+
+    /// Checks if enough time has passed since the last injection at the specified site.
+    /// Enforces minimum intervals: 48h for PED (IM), 24h for peptide (SubQ).
+    func checkMinimumInterval(for site: String, category: CompoundCategory) -> IntervalCheckResult {
+        let minimumHours: Int
+        switch category {
+        case .ped:
+            minimumHours = AppConstants.InjectionRotation.pedMinimumIntervalHours
+        case .peptide:
+            minimumHours = AppConstants.InjectionRotation.peptideMinimumIntervalHours
+        default:
+            return IntervalCheckResult(isAllowed: true, site: site, hoursRemaining: nil, warning: nil)
+        }
+
+        // Find last injection at this site
+        let history = CoreDataManager.shared.fetchInjectionHistory(for: category, limit: 50)
+        let matchingLogs = history.filter { $0.injectionSiteRaw == site }
+
+        guard let lastInjection = matchingLogs.first,
+              let timestamp = lastInjection.timestamp else {
+            return IntervalCheckResult(isAllowed: true, site: site, hoursRemaining: nil, warning: nil)
+        }
+
+        let hoursSinceLastInjection = Int(Date().timeIntervalSince(timestamp) / 3600)
+
+        if hoursSinceLastInjection >= minimumHours {
+            return IntervalCheckResult(isAllowed: true, site: site, hoursRemaining: nil, warning: nil)
+        }
+
+        let hoursRemaining = minimumHours - hoursSinceLastInjection
+        let siteDisplayName = displayName(for: site, category: category)
+
+        return IntervalCheckResult(
+            isAllowed: false,
+            site: siteDisplayName,
+            hoursRemaining: hoursRemaining,
+            warning: "\(siteDisplayName) was used recently. Wait \(hoursRemaining)h for tissue recovery."
+        )
+    }
+
+    /// Checks minimum interval and returns sites that are currently available.
+    func availableSites(for category: CompoundCategory) -> [String] {
+        let allSites: [String]
+
+        switch category {
+        case .ped:
+            allSites = PEDInjectionSite.allCases.map { $0.rawValue }
+        case .peptide:
+            allSites = PeptideInjectionSite.allCases.map { $0.rawValue }
+        default:
+            return []
+        }
+
+        return allSites.filter { site in
+            checkMinimumInterval(for: site, category: category).isAllowed
+        }
+    }
+
+    /// Returns sites that are blocked due to minimum interval, with remaining wait time.
+    func blockedSites(for category: CompoundCategory) -> [(site: String, hoursRemaining: Int)] {
+        let allSites: [String]
+
+        switch category {
+        case .ped:
+            allSites = PEDInjectionSite.allCases.map { $0.rawValue }
+        case .peptide:
+            allSites = PeptideInjectionSite.allCases.map { $0.rawValue }
+        default:
+            return []
+        }
+
+        return allSites.compactMap { site -> (site: String, hoursRemaining: Int)? in
+            let result = checkMinimumInterval(for: site, category: category)
+            guard !result.isAllowed, let hours = result.hoursRemaining else { return nil }
+            return (site: displayName(for: site, category: category), hoursRemaining: hours)
+        }.sorted { $0.hoursRemaining < $1.hoursRemaining }
+    }
+
+    /// Returns display name for a raw site value
+    private func displayName(for rawValue: String, category: CompoundCategory) -> String {
+        switch category {
+        case .ped:
+            return PEDInjectionSite(rawValue: rawValue)?.displayName ?? rawValue
+        case .peptide:
+            return PeptideInjectionSite(rawValue: rawValue)?.displayName ?? rawValue
+        default:
+            return rawValue
+        }
+    }
+
     // MARK: - Rotation Pattern Validation
 
     func validateRotation(for compound: Compound) -> (isGood: Bool, message: String) {
