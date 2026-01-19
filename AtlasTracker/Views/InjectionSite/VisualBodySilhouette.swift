@@ -409,31 +409,40 @@ struct SubOptionSheet: View {
     let recommendedSite: String?
     @Binding var isPresented: Bool
 
+    // Convert to arrays to avoid ArraySlice issues with ForEach
+    private var topRow: [(PeptideInjectionSite, String)] {
+        Array(region.subOptions.prefix(2))
+    }
+
+    private var bottomRow: [(PeptideInjectionSite, String)] {
+        Array(region.subOptions.suffix(2))
+    }
+
     var body: some View {
         VStack(spacing: 16) {
             // Header
             HStack {
                 Text("Select \(region.displayName) Zone")
                     .font(.headline)
-                    .foregroundColor(.textPrimary)
+                    .foregroundColor(.white)
                 Spacer()
                 Button {
                     isPresented = false
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.title2)
-                        .foregroundColor(.textTertiary)
+                        .foregroundColor(.gray)
                 }
             }
-            .padding(.horizontal)
-            .padding(.top, 8)
+            .padding(.horizontal, 20)
+            .padding(.top, 16)
 
             // Options - Grid for belly (4 zones), Row for others (2 zones)
             if region == .belly {
                 // 2x2 Grid for belly zones
                 VStack(spacing: 12) {
                     HStack(spacing: 12) {
-                        ForEach(region.subOptions.prefix(2), id: \.0) { site, label in
+                        ForEach(topRow, id: \.0) { site, label in
                             SubOptionButton(
                                 label: label,
                                 isSelected: selectedSite == site.rawValue,
@@ -445,7 +454,7 @@ struct SubOptionSheet: View {
                         }
                     }
                     HStack(spacing: 12) {
-                        ForEach(region.subOptions.suffix(2), id: \.0) { site, label in
+                        ForEach(bottomRow, id: \.0) { site, label in
                             SubOptionButton(
                                 label: label,
                                 isSelected: selectedSite == site.rawValue,
@@ -457,7 +466,7 @@ struct SubOptionSheet: View {
                         }
                     }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 20)
             } else {
                 // Row for 2-zone regions
                 HStack(spacing: 16) {
@@ -472,12 +481,13 @@ struct SubOptionSheet: View {
                         }
                     }
                 }
-                .padding(.horizontal)
+                .padding(.horizontal, 20)
             }
 
             Spacer()
         }
-        .background(Color.backgroundPrimary)
+        .frame(maxWidth: .infinity, maxHeight: .infinity)
+        .background(Color(hex: "#1C1C1E"))
     }
 
     private func selectSite(_ site: PeptideInjectionSite) {
@@ -501,18 +511,24 @@ struct SubOptionButton: View {
     let isLastUsed: Bool
     let onTap: () -> Void
 
+    // Use explicit colors to ensure visibility
+    private let accentBlue = Color(hex: "#007AFF")
+    private let successGreen = Color(hex: "#30D158")
+    private let warningYellow = Color(hex: "#FFD60A")
+    private let darkGrey = Color(hex: "#2C2C2E")
+
     private var backgroundColor: Color {
-        if isSelected { return .accentPrimary }
-        if isRecommended { return .statusSuccess.opacity(0.2) }
-        if isLastUsed { return .statusWarning.opacity(0.2) }
-        return .backgroundSecondary
+        if isSelected { return accentBlue }
+        if isRecommended { return successGreen.opacity(0.2) }
+        if isLastUsed { return warningYellow.opacity(0.2) }
+        return darkGrey
     }
 
     private var borderColor: Color {
-        if isSelected { return .accentPrimary }
-        if isRecommended { return .statusSuccess }
-        if isLastUsed { return .statusWarning }
-        return .clear
+        if isSelected { return accentBlue }
+        if isRecommended { return successGreen }
+        if isLastUsed { return warningYellow }
+        return Color.gray.opacity(0.3)
     }
 
     var body: some View {
@@ -521,11 +537,11 @@ struct SubOptionButton: View {
                 if isRecommended && !isSelected {
                     Image(systemName: "star.fill")
                         .font(.caption)
-                        .foregroundColor(.statusSuccess)
+                        .foregroundColor(successGreen)
                 }
                 Text(label)
                     .font(.headline)
-                    .foregroundColor(isSelected ? .white : .textPrimary)
+                    .foregroundColor(.white)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
