@@ -90,4 +90,11 @@ enum Logger {
         os_log(.debug, log: coreDataLog, "SeedData: %{public}@", message)
         #endif
     }
+
+    /// General logging for misc operations
+    static func general(_ message: String) {
+        #if DEBUG
+        os_log(.debug, log: generalLog, "%{public}@", message)
+        #endif
+    }
 }
