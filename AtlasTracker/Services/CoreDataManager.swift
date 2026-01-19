@@ -369,8 +369,8 @@ final class CoreDataManager: ObservableObject {
             tracked.lastDoseDate = timestamp
         }
 
-        // Auto-decrement inventory if applicable
-        if let inventory = compound.inventoryArray.first {
+        // Auto-decrement inventory if applicable (1:1 relationship)
+        if let inventory = compound.inventory {
             inventory.decrementByDose(dosageAmount)
         }
 
@@ -444,8 +444,8 @@ final class CoreDataManager: ObservableObject {
         vialSizeMg: Double,
         lowStockThreshold: Int16 = AppConstants.Inventory.defaultLowStockThreshold
     ) -> Inventory {
-        // Check if inventory already exists
-        if let existing = compound.inventoryArray.first {
+        // Check if inventory already exists (1:1 relationship)
+        if let existing = compound.inventory {
             existing.vialCount = vialCount
             existing.vialSizeMg = vialSizeMg
             existing.lowStockThreshold = lowStockThreshold

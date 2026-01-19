@@ -66,10 +66,15 @@ public class Compound: NSManagedObject {
         return set.sorted { ($0.timestamp ?? Date()) > ($1.timestamp ?? Date()) }
     }
 
-    // MARK: - Inventory Array
+    // MARK: - Inventory (1:1 relationship)
+    // For backwards compatibility, returns array with single item or empty
     var inventoryArray: [Inventory] {
-        let set = inventory as? Set<Inventory> ?? []
-        return set.sorted { ($0.lastUpdated ?? Date()) > ($1.lastUpdated ?? Date()) }
+        guard let inv = inventory else { return [] }
+        return [inv]
+    }
+
+    var hasInventory: Bool {
+        inventory != nil
     }
 
     // MARK: - Last Dose Date

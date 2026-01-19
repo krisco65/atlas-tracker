@@ -292,7 +292,7 @@ struct CompoundDetailView: View {
                 Spacer()
             }
 
-            if let inventory = viewModel.compound.inventoryArray.first {
+            if let inventory = viewModel.compound.inventory {
                 // Show inventory info
                 VStack(spacing: 12) {
                     HStack {
@@ -555,7 +555,7 @@ struct AddInventorySheetForCompound: View {
     @State private var autoDecrementEnabled = true
 
     private var existingInventory: Inventory? {
-        compound.inventoryArray.first
+        compound.inventory
     }
 
     private var canSave: Bool {

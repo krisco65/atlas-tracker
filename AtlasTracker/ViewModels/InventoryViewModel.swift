@@ -59,12 +59,10 @@ final class InventoryViewModel {
         }
     }
 
-    /// Returns compounds that don't already have inventory
+    /// Returns compounds that don't already have inventory (1:1 relationship)
     var compoundsWithoutInventory: [Compound] {
-        let existingCompoundIds = Set(inventoryItems.compactMap { $0.compound?.id })
         return eligibleCompounds.filter { compound in
-            guard let id = compound.id else { return true }
-            return !existingCompoundIds.contains(id)
+            compound.inventory == nil
         }
     }
 

@@ -23,7 +23,7 @@ extension Compound {
     // Relationships
     @NSManaged public var trackedCompound: TrackedCompound?
     @NSManaged public var doseLogs: NSSet?
-    @NSManaged public var inventory: NSSet?
+    @NSManaged public var inventory: Inventory?  // 1:1 relationship (one inventory per compound)
 }
 
 // MARK: - Generated accessors for doseLogs
@@ -42,20 +42,7 @@ extension Compound {
     @NSManaged public func removeFromDoseLogs(_ values: NSSet)
 }
 
-// MARK: - Generated accessors for inventory
-extension Compound {
-
-    @objc(addInventoryObject:)
-    @NSManaged public func addToInventory(_ value: Inventory)
-
-    @objc(removeInventoryObject:)
-    @NSManaged public func removeFromInventory(_ value: Inventory)
-
-    @objc(addInventory:)
-    @NSManaged public func addToInventory(_ values: NSSet)
-
-    @objc(removeInventory:)
-    @NSManaged public func removeFromInventory(_ values: NSSet)
-}
+// MARK: - Inventory (1:1 relationship)
+// No accessors needed - use compound.inventory directly
 
 extension Compound: Identifiable { }

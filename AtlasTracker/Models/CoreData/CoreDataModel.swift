@@ -25,7 +25,7 @@ import CoreData
  Relationships:
  - trackedCompound: TrackedCompound (optional, to-one, inverse: compound)
  - doseLogs: DoseLog (to-many, inverse: compound)
- - inventory: Inventory (to-many, inverse: compound)
+ - inventory: Inventory (optional, to-one, inverse: compound)
  - weightEntries: WeightEntry (to-many, inverse: compound)
 
 
@@ -496,12 +496,12 @@ class CoreDataModelCreator {
         compoundToDoseLogs.inverseRelationship = doseLogToCompound
         doseLogToCompound.inverseRelationship = compoundToDoseLogs
 
-        // Compound <-> Inventory (1:many)
+        // Compound <-> Inventory (1:1 - one inventory per compound)
         let compoundToInventory = NSRelationshipDescription()
         compoundToInventory.name = "inventory"
         compoundToInventory.destinationEntity = inventory
         compoundToInventory.minCount = 0
-        compoundToInventory.maxCount = 0
+        compoundToInventory.maxCount = 1  // Changed from 0 (many) to 1 (one)
         compoundToInventory.deleteRule = .cascadeDeleteRule
 
         let inventoryToCompound = NSRelationshipDescription()
