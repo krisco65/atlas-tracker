@@ -26,5 +26,9 @@ Packages/
 # macOS
 .DS_Store
 
+# Windows
+nul
+Thumbs.db
+
 # Claude Code
 .claude/

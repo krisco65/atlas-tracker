@@ -1,0 +1,45 @@
+name: iOS Build
+
+on:
+  push:
+    branches: [ main ]
+  pull_request:
+    branches: [ main ]
+  workflow_dispatch:
+
+jobs:
+  build:
+    runs-on: macos-14
+
+    steps:
+    - name: Checkout code
+      uses: actions/checkout@v4
+
+    - name: Select Xcode version
+      run: sudo xcode-select -s /Applications/Xcode_15.2.app/Contents/Developer
+
+    - name: Show Xcode version
+      run: xcodebuild -version
+
+    - name: Build for iOS Simulator
+      run: |
+        xcodebuild clean build \
+          -project AtlasTracker.xcodeproj \
+          -scheme AtlasTracker \
+          -destination 'platform=iOS Simulator,name=iPhone 15,OS=17.2' \
+          -configuration Debug \
+          CODE_SIGN_IDENTITY="" \
+          CODE_SIGNING_REQUIRED=NO \
+          CODE_SIGNING_ALLOWED=NO \
+          | xcpretty --color
+      continue-on-error: false
+
+    - name: Build Summary
+      if: always()
+      run: |
+        echo "## Build Results" >> $GITHUB_STEP_SUMMARY
+        if [ "${{ job.status }}" == "success" ]; then
+          echo "Build succeeded!" >> $GITHUB_STEP_SUMMARY
+        else
+          echo "Build failed. Check the logs above for errors." >> $GITHUB_STEP_SUMMARY
+        fi
