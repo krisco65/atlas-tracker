@@ -1,35 +1,16 @@
 import SwiftUI
 
-// MARK: - Body Silhouette View (moved here to guarantee visibility)
-/// Professional body silhouette with gradient fill and subtle styling
+// MARK: - Body Silhouette View
+/// Professional body silhouette using image asset
 struct BodySilhouetteView: View {
     var fillColor: Color = Color(white: 0.25)
     var strokeColor: Color = Color(white: 0.4)
     var showGlow: Bool = true
 
     var body: some View {
-        ZStack {
-            if showGlow {
-                ProfessionalBodyShape()
-                    .fill(Color.accentPrimary.opacity(0.08))
-                    .blur(radius: 20)
-            }
-
-            ProfessionalBodyShape()
-                .fill(
-                    LinearGradient(
-                        colors: [
-                            fillColor.opacity(0.9),
-                            fillColor.opacity(0.7)
-                        ],
-                        startPoint: .top,
-                        endPoint: .bottom
-                    )
-                )
-
-            ProfessionalBodyShape()
-                .stroke(strokeColor, lineWidth: 1.5)
-        }
+        Image("Body")
+            .resizable()
+            .aspectRatio(contentMode: .fit)
     }
 }
 
