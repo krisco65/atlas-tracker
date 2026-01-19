@@ -173,7 +173,7 @@ struct InventoryView: View {
 
 struct InventoryItemCard: View {
     let inventory: Inventory
-    @ObservedObject var viewModel: InventoryViewModel
+    @Bindable var viewModel: InventoryViewModel
     let isLowStockHighlight: Bool
 
     @State private var showActions = false
@@ -382,7 +382,7 @@ struct InventoryItemCard: View {
 // MARK: - Add Inventory Sheet
 
 struct AddInventorySheet: View {
-    @ObservedObject var viewModel: InventoryViewModel
+    @Bindable var viewModel: InventoryViewModel
     @Environment(\.dismiss) private var dismiss
 
     var body: some View {

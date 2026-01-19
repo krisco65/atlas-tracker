@@ -539,7 +539,7 @@ struct AnalyticsView: View {
 
 // MARK: - Add Weight Sheet
 struct AddWeightSheet: View {
-    @ObservedObject var viewModel: AnalyticsViewModel
+    @Bindable var viewModel: AnalyticsViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var weightString = ""
