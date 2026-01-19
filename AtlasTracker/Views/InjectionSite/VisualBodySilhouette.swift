@@ -411,156 +411,142 @@ struct SubOptionSheet: View {
     let recommendedSite: String?
     @Binding var isPresented: Bool
 
-    // Convert to arrays to avoid ArraySlice issues with ForEach
-    private var topRow: [(PeptideInjectionSite, String)] {
-        Array(region.subOptions.prefix(2))
-    }
-
-    private var bottomRow: [(PeptideInjectionSite, String)] {
-        Array(region.subOptions.suffix(2))
-    }
-
     var body: some View {
         VStack(spacing: 16) {
-            // Header
+            // Header with close button
             HStack {
                 Text("Select \(region.displayName) Zone")
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .fontWeight(.semibold)
+                    .foregroundStyle(.white)
                 Spacer()
                 Button {
                     isPresented = false
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.title2)
-                        .foregroundColor(.gray)
+                        .foregroundStyle(.gray)
                 }
                 .accessibilityIdentifier("sub_option_sheet_close")
             }
             .padding(.horizontal, 20)
-            .padding(.top, 16)
+            .padding(.top, 20)
 
-            // Options - Grid for belly (4 zones), Row for others (2 zones)
+            // Explicit buttons - NO ForEach, just direct buttons
             if region == .belly {
-                // 2x2 Grid for belly zones
-                VStack(spacing: 12) {
-                    HStack(spacing: 12) {
-                        ForEach(topRow, id: \.0) { site, label in
-                            SubOptionButton(
-                                label: label,
-                                isSelected: selectedSite == site.rawValue,
-                                isRecommended: recommendedSite == site.rawValue,
-                                isLastUsed: lastUsedSite == site.rawValue
-                            ) {
-                                selectSite(site)
-                            }
-                        }
-                    }
-                    HStack(spacing: 12) {
-                        ForEach(bottomRow, id: \.0) { site, label in
-                            SubOptionButton(
-                                label: label,
-                                isSelected: selectedSite == site.rawValue,
-                                isRecommended: recommendedSite == site.rawValue,
-                                isLastUsed: lastUsedSite == site.rawValue
-                            ) {
-                                selectSite(site)
-                            }
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
+                bellyZoneButtons
             } else {
-                // Row for 2-zone regions
-                HStack(spacing: 16) {
-                    ForEach(region.subOptions, id: \.0) { site, label in
-                        SubOptionButton(
-                            label: label,
-                            isSelected: selectedSite == site.rawValue,
-                            isRecommended: recommendedSite == site.rawValue,
-                            isLastUsed: lastUsedSite == site.rawValue
-                        ) {
-                            selectSite(site)
-                        }
-                    }
-                }
-                .padding(.horizontal, 20)
+                twoZoneButtons
             }
 
             Spacer()
         }
-        .frame(maxWidth: .infinity, maxHeight: .infinity)
-        .background(Color(hex: "#1C1C1E"))
+        .presentationBackground(Color(white: 0.11))
     }
 
-    private func selectSite(_ site: PeptideInjectionSite) {
-        withAnimation(.easeOut(duration: 0.15)) {
+    // MARK: - Belly: 4-zone grid (explicit, no ForEach)
+    @ViewBuilder
+    private var bellyZoneButtons: some View {
+        VStack(spacing: 12) {
+            // Top row: Upper Left, Upper Right
+            HStack(spacing: 12) {
+                zoneButton(
+                    site: .leftBellyUpper,
+                    label: "Upper Left"
+                )
+                zoneButton(
+                    site: .rightBellyUpper,
+                    label: "Upper Right"
+                )
+            }
+            // Bottom row: Lower Left, Lower Right
+            HStack(spacing: 12) {
+                zoneButton(
+                    site: .leftBellyLower,
+                    label: "Lower Left"
+                )
+                zoneButton(
+                    site: .rightBellyLower,
+                    label: "Lower Right"
+                )
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+
+    // MARK: - Other regions: 2-zone row
+    @ViewBuilder
+    private var twoZoneButtons: some View {
+        HStack(spacing: 12) {
+            if let options = twoZoneOptions {
+                zoneButton(site: options.0.site, label: options.0.label)
+                zoneButton(site: options.1.site, label: options.1.label)
+            }
+        }
+        .padding(.horizontal, 20)
+    }
+
+    private var twoZoneOptions: ((site: PeptideInjectionSite, label: String), (site: PeptideInjectionSite, label: String))? {
+        switch region {
+        case .loveHandleLeft:
+            return ((.leftLoveHandleUpper, "Upper"), (.leftLoveHandleLower, "Lower"))
+        case .loveHandleRight:
+            return ((.rightLoveHandleUpper, "Upper"), (.rightLoveHandleLower, "Lower"))
+        case .gluteLeft:
+            return ((.gluteLeftUpper, "Upper"), (.gluteLeftLower, "Lower"))
+        case .gluteRight:
+            return ((.gluteRightUpper, "Upper"), (.gluteRightLower, "Lower"))
+        default:
+            return nil
+        }
+    }
+
+    // MARK: - Zone Button (explicit implementation)
+    @ViewBuilder
+    private func zoneButton(site: PeptideInjectionSite, label: String) -> some View {
+        let isSelected = selectedSite == site.rawValue
+        let isRecommended = recommendedSite == site.rawValue
+        let isLastUsed = lastUsedSite == site.rawValue
+
+        Button {
             selectedSite = site.rawValue
-        }
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-
-        // Dismiss after short delay
-        DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-            isPresented = false
-        }
-    }
-}
-
-// MARK: - Sub-Option Button
-struct SubOptionButton: View {
-    let label: String
-    let isSelected: Bool
-    let isRecommended: Bool
-    let isLastUsed: Bool
-    let onTap: () -> Void
-
-    // Use explicit colors to ensure visibility
-    private let accentBlue = Color(hex: "#007AFF")
-    private let successGreen = Color(hex: "#30D158")
-    private let warningYellow = Color(hex: "#FFD60A")
-    private let darkGrey = Color(hex: "#2C2C2E")
-
-    private var backgroundColor: Color {
-        if isSelected { return accentBlue }
-        if isRecommended { return successGreen.opacity(0.2) }
-        if isLastUsed { return warningYellow.opacity(0.2) }
-        return darkGrey
-    }
-
-    private var borderColor: Color {
-        if isSelected { return accentBlue }
-        if isRecommended { return successGreen }
-        if isLastUsed { return warningYellow }
-        return Color.gray.opacity(0.3)
-    }
-
-    private var accessibilityId: String {
-        "sub_option_\(label.lowercased().replacingOccurrences(of: " ", with: "_"))"
-    }
-
-    var body: some View {
-        Button(action: onTap) {
+            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
+                isPresented = false
+            }
+        } label: {
             HStack(spacing: 6) {
                 if isRecommended && !isSelected {
                     Image(systemName: "star.fill")
                         .font(.caption)
-                        .foregroundColor(successGreen)
+                        .foregroundStyle(.green)
                 }
                 Text(label)
                     .font(.headline)
-                    .foregroundColor(.white)
+                    .foregroundStyle(.white)
             }
             .frame(maxWidth: .infinity)
             .padding(.vertical, 16)
-            .background(backgroundColor)
-            .cornerRadius(12)
+            .background(
+                isSelected ? Color.blue :
+                isRecommended ? Color.green.opacity(0.2) :
+                isLastUsed ? Color.yellow.opacity(0.2) :
+                Color(white: 0.18)
+            )
+            .clipShape(RoundedRectangle(cornerRadius: 12))
             .overlay(
                 RoundedRectangle(cornerRadius: 12)
-                    .stroke(borderColor, lineWidth: 2)
+                    .stroke(
+                        isSelected ? Color.blue :
+                        isRecommended ? Color.green :
+                        isLastUsed ? Color.yellow :
+                        Color.gray.opacity(0.3),
+                        lineWidth: 2
+                    )
             )
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier(accessibilityId)
+        .accessibilityIdentifier("sub_option_\(label.lowercased().replacingOccurrences(of: " ", with: "_"))")
     }
 }
 
