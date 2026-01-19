@@ -1,7 +1,7 @@
 import SwiftUI
 
 struct AddCustomCompoundView: View {
-    @ObservedObject var viewModel: LibraryViewModel
+    @Bindable var viewModel: LibraryViewModel
     @Environment(\.dismiss) private var dismiss
 
     @State private var name = ""
