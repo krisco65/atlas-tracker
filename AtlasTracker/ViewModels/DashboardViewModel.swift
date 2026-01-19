@@ -137,6 +137,36 @@ final class DashboardViewModel {
         return InjectionSiteRecommendationService.shared.recommendNextSite(for: compound)
     }
 
+    // MARK: - Skip Dose
+    func skipDose(for tracked: TrackedCompound) {
+        guard let compound = tracked.compound else { return }
+
+        // Log a "skipped" dose with 0 amount and a note
+        let _ = coreDataManager.logDose(
+            compound: compound,
+            dosageAmount: 0,
+            dosageUnit: tracked.dosageUnit,
+            timestamp: Date(),
+            injectionSite: nil,
+            notes: "Dose skipped"
+        )
+
+        // Update last dose date so the next dose shows correctly
+        tracked.lastDoseDate = Date()
+        coreDataManager.saveContext()
+
+        // Reschedule notification for next dose
+        if tracked.notificationEnabled {
+            NotificationService.shared.scheduleDoseReminder(for: tracked)
+        }
+
+        // Reload data
+        loadData()
+
+        // Haptic feedback
+        HapticManager.warning()
+    }
+
     // MARK: - Quick Stats
     var weeklyDoseCount: Int {
         let startDate = Date().startOfWeek

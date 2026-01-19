@@ -6,6 +6,8 @@ struct DashboardView: View {
     @State private var showActiveCompounds = false
     @State private var showInventory = false
     @State private var showReconstitutionCalculator = false
+    @State private var showSkipConfirmation = false
+    @State private var trackedToSkip: TrackedCompound?
 
     var body: some View {
         NavigationStack {
@@ -75,6 +77,23 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $showReconstitutionCalculator) {
                 ReconstitutionCalculatorView()
+            }
+            .alert("Skip Dose?", isPresented: $showSkipConfirmation) {
+                Button("Cancel", role: .cancel) {
+                    trackedToSkip = nil
+                }
+                Button("Skip", role: .destructive) {
+                    if let tracked = trackedToSkip {
+                        viewModel.skipDose(for: tracked)
+                    }
+                    trackedToSkip = nil
+                }
+            } message: {
+                if let tracked = trackedToSkip {
+                    Text("Skip today's \(tracked.compound?.name ?? "dose")? This will be recorded in your history.")
+                } else {
+                    Text("Skip this dose? This will be recorded in your history.")
+                }
             }
         }
     }
@@ -177,10 +196,15 @@ struct DashboardView: View {
                     TodayDoseCard(
                         tracked: tracked,
                         isCompleted: viewModel.isDoseCompletedToday(tracked),
-                        recommendedSite: viewModel.recommendedSite(for: tracked)
-                    ) {
-                        selectedTracked = tracked
-                    }
+                        recommendedSite: viewModel.recommendedSite(for: tracked),
+                        onLogTap: {
+                            selectedTracked = tracked
+                        },
+                        onSkipTap: {
+                            showSkipConfirmation = true
+                            trackedToSkip = tracked
+                        }
+                    )
                 }
             }
         }

@@ -14,6 +14,7 @@ struct AppConstants {
         static let preferredWeightUnit = "preferredWeightUnit"
         static let biometricEnabled = "biometricEnabled"
         static let notificationsEnabled = "notificationsEnabled"
+        static let discreetNotifications = "discreetNotifications"
         static let lastSeedDataVersion = "lastSeedDataVersion"
     }
 

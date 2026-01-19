@@ -81,6 +81,11 @@ final class NotificationService: ObservableObject {
         notificationCenter.setNotificationCategories([doseCategory, lowInventoryCategory])
     }
 
+    // MARK: - Discreet Mode Check
+    private var isDiscreetMode: Bool {
+        UserDefaults.standard.bool(forKey: AppConstants.UserDefaultsKeys.discreetNotifications)
+    }
+
     // MARK: - Schedule Dose Reminder
 
     func scheduleDoseReminder(for trackedCompound: TrackedCompound) {
@@ -98,10 +103,17 @@ final class NotificationService: ObservableObject {
             return
         }
 
-        // Create notification content
+        // Create notification content based on discreet mode
         let content = UNMutableNotificationContent()
-        content.title = "Time for \(compoundName)"
-        content.body = buildNotificationBody(for: trackedCompound)
+
+        if isDiscreetMode {
+            content.title = "Dose Reminder"
+            content.body = "Time for your scheduled dose"
+        } else {
+            content.title = "Time for \(compoundName)"
+            content.body = buildNotificationBody(for: trackedCompound)
+        }
+
         content.sound = .default
         content.categoryIdentifier = AppConstants.NotificationIdentifiers.doseReminder
 
@@ -133,6 +145,11 @@ final class NotificationService: ObservableObject {
     }
 
     private func buildNotificationBody(for trackedCompound: TrackedCompound) -> String {
+        // If discreet mode, return generic body
+        if isDiscreetMode {
+            return "Time for your scheduled dose"
+        }
+
         var body = trackedCompound.dosageString
 
         // Add recommended injection site if applicable
@@ -181,8 +198,15 @@ final class NotificationService: ObservableObject {
         }
 
         let content = UNMutableNotificationContent()
-        content.title = "Time for \(compoundName)"
-        content.body = buildNotificationBody(for: trackedCompound)
+
+        if isDiscreetMode {
+            content.title = "Dose Reminder"
+            content.body = "Time for your scheduled dose"
+        } else {
+            content.title = "Time for \(compoundName)"
+            content.body = buildNotificationBody(for: trackedCompound)
+        }
+
         content.sound = .default
         content.categoryIdentifier = AppConstants.NotificationIdentifiers.doseReminder
         content.userInfo = [
@@ -210,8 +234,15 @@ final class NotificationService: ObservableObject {
         let snoozeDate = Date().addingTimeInterval(TimeInterval(AppConstants.snoozeDurationMinutes * 60))
 
         let content = UNMutableNotificationContent()
-        content.title = "Reminder: \(compound.name ?? "Dose")"
-        content.body = trackedCompound.dosageString
+
+        if isDiscreetMode {
+            content.title = "Dose Reminder"
+            content.body = "Time for your scheduled dose"
+        } else {
+            content.title = "Reminder: \(compound.name ?? "Dose")"
+            content.body = trackedCompound.dosageString
+        }
+
         content.sound = .default
         content.categoryIdentifier = AppConstants.NotificationIdentifiers.doseReminder
 

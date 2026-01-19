@@ -67,7 +67,9 @@ public class Inventory: NSManagedObject {
                      vialSizeMg: Double,
                      lowStockThreshold: Int16 = AppConstants.Inventory.defaultLowStockThreshold) {
 
-        let entity = NSEntityDescription.entity(forEntityName: "Inventory", in: context)!
+        guard let entity = NSEntityDescription.entity(forEntityName: "Inventory", in: context) else {
+            fatalError("Inventory entity not found in Core Data model")
+        }
         self.init(entity: entity, insertInto: context)
 
         self.id = UUID()

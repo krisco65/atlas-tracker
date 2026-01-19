@@ -349,6 +349,7 @@ final class CoreDataManager: ObservableObject {
         dosageUnit: DosageUnit,
         timestamp: Date = Date(),
         injectionSite: String? = nil,
+        sideEffects: [SideEffect]? = nil,
         notes: String? = nil
     ) -> DoseLog {
         let log = DoseLog(
@@ -358,6 +359,7 @@ final class CoreDataManager: ObservableObject {
             dosageUnit: dosageUnit,
             timestamp: timestamp,
             injectionSite: injectionSite,
+            sideEffects: sideEffects,
             notes: notes
         )
 

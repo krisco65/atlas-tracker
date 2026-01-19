@@ -58,6 +58,7 @@ import CoreData
  - dosageUnitRaw: String
  - timestamp: Date
  - injectionSiteRaw: String (optional)
+ - sideEffectsRaw: Transformable ([String]) (optional)
  - notes: String (optional)
 
  Relationships:
@@ -355,6 +356,13 @@ class CoreDataModelCreator {
         injectionSiteRaw.attributeType = .stringAttributeType
         injectionSiteRaw.isOptional = true
         properties.append(injectionSiteRaw)
+
+        let sideEffectsRaw = NSAttributeDescription()
+        sideEffectsRaw.name = "sideEffectsRaw"
+        sideEffectsRaw.attributeType = .transformableAttributeType
+        sideEffectsRaw.valueTransformerName = "NSSecureUnarchiveFromDataTransformer"
+        sideEffectsRaw.isOptional = true
+        properties.append(sideEffectsRaw)
 
         let notes = NSAttributeDescription()
         notes.name = "notes"

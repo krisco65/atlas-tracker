@@ -106,13 +106,18 @@ public class TrackedCompound: NSManagedObject {
         let calendar = Calendar.current
         let timeComponents = calendar.dateComponents([.hour, .minute], from: notificationTime)
 
-        var nextDate = calendar.date(bySettingHour: timeComponents.hour ?? 8,
-                                     minute: timeComponents.minute ?? 0,
-                                     second: 0,
-                                     of: date)!
+        guard var nextDate = calendar.date(bySettingHour: timeComponents.hour ?? 8,
+                                           minute: timeComponents.minute ?? 0,
+                                           second: 0,
+                                           of: date) else {
+            return date.startOfDay
+        }
 
         if nextDate <= date {
-            nextDate = calendar.date(byAdding: .day, value: 1, to: nextDate)!
+            guard let tomorrow = calendar.date(byAdding: .day, value: 1, to: nextDate) else {
+                return date.startOfDay
+            }
+            nextDate = tomorrow
         }
 
         return nextDate
@@ -146,19 +151,25 @@ public class TrackedCompound: NSManagedObject {
             }
         }
 
-        var nextDate = calendar.date(byAdding: .day, value: daysUntilNext, to: date.startOfDay)!
+        guard var nextDate = calendar.date(byAdding: .day, value: daysUntilNext, to: date.startOfDay) else {
+            return date.startOfDay
+        }
 
         // Apply notification time
         if let notificationTime = notificationTime {
             let timeComponents = calendar.dateComponents([.hour, .minute], from: notificationTime)
-            nextDate = calendar.date(bySettingHour: timeComponents.hour ?? 8,
-                                     minute: timeComponents.minute ?? 0,
-                                     second: 0,
-                                     of: nextDate)!
+            if let scheduledDate = calendar.date(bySettingHour: timeComponents.hour ?? 8,
+                                                 minute: timeComponents.minute ?? 0,
+                                                 second: 0,
+                                                 of: nextDate) {
+                nextDate = scheduledDate
+            }
         }
 
         if nextDate <= date && daysUntilNext == 0 {
-            nextDate = calendar.date(byAdding: .day, value: interval, to: nextDate)!
+            if let futureDate = calendar.date(byAdding: .day, value: interval, to: nextDate) {
+                nextDate = futureDate
+            }
         }
 
         return nextDate
@@ -179,11 +190,11 @@ public class TrackedCompound: NSManagedObject {
                 // Today is a scheduled day, check if time has passed
                 if let notificationTime = notificationTime {
                     let timeComponents = calendar.dateComponents([.hour, .minute], from: notificationTime)
-                    let scheduledTime = calendar.date(bySettingHour: timeComponents.hour ?? 8,
-                                                      minute: timeComponents.minute ?? 0,
-                                                      second: 0,
-                                                      of: date)!
-                    if scheduledTime > date {
+                    if let scheduledTime = calendar.date(bySettingHour: timeComponents.hour ?? 8,
+                                                         minute: timeComponents.minute ?? 0,
+                                                         second: 0,
+                                                         of: date),
+                       scheduledTime > date {
                         daysUntilNext = 0
                         break
                     }
@@ -201,15 +212,19 @@ public class TrackedCompound: NSManagedObject {
             }
         }
 
-        var nextDate = calendar.date(byAdding: .day, value: daysUntilNext, to: date.startOfDay)!
+        guard var nextDate = calendar.date(byAdding: .day, value: daysUntilNext, to: date.startOfDay) else {
+            return date.startOfDay
+        }
 
         // Apply notification time
         if let notificationTime = notificationTime {
             let timeComponents = calendar.dateComponents([.hour, .minute], from: notificationTime)
-            nextDate = calendar.date(bySettingHour: timeComponents.hour ?? 8,
-                                     minute: timeComponents.minute ?? 0,
-                                     second: 0,
-                                     of: nextDate)!
+            if let scheduledDate = calendar.date(bySettingHour: timeComponents.hour ?? 8,
+                                                 minute: timeComponents.minute ?? 0,
+                                                 second: 0,
+                                                 of: nextDate) {
+                nextDate = scheduledDate
+            }
         }
 
         return nextDate

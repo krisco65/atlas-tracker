@@ -33,9 +33,9 @@ public class DoseLog: NSManagedObject {
     }
 
     private func validateDoseLog() throws {
-        // Validate dosage amount is positive
-        guard dosageAmount > 0 else {
-            throw DoseLogValidationError.invalidDosage("Dosage must be greater than 0")
+        // Validate dosage amount is non-negative (0 is allowed for skipped doses)
+        guard dosageAmount >= 0 else {
+            throw DoseLogValidationError.invalidDosage("Dosage must be 0 or greater")
         }
 
         // Validate dosage amount is reasonable (under 10,000)
@@ -56,9 +56,12 @@ public class DoseLog: NSManagedObject {
                      dosageUnit: DosageUnit,
                      timestamp: Date = Date(),
                      injectionSite: String? = nil,
+                     sideEffects: [SideEffect]? = nil,
                      notes: String? = nil) {
 
-        let entity = NSEntityDescription.entity(forEntityName: "DoseLog", in: context)!
+        guard let entity = NSEntityDescription.entity(forEntityName: "DoseLog", in: context) else {
+            fatalError("DoseLog entity not found in Core Data model")
+        }
         self.init(entity: entity, insertInto: context)
 
         self.id = UUID()
@@ -67,6 +70,7 @@ public class DoseLog: NSManagedObject {
         self.dosageUnitRaw = dosageUnit.rawValue
         self.timestamp = timestamp
         self.injectionSiteRaw = injectionSite
+        self.sideEffectsRaw = sideEffects?.rawValues as NSArray?
         self.notes = notes
     }
 
@@ -126,5 +130,32 @@ public class DoseLog: NSManagedObject {
     var relativeDateString: String {
         guard let timestamp = timestamp else { return "" }
         return timestamp.relativeDateString
+    }
+
+    // MARK: - Side Effects
+    var sideEffects: [SideEffect] {
+        get {
+            guard let rawArray = sideEffectsRaw as? [String] else { return [] }
+            return rawArray.compactMap { SideEffect(rawValue: $0) }
+        }
+        set {
+            sideEffectsRaw = newValue.rawValues as NSArray
+        }
+    }
+
+    var hasSideEffects: Bool {
+        let effects = sideEffects
+        return !effects.isEmpty && effects != [.none]
+    }
+
+    var sideEffectsString: String? {
+        let effects = sideEffects
+        guard !effects.isEmpty else { return nil }
+        if effects == [.none] { return nil }
+        return effects.filter { $0 != .none }.map { $0.displayName }.joined(separator: ", ")
+    }
+
+    var isSkippedDose: Bool {
+        return dosageAmount == 0 && notes?.lowercased().contains("skip") == true
     }
 }

@@ -49,7 +49,9 @@ public class WeightEntry: NSManagedObject {
                      compound: Compound? = nil,
                      notes: String? = nil) {
 
-        let entity = NSEntityDescription.entity(forEntityName: "WeightEntry", in: context)!
+        guard let entity = NSEntityDescription.entity(forEntityName: "WeightEntry", in: context) else {
+            fatalError("WeightEntry entity not found in Core Data model")
+        }
         self.init(entity: entity, insertInto: context)
 
         self.id = UUID()

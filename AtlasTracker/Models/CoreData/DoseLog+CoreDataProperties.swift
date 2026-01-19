@@ -12,6 +12,7 @@ extension DoseLog {
     @NSManaged public var dosageUnitRaw: String?
     @NSManaged public var timestamp: Date?
     @NSManaged public var injectionSiteRaw: String?
+    @NSManaged public var sideEffectsRaw: NSArray?
     @NSManaged public var notes: String?
 
     // Relationships

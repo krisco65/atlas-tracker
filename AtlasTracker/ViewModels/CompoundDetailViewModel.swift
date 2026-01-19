@@ -173,11 +173,53 @@ final class CompoundDetailViewModel {
 
     // MARK: - Update Tracking
     func updateTracking() {
-        guard canSaveTracking else { return }
+        guard canSaveTracking else {
+            errorMessage = "Please fill in all required fields"
+            return
+        }
 
-        // Stop existing tracking and start new
-        stopTracking()
-        startTracking()
+        guard let tracked = trackedCompound,
+              let amount = Double(dosageAmount) else {
+            errorMessage = "Invalid tracking configuration"
+            return
+        }
+
+        isLoading = true
+        errorMessage = nil
+
+        DispatchQueue.main.async { [weak self] in
+            guard let self = self else { return }
+
+            // Update existing TrackedCompound in place (preserves all history)
+            tracked.dosageAmount = amount
+            tracked.dosageUnitRaw = self.selectedUnit.rawValue
+            tracked.scheduleTypeRaw = self.scheduleType.rawValue
+
+            if self.scheduleType == .everyXDays {
+                tracked.scheduleInterval = Int16(self.scheduleInterval) ?? 1
+            }
+
+            if self.scheduleType == .specificDays {
+                tracked.scheduleDaysRaw = Array(self.selectedDays).map { Int16($0) }
+            }
+
+            tracked.notificationEnabled = self.notificationEnabled
+            tracked.notificationTime = self.notificationTime
+
+            self.coreDataManager.saveContext()
+
+            // Reschedule notifications
+            NotificationService.shared.cancelNotifications(for: self.compound)
+            if self.notificationEnabled {
+                NotificationService.shared.scheduleRecurringNotifications(for: tracked)
+            }
+
+            self.isLoading = false
+            self.showTrackingSetup = false
+
+            // Haptic feedback for success
+            HapticManager.success()
+        }
     }
 
     // MARK: - Toggle Day Selection

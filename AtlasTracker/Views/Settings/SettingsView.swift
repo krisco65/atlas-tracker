@@ -3,6 +3,7 @@ import SwiftUI
 struct SettingsView: View {
     @AppStorage(AppConstants.UserDefaultsKeys.biometricEnabled) private var biometricEnabled = false
     @AppStorage(AppConstants.UserDefaultsKeys.notificationsEnabled) private var notificationsEnabled = true
+    @AppStorage(AppConstants.UserDefaultsKeys.discreetNotifications) private var discreetNotifications = false
     @AppStorage(AppConstants.UserDefaultsKeys.preferredWeightUnit) private var preferredWeightUnit = WeightUnit.lbs.rawValue
 
     @State private var showResetConfirmation = false
@@ -15,6 +16,10 @@ struct SettingsView: View {
     @State private var showHealthKitError = false
     @State private var healthKitErrorMessage = ""
     @State private var isConnectingHealthKit = false
+    @State private var isExporting = false
+    @State private var showExportSheet = false
+    @State private var exportURL: URL?
+    @State private var showExportError = false
 
     var body: some View {
         NavigationStack {
@@ -49,6 +54,20 @@ struct SettingsView: View {
                             }
                         }
 
+                        Toggle(isOn: $discreetNotifications) {
+                            VStack(alignment: .leading, spacing: 4) {
+                                Label("Discreet Mode", systemImage: "eye.slash")
+                                Text("Hide compound names in notifications")
+                                    .font(.caption)
+                                    .foregroundColor(.textTertiary)
+                            }
+                        }
+                        .tint(.accentPrimary)
+                        .onChange(of: discreetNotifications) { _ in
+                            // Reschedule all notifications with new format
+                            NotificationService.shared.rescheduleAllNotifications()
+                        }
+
                         HStack {
                             Label("Scheduled Notifications", systemImage: "calendar.badge.clock")
                             Spacer()
@@ -57,6 +76,10 @@ struct SettingsView: View {
                         }
                     } header: {
                         Text("Notifications")
+                    } footer: {
+                        if discreetNotifications {
+                            Text("Notifications will show \"Dose Reminder\" instead of compound names for privacy.")
+                        }
                     }
 
                     // Units Section
@@ -136,6 +159,27 @@ struct SettingsView: View {
                         }
                     }
 
+                    // Export Section
+                    Section {
+                        Button {
+                            exportData()
+                        } label: {
+                            HStack {
+                                Label("Export Dose History", systemImage: "square.and.arrow.up")
+                                Spacer()
+                                if isExporting {
+                                    ProgressView()
+                                        .scaleEffect(0.8)
+                                }
+                            }
+                        }
+                        .disabled(isExporting)
+                    } header: {
+                        Text("Export")
+                    } footer: {
+                        Text("Export your complete dose history as a CSV file. Share with doctors or use as a backup.")
+                    }
+
                     // Data Section
                     Section {
                         NavigationLink {
@@ -182,8 +226,10 @@ struct SettingsView: View {
                         }
                         .padding(.vertical, 8)
 
-                        Link(destination: URL(string: "https://github.com")!) {
-                            Label("Report Issue", systemImage: "ant")
+                        if let issueURL = URL(string: "https://github.com") {
+                            Link(destination: issueURL) {
+                                Label("Report Issue", systemImage: "ant")
+                            }
                         }
                     } header: {
                         Text("About")
@@ -219,6 +265,37 @@ struct SettingsView: View {
             }
             .sheet(isPresented: $showReconstitutionCalculator) {
                 ReconstitutionCalculatorView()
+            }
+            .sheet(isPresented: $showExportSheet) {
+                if let url = exportURL {
+                    ShareSheet(activityItems: [url])
+                }
+            }
+            .alert("Export Failed", isPresented: $showExportError) {
+                Button("OK") { }
+            } message: {
+                Text("No dose history to export. Start logging doses to create exportable data.")
+            }
+        }
+    }
+
+    private func exportData() {
+        isExporting = true
+
+        DispatchQueue.global(qos: .userInitiated).async {
+            let url = DataExportService.shared.exportDoseLogsToCSV()
+
+            DispatchQueue.main.async {
+                isExporting = false
+
+                if let exportedURL = url {
+                    exportURL = exportedURL
+                    showExportSheet = true
+                    HapticManager.success()
+                } else {
+                    showExportError = true
+                    HapticManager.error()
+                }
             }
         }
     }

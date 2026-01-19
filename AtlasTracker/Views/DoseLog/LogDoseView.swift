@@ -35,6 +35,9 @@ struct LogDoseView: View {
                                 injectionSiteSection
                             }
 
+                            // Side Effects Section (Optional)
+                            sideEffectsSection
+
                             // Date/Time Section
                             dateTimeSection
 
@@ -272,6 +275,91 @@ struct LogDoseView: View {
         }
     }
 
+    // MARK: - Side Effects Section
+    private var sideEffectsSection: some View {
+        VStack(alignment: .leading, spacing: 12) {
+            HStack {
+                Text("Side Effects (Optional)")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+
+                Spacer()
+
+                if !viewModel.selectedSideEffects.isEmpty && viewModel.selectedSideEffects != [.none] {
+                    Button {
+                        viewModel.selectedSideEffects = []
+                    } label: {
+                        Text("Clear")
+                            .font(.caption)
+                            .foregroundColor(.accentPrimary)
+                    }
+                }
+            }
+
+            // Common side effects (quick select)
+            VStack(alignment: .leading, spacing: 8) {
+                Text("Quick Select")
+                    .font(.caption)
+                    .foregroundColor(.textSecondary)
+
+                FlowLayout(spacing: 8) {
+                    ForEach(SideEffect.common) { effect in
+                        SideEffectChip(
+                            effect: effect,
+                            isSelected: viewModel.selectedSideEffects.contains(effect)
+                        ) {
+                            viewModel.toggleSideEffect(effect)
+                        }
+                    }
+                }
+            }
+
+            // Show more side effects
+            DisclosureGroup("More Side Effects") {
+                VStack(alignment: .leading, spacing: 12) {
+                    ForEach(SideEffect.grouped, id: \.name) { group in
+                        if group.name != "Common" {
+                            VStack(alignment: .leading, spacing: 6) {
+                                Text(group.name)
+                                    .font(.caption)
+                                    .foregroundColor(.textSecondary)
+
+                                FlowLayout(spacing: 6) {
+                                    ForEach(group.effects) { effect in
+                                        SideEffectChip(
+                                            effect: effect,
+                                            isSelected: viewModel.selectedSideEffects.contains(effect)
+                                        ) {
+                                            viewModel.toggleSideEffect(effect)
+                                        }
+                                    }
+                                }
+                            }
+                        }
+                    }
+                }
+                .padding(.top, 8)
+            }
+            .foregroundColor(.textSecondary)
+
+            // Selected side effects summary
+            if !viewModel.selectedSideEffects.isEmpty && viewModel.selectedSideEffects != [.none] {
+                HStack {
+                    Image(systemName: "exclamationmark.triangle.fill")
+                        .foregroundColor(.statusWarning)
+
+                    Text(viewModel.selectedSideEffects.filter { $0 != .none }.map { $0.displayName }.joined(separator: ", "))
+                        .font(.caption)
+                        .foregroundColor(.textPrimary)
+                }
+                .padding()
+                .frame(maxWidth: .infinity, alignment: .leading)
+                .background(Color.statusWarning.opacity(0.1))
+                .cornerRadius(10)
+            }
+        }
+    }
+
     // MARK: - Date/Time Section
     private var dateTimeSection: some View {
         VStack(alignment: .leading, spacing: 12) {
@@ -421,6 +509,86 @@ struct InjectionSiteButton: View {
                 RoundedRectangle(cornerRadius: 8)
                     .stroke(isRecommended && !isSelected ? Color.accentPrimary : Color.clear, lineWidth: 1)
             )
+        }
+    }
+}
+
+// MARK: - Side Effect Chip
+struct SideEffectChip: View {
+    let effect: SideEffect
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 4) {
+                Image(systemName: effect.icon)
+                    .font(.caption2)
+                Text(effect.displayName)
+                    .font(.caption)
+            }
+            .padding(.horizontal, 10)
+            .padding(.vertical, 6)
+            .background(isSelected ? effect.color.opacity(0.2) : Color.backgroundTertiary)
+            .foregroundColor(isSelected ? effect.color : .textSecondary)
+            .cornerRadius(16)
+            .overlay(
+                RoundedRectangle(cornerRadius: 16)
+                    .stroke(isSelected ? effect.color : Color.clear, lineWidth: 1)
+            )
+        }
+    }
+}
+
+// MARK: - Flow Layout
+struct FlowLayout: Layout {
+    var spacing: CGFloat = 8
+
+    func sizeThatFits(proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) -> CGSize {
+        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+
+        var totalWidth: CGFloat = 0
+        var totalHeight: CGFloat = 0
+        var lineWidth: CGFloat = 0
+        var lineHeight: CGFloat = 0
+
+        for size in sizes {
+            if lineWidth + spacing + size.width > (proposal.width ?? .infinity) {
+                totalWidth = max(totalWidth, lineWidth)
+                totalHeight += lineHeight + spacing
+                lineWidth = size.width
+                lineHeight = size.height
+            } else {
+                lineWidth += spacing + size.width
+                lineHeight = max(lineHeight, size.height)
+            }
+        }
+
+        totalWidth = max(totalWidth, lineWidth)
+        totalHeight += lineHeight
+
+        return CGSize(width: totalWidth, height: totalHeight)
+    }
+
+    func placeSubviews(in bounds: CGRect, proposal: ProposedViewSize, subviews: Subviews, cache: inout ()) {
+        let sizes = subviews.map { $0.sizeThatFits(.unspecified) }
+
+        var origin = bounds.origin
+        var lineHeight: CGFloat = 0
+
+        for (index, subview) in subviews.enumerated() {
+            let size = sizes[index]
+
+            if origin.x + size.width > bounds.maxX {
+                origin.x = bounds.minX
+                origin.y += lineHeight + spacing
+                lineHeight = 0
+            }
+
+            subview.place(at: origin, proposal: ProposedViewSize(size))
+
+            origin.x += size.width + spacing
+            lineHeight = max(lineHeight, size.height)
         }
     }
 }

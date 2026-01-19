@@ -10,6 +10,7 @@ final class DoseLogViewModel {
     var dosageAmount: String = ""
     var selectedUnit: DosageUnit = .mg
     var selectedInjectionSite: String?
+    var selectedSideEffects: [SideEffect] = []
     var timestamp: Date = Date()
     var notes: String = ""
     var isLoading = false
@@ -162,12 +163,32 @@ final class DoseLogViewModel {
         }
     }
 
+    // MARK: - Toggle Side Effect
+    func toggleSideEffect(_ effect: SideEffect) {
+        if effect == .none {
+            // If "None" is selected, clear all others
+            selectedSideEffects = [.none]
+        } else {
+            // Remove "None" if selecting another effect
+            selectedSideEffects.removeAll { $0 == .none }
+
+            if selectedSideEffects.contains(effect) {
+                selectedSideEffects.removeAll { $0 == effect }
+            } else {
+                selectedSideEffects.append(effect)
+            }
+        }
+
+        HapticManager.lightImpact()
+    }
+
     // MARK: - Reset Form
     func resetForm() {
         selectedCompound = nil
         dosageAmount = ""
         selectedUnit = .mg
         selectedInjectionSite = nil
+        selectedSideEffects = []
         timestamp = Date()
         notes = ""
         errorMessage = nil
@@ -193,12 +214,16 @@ final class DoseLogViewModel {
         DispatchQueue.main.async { [weak self] in
             guard let self = self else { return }
 
+            let sideEffects = self.selectedSideEffects.isEmpty || self.selectedSideEffects == [.none]
+                ? nil : self.selectedSideEffects
+
             let _ = self.coreDataManager.logDose(
                 compound: compound,
                 dosageAmount: amount,
                 dosageUnit: self.selectedUnit,
                 timestamp: self.timestamp,
                 injectionSite: self.selectedInjectionSite,
+                sideEffects: sideEffects,
                 notes: self.notes.isEmpty ? nil : self.notes
             )
 

@@ -14,7 +14,9 @@ public class Compound: NSManagedObject {
                      recommendedSites: [String] = [],
                      isCustom: Bool = false) {
 
-        let entity = NSEntityDescription.entity(forEntityName: "Compound", in: context)!
+        guard let entity = NSEntityDescription.entity(forEntityName: "Compound", in: context) else {
+            fatalError("Compound entity not found in Core Data model")
+        }
         self.init(entity: entity, insertInto: context)
 
         self.id = UUID()

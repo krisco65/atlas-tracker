@@ -1,8 +1,9 @@
 import SwiftUI
 
 struct TrackingSetupView: View {
-    @ObservedObject var viewModel: CompoundDetailViewModel
+    @Bindable var viewModel: CompoundDetailViewModel
     @Environment(\.dismiss) private var dismiss
+    @State private var showSaveConfirmation = false
 
     var body: some View {
         NavigationStack {
@@ -12,6 +13,11 @@ struct TrackingSetupView: View {
 
                 ScrollView {
                     VStack(spacing: 24) {
+                        // Edit mode info banner
+                        if viewModel.isTracked {
+                            editInfoBanner
+                        }
+
                         // Dosage Section
                         dosageSection
 
@@ -46,10 +52,41 @@ struct TrackingSetupView: View {
                             viewModel.startTracking()
                         }
                     }
-                    .disabled(!viewModel.canSaveTracking)
+                    .disabled(!viewModel.canSaveTracking || viewModel.isLoading)
                 }
             }
+            .alert("Error", isPresented: Binding(
+                get: { viewModel.errorMessage != nil },
+                set: { if !$0 { viewModel.errorMessage = nil } }
+            )) {
+                Button("OK") { viewModel.errorMessage = nil }
+            } message: {
+                Text(viewModel.errorMessage ?? "")
+            }
         }
+    }
+
+    // MARK: - Edit Info Banner
+    private var editInfoBanner: some View {
+        HStack(spacing: 12) {
+            Image(systemName: "info.circle.fill")
+                .foregroundColor(.accentPrimary)
+
+            VStack(alignment: .leading, spacing: 2) {
+                Text("Editing Tracking Settings")
+                    .font(.subheadline)
+                    .fontWeight(.medium)
+                    .foregroundColor(.textPrimary)
+                Text("Your dose history will be preserved")
+                    .font(.caption)
+                    .foregroundColor(.textSecondary)
+            }
+
+            Spacer()
+        }
+        .padding()
+        .background(Color.accentPrimary.opacity(0.1))
+        .cornerRadius(10)
     }
 
     // MARK: - Dosage Section
