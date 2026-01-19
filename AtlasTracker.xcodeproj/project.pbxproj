@@ -16,6 +16,7 @@
 		A1000002002 /* DosageUnit.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002002 /* DosageUnit.swift */; };
 		A1000002003 /* ScheduleType.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002003 /* ScheduleType.swift */; };
 		A1000002004 /* InjectionSite.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002004 /* InjectionSite.swift */; };
+		A1000002005 /* SideEffect.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100002005 /* SideEffect.swift */; };
 
 		/* Models - CoreData */
 		A1000003001 /* CoreDataModel.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100003001 /* CoreDataModel.swift */; };
@@ -42,12 +43,15 @@
 		A1000005003 /* NotificationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005003 /* NotificationService.swift */; };
 		A1000005004 /* InjectionSiteRecommendationService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005004 /* InjectionSiteRecommendationService.swift */; };
 		A1000005005 /* HealthKitService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005005 /* HealthKitService.swift */; };
+		A1000005006 /* DataExportService.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100005006 /* DataExportService.swift */; };
 
 		/* Utilities */
 		A1000006001 /* Constants.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006001 /* Constants.swift */; };
 		A1000006002 /* Color+Theme.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006002 /* Color+Theme.swift */; };
 		A1000006003 /* View+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006003 /* View+Extensions.swift */; };
 		A1000006004 /* Date+Extensions.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006004 /* Date+Extensions.swift */; };
+		A1000006005 /* Logger.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006005 /* Logger.swift */; };
+		A1000006006 /* HapticManager.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100006006 /* HapticManager.swift */; };
 
 		/* Views - Main */
 		A1000007001 /* ContentView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100007001 /* ContentView.swift */; };
@@ -68,6 +72,11 @@
 
 		/* Views - Dashboard */
 		A1000011001 /* DashboardView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100011001 /* DashboardView.swift */; };
+		A1000011002 /* StatCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100011002 /* StatCard.swift */; };
+		A1000011003 /* RecentLogRow.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100011003 /* RecentLogRow.swift */; };
+		A1000011004 /* QuickLogSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100011004 /* QuickLogSheet.swift */; };
+		A1000011005 /* ActiveCompoundsSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100011005 /* ActiveCompoundsSheet.swift */; };
+		A1000011006 /* TodayDoseCard.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100011006 /* TodayDoseCard.swift */; };
 
 		/* Views - DoseLog */
 		A1000012001 /* LogDoseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100012001 /* LogDoseView.swift */; };
@@ -115,6 +124,7 @@
 		A1100002002 /* DosageUnit.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DosageUnit.swift; sourceTree = "<group>"; };
 		A1100002003 /* ScheduleType.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ScheduleType.swift; sourceTree = "<group>"; };
 		A1100002004 /* InjectionSite.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSite.swift; sourceTree = "<group>"; };
+		A1100002005 /* SideEffect.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = SideEffect.swift; sourceTree = "<group>"; };
 
 		/* Models - CoreData */
 		A1100003001 /* CoreDataModel.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = CoreDataModel.swift; sourceTree = "<group>"; };
@@ -143,12 +153,15 @@
 		A1100005003 /* NotificationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = NotificationService.swift; sourceTree = "<group>"; };
 		A1100005004 /* InjectionSiteRecommendationService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSiteRecommendationService.swift; sourceTree = "<group>"; };
 		A1100005005 /* HealthKitService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HealthKitService.swift; sourceTree = "<group>"; };
+		A1100005006 /* DataExportService.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DataExportService.swift; sourceTree = "<group>"; };
 
 		/* Utilities */
 		A1100006001 /* Constants.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Constants.swift; sourceTree = "<group>"; };
 		A1100006002 /* Color+Theme.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Color+Theme.swift"; sourceTree = "<group>"; };
 		A1100006003 /* View+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "View+Extensions.swift"; sourceTree = "<group>"; };
 		A1100006004 /* Date+Extensions.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = "Date+Extensions.swift"; sourceTree = "<group>"; };
+		A1100006005 /* Logger.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = Logger.swift; sourceTree = "<group>"; };
+		A1100006006 /* HapticManager.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = HapticManager.swift; sourceTree = "<group>"; };
 
 		/* Views - Main */
 		A1100007001 /* ContentView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ContentView.swift; sourceTree = "<group>"; };
@@ -169,6 +182,11 @@
 
 		/* Views - Dashboard */
 		A1100011001 /* DashboardView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = DashboardView.swift; sourceTree = "<group>"; };
+		A1100011002 /* StatCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = StatCard.swift; sourceTree = "<group>"; };
+		A1100011003 /* RecentLogRow.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = RecentLogRow.swift; sourceTree = "<group>"; };
+		A1100011004 /* QuickLogSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = QuickLogSheet.swift; sourceTree = "<group>"; };
+		A1100011005 /* ActiveCompoundsSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ActiveCompoundsSheet.swift; sourceTree = "<group>"; };
+		A1100011006 /* TodayDoseCard.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = TodayDoseCard.swift; sourceTree = "<group>"; };
 
 		/* Views - DoseLog */
 		A1100012001 /* LogDoseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogDoseView.swift; sourceTree = "<group>"; };
@@ -265,6 +283,7 @@
 				A1100002002 /* DosageUnit.swift */,
 				A1100002003 /* ScheduleType.swift */,
 				A1100002004 /* InjectionSite.swift */,
+				A1100002005 /* SideEffect.swift */,
 			);
 			path = Enums;
 			sourceTree = "<group>";
@@ -359,6 +378,11 @@
 			isa = PBXGroup;
 			children = (
 				A1100011001 /* DashboardView.swift */,
+				A1100011002 /* StatCard.swift */,
+				A1100011003 /* RecentLogRow.swift */,
+				A1100011004 /* QuickLogSheet.swift */,
+				A1100011005 /* ActiveCompoundsSheet.swift */,
+				A1100011006 /* TodayDoseCard.swift */,
 			);
 			path = Dashboard;
 			sourceTree = "<group>";
@@ -421,6 +445,7 @@
 				A1100005003 /* NotificationService.swift */,
 				A1100005004 /* InjectionSiteRecommendationService.swift */,
 				A1100005005 /* HealthKitService.swift */,
+				A1100005006 /* DataExportService.swift */,
 			);
 			path = Services;
 			sourceTree = "<group>";
@@ -429,6 +454,8 @@
 			isa = PBXGroup;
 			children = (
 				A1100006001 /* Constants.swift */,
+				A1100006005 /* Logger.swift */,
+				A1100006006 /* HapticManager.swift */,
 				A1400007001 /* Extensions */,
 			);
 			path = Utilities;
@@ -540,6 +567,7 @@
 				A1000002002 /* DosageUnit.swift in Sources */,
 				A1000002003 /* ScheduleType.swift in Sources */,
 				A1000002004 /* InjectionSite.swift in Sources */,
+				A1000002005 /* SideEffect.swift in Sources */,
 
 				/* Models - CoreData */
 				A1000003001 /* CoreDataModel.swift in Sources */,
@@ -568,12 +596,15 @@
 				A1000005003 /* NotificationService.swift in Sources */,
 				A1000005004 /* InjectionSiteRecommendationService.swift in Sources */,
 				A1000005005 /* HealthKitService.swift in Sources */,
+				A1000005006 /* DataExportService.swift in Sources */,
 
 				/* Utilities */
 				A1000006001 /* Constants.swift in Sources */,
 				A1000006002 /* Color+Theme.swift in Sources */,
 				A1000006003 /* View+Extensions.swift in Sources */,
 				A1000006004 /* Date+Extensions.swift in Sources */,
+				A1000006005 /* Logger.swift in Sources */,
+				A1000006006 /* HapticManager.swift in Sources */,
 
 				/* Views - Main */
 				A1000007001 /* ContentView.swift in Sources */,
@@ -594,6 +625,11 @@
 
 				/* Views - Dashboard */
 				A1000011001 /* DashboardView.swift in Sources */,
+				A1000011002 /* StatCard.swift in Sources */,
+				A1000011003 /* RecentLogRow.swift in Sources */,
+				A1000011004 /* QuickLogSheet.swift in Sources */,
+				A1000011005 /* ActiveCompoundsSheet.swift in Sources */,
+				A1000011006 /* TodayDoseCard.swift in Sources */,
 
 				/* Views - DoseLog */
 				A1000012001 /* LogDoseView.swift in Sources */,
