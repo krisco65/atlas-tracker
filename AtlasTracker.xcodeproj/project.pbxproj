@@ -91,6 +91,7 @@
 		A1000016001 /* BodyDiagramView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016001 /* BodyDiagramView.swift */; };
 		A1000016004 /* InjectionSitePickerView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016004 /* InjectionSitePickerView.swift */; };
 		A1000016005 /* VisualBodySilhouette.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016005 /* VisualBodySilhouette.swift */; };
+		A1000016006 /* ProfessionalBodyShape.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100016006 /* ProfessionalBodyShape.swift */; };
 
 		/* Views - Reconstitution */
 		A1000018001 /* ReconstitutionCalculatorView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100018001 /* ReconstitutionCalculatorView.swift */; };
@@ -201,6 +202,7 @@
 		A1100016001 /* BodyDiagramView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = BodyDiagramView.swift; sourceTree = "<group>"; };
 		A1100016005 /* VisualBodySilhouette.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = VisualBodySilhouette.swift; sourceTree = "<group>"; };
 		A1100016004 /* InjectionSitePickerView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSitePickerView.swift; sourceTree = "<group>"; };
+		A1100016006 /* ProfessionalBodyShape.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ProfessionalBodyShape.swift; sourceTree = "<group>"; };
 
 		/* Views - Reconstitution */
 		A1100018001 /* ReconstitutionCalculatorView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = ReconstitutionCalculatorView.swift; sourceTree = "<group>"; };
@@ -417,6 +419,7 @@
 				A1100016001 /* BodyDiagramView.swift */,
 				A1100016005 /* VisualBodySilhouette.swift */,
 				A1100016004 /* InjectionSitePickerView.swift */,
+				A1100016006 /* ProfessionalBodyShape.swift */,
 			);
 			path = InjectionSite;
 			sourceTree = "<group>";
@@ -644,6 +647,7 @@
 				A1000016001 /* BodyDiagramView.swift in Sources */,
 				A1000016005 /* VisualBodySilhouette.swift in Sources */,
 				A1000016004 /* InjectionSitePickerView.swift in Sources */,
+				A1000016006 /* ProfessionalBodyShape.swift in Sources */,
 
 				/* Views - Reconstitution */
 				A1000018001 /* ReconstitutionCalculatorView.swift in Sources */,
