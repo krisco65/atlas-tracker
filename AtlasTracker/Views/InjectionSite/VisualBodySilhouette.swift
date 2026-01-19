@@ -333,6 +333,7 @@ struct RegionButton: View {
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.1 : 1.0)
         .animation(.easeOut(duration: 0.15), value: isSelected)
+        .accessibilityIdentifier("region_button_\(region.rawValue)")
     }
 }
 
@@ -398,6 +399,7 @@ struct PEDSiteButton: View {
         .buttonStyle(.plain)
         .scaleEffect(isSelected ? 1.1 : 1.0)
         .animation(.easeOut(duration: 0.15), value: isSelected)
+        .accessibilityIdentifier("ped_site_button_\(site.rawValue)")
     }
 }
 
@@ -433,6 +435,7 @@ struct SubOptionSheet: View {
                         .font(.title2)
                         .foregroundColor(.gray)
                 }
+                .accessibilityIdentifier("sub_option_sheet_close")
             }
             .padding(.horizontal, 20)
             .padding(.top, 16)
@@ -531,6 +534,10 @@ struct SubOptionButton: View {
         return Color.gray.opacity(0.3)
     }
 
+    private var accessibilityId: String {
+        "sub_option_\(label.lowercased().replacingOccurrences(of: " ", with: "_"))"
+    }
+
     var body: some View {
         Button(action: onTap) {
             HStack(spacing: 6) {
@@ -553,6 +560,7 @@ struct SubOptionButton: View {
             )
         }
         .buttonStyle(.plain)
+        .accessibilityIdentifier(accessibilityId)
     }
 }
 

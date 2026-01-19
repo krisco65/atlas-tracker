@@ -111,6 +111,10 @@
 		/* Resources */
 		A1000015001 /* SeedData.json in Resources */ = {isa = PBXBuildFile; fileRef = A1100015001 /* SeedData.json */; };
 		A1000015002 /* Assets.xcassets in Resources */ = {isa = PBXBuildFile; fileRef = A1100015002 /* Assets.xcassets */; };
+
+		/* UI Tests */
+		A2000020001 /* AtlasTrackerUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100020001 /* AtlasTrackerUITests.swift */; };
+		A2000020002 /* InjectionSiteUITests.swift in Sources */ = {isa = PBXBuildFile; fileRef = A2100020002 /* InjectionSiteUITests.swift */; };
 /* End PBXBuildFile section */
 
 /* Begin PBXFileReference section */
@@ -216,6 +220,12 @@
 		/* Resources */
 		A1100015001 /* SeedData.json */ = {isa = PBXFileReference; lastKnownFileType = text.json; path = SeedData.json; sourceTree = "<group>"; };
 		A1100015002 /* Assets.xcassets */ = {isa = PBXFileReference; lastKnownFileType = folder.assetcatalog; path = Assets.xcassets; sourceTree = "<group>"; };
+
+		/* UI Tests */
+		A2100020001 /* AtlasTrackerUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AtlasTrackerUITests.swift; sourceTree = "<group>"; };
+		A2100020002 /* InjectionSiteUITests.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = InjectionSiteUITests.swift; sourceTree = "<group>"; };
+		A2100020003 /* Info.plist */ = {isa = PBXFileReference; lastKnownFileType = text.plist.xml; path = Info.plist; sourceTree = "<group>"; };
+		A2200020001 /* AtlasTrackerUITests.xctest */ = {isa = PBXFileReference; explicitFileType = wrapper.cfbundle; includeInIndex = 0; path = AtlasTrackerUITests.xctest; sourceTree = BUILT_PRODUCTS_DIR; };
 /* End PBXFileReference section */
 
 /* Begin PBXFrameworksBuildPhase section */
@@ -226,13 +236,39 @@
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
+		A2300020001 /* Frameworks */ = {
+			isa = PBXFrameworksBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
 /* End PBXFrameworksBuildPhase section */
+
+/* Begin PBXContainerItemProxy section */
+		A2800020001 /* PBXContainerItemProxy */ = {
+			isa = PBXContainerItemProxy;
+			containerPortal = A1800000001 /* Project object */;
+			proxyType = 1;
+			remoteGlobalIDString = A1500000001;
+			remoteInfo = AtlasTracker;
+		};
+/* End PBXContainerItemProxy section */
+
+/* Begin PBXTargetDependency section */
+		A2800020002 /* PBXTargetDependency */ = {
+			isa = PBXTargetDependency;
+			target = A1500000001 /* AtlasTracker */;
+			targetProxy = A2800020001 /* PBXContainerItemProxy */;
+		};
+/* End PBXTargetDependency section */
 
 /* Begin PBXGroup section */
 		A1400000001 /* Root */ = {
 			isa = PBXGroup;
 			children = (
 				A1400000002 /* AtlasTracker */,
+				A2400020001 /* AtlasTrackerUITests */,
 				A1400000003 /* Products */,
 			);
 			sourceTree = "<group>";
@@ -256,8 +292,19 @@
 			isa = PBXGroup;
 			children = (
 				A1200000001 /* AtlasTracker.app */,
+				A2200020001 /* AtlasTrackerUITests.xctest */,
 			);
 			name = Products;
+			sourceTree = "<group>";
+		};
+		A2400020001 /* AtlasTrackerUITests */ = {
+			isa = PBXGroup;
+			children = (
+				A2100020001 /* AtlasTrackerUITests.swift */,
+				A2100020002 /* InjectionSiteUITests.swift */,
+				A2100020003 /* Info.plist */,
+			);
+			path = AtlasTrackerUITests;
 			sourceTree = "<group>";
 		};
 		A1400001000 /* App */ = {
@@ -511,6 +558,24 @@
 			productReference = A1200000001 /* AtlasTracker.app */;
 			productType = "com.apple.product-type.application";
 		};
+		A2500020001 /* AtlasTrackerUITests */ = {
+			isa = PBXNativeTarget;
+			buildConfigurationList = A2700020001 /* Build configuration list for PBXNativeTarget "AtlasTrackerUITests" */;
+			buildPhases = (
+				A2600020001 /* Sources */,
+				A2300020001 /* Frameworks */,
+				A2600020002 /* Resources */,
+			);
+			buildRules = (
+			);
+			dependencies = (
+				A2800020002 /* PBXTargetDependency */,
+			);
+			name = AtlasTrackerUITests;
+			productName = AtlasTrackerUITests;
+			productReference = A2200020001 /* AtlasTrackerUITests.xctest */;
+			productType = "com.apple.product-type.bundle.ui-testing";
+		};
 /* End PBXNativeTarget section */
 
 /* Begin PBXProject section */
@@ -523,6 +588,10 @@
 				TargetAttributes = {
 					A1500000001 = {
 						CreatedOnToolsVersion = 15.0;
+					};
+					A2500020001 = {
+						CreatedOnToolsVersion = 15.0;
+						TestTargetID = A1500000001;
 					};
 				};
 			};
@@ -540,6 +609,7 @@
 			projectRoot = "";
 			targets = (
 				A1500000001 /* AtlasTracker */,
+				A2500020001 /* AtlasTrackerUITests */,
 			);
 		};
 /* End PBXProject section */
@@ -551,6 +621,13 @@
 			files = (
 				A1000015001 /* SeedData.json in Resources */,
 				A1000015002 /* Assets.xcassets in Resources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2600020002 /* Resources */ = {
+			isa = PBXResourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -657,6 +734,15 @@
 
 				/* Preview Content */
 				A1000017001 /* PreviewData.swift in Sources */,
+			);
+			runOnlyForDeploymentPostprocessing = 0;
+		};
+		A2600020001 /* Sources */ = {
+			isa = PBXSourcesBuildPhase;
+			buildActionMask = 2147483647;
+			files = (
+				A2000020001 /* AtlasTrackerUITests.swift in Sources */,
+				A2000020002 /* InjectionSiteUITests.swift in Sources */,
 			);
 			runOnlyForDeploymentPostprocessing = 0;
 		};
@@ -856,6 +942,58 @@
 			};
 			name = Release;
 		};
+		A2900020001 /* Debug */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AtlasTrackerUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atlastracker.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = AtlasTracker;
+			};
+			name = Debug;
+		};
+		A2900020002 /* Release */ = {
+			isa = XCBuildConfiguration;
+			buildSettings = {
+				CODE_SIGN_STYLE = Automatic;
+				CURRENT_PROJECT_VERSION = 1;
+				DEVELOPMENT_TEAM = "";
+				GENERATE_INFOPLIST_FILE = YES;
+				INFOPLIST_FILE = AtlasTrackerUITests/Info.plist;
+				IPHONEOS_DEPLOYMENT_TARGET = 17.0;
+				LD_RUNPATH_SEARCH_PATHS = (
+					"$(inherited)",
+					"@executable_path/Frameworks",
+					"@loader_path/Frameworks",
+				);
+				MARKETING_VERSION = 1.0;
+				PRODUCT_BUNDLE_IDENTIFIER = com.atlastracker.app.uitests;
+				PRODUCT_NAME = "$(TARGET_NAME)";
+				SUPPORTED_PLATFORMS = "iphoneos iphonesimulator";
+				SUPPORTS_MACCATALYST = NO;
+				SWIFT_EMIT_LOC_STRINGS = NO;
+				SWIFT_VERSION = 5.0;
+				TARGETED_DEVICE_FAMILY = 1;
+				TEST_TARGET_NAME = AtlasTracker;
+			};
+			name = Release;
+		};
 /* End XCBuildConfiguration section */
 
 /* Begin XCConfigurationList section */
@@ -873,6 +1011,15 @@
 			buildConfigurations = (
 				A1900000001 /* Debug */,
 				A1900000002 /* Release */,
+			);
+			defaultConfigurationIsVisible = 0;
+			defaultConfigurationName = Release;
+		};
+		A2700020001 /* Build configuration list for PBXNativeTarget "AtlasTrackerUITests" */ = {
+			isa = XCConfigurationList;
+			buildConfigurations = (
+				A2900020001 /* Debug */,
+				A2900020002 /* Release */,
 			);
 			defaultConfigurationIsVisible = 0;
 			defaultConfigurationName = Release;
