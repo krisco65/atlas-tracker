@@ -145,14 +145,14 @@ public class DoseLog: NSManagedObject {
 
     var hasSideEffects: Bool {
         let effects = sideEffects
-        return !effects.isEmpty && effects != [.none]
+        return !effects.isEmpty && effects != [SideEffect.none]
     }
 
     var sideEffectsString: String? {
         let effects = sideEffects
         guard !effects.isEmpty else { return nil }
-        if effects == [.none] { return nil }
-        return effects.filter { $0 != .none }.map { $0.displayName }.joined(separator: ", ")
+        if effects == [SideEffect.none] { return nil }
+        return effects.filter { $0 != SideEffect.none }.map { $0.displayName }.joined(separator: ", ")
     }
 
     var isSkippedDose: Bool {
