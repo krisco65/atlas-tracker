@@ -56,7 +56,7 @@ struct TodayDoseCard: View {
         let calendar = Calendar.current
 
         // Get today's scheduled time
-        var scheduledTime = calendar.date(bySettingHour: calendar.component(.hour, from: notificationTime),
+        let scheduledTime = calendar.date(bySettingHour: calendar.component(.hour, from: notificationTime),
                                           minute: calendar.component(.minute, from: notificationTime),
                                           second: 0,
                                           of: now) ?? notificationTime

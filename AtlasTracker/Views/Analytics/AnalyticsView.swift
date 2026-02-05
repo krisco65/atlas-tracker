@@ -188,7 +188,7 @@ struct AnalyticsView: View {
             .onAppear {
                 viewModel.loadData()
             }
-            .onChange(of: viewModel.selectedPeriod) { _ in
+            .onChange(of: viewModel.selectedPeriod) {
                 viewModel.loadData()
             }
             .sheet(isPresented: $viewModel.showAddWeight) {

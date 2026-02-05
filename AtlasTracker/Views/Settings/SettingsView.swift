@@ -46,7 +46,7 @@ struct SettingsView: View {
                             Label("Enable Notifications", systemImage: "bell.fill")
                         }
                         .tint(.accentPrimary)
-                        .onChange(of: notificationsEnabled) { newValue in
+                        .onChange(of: notificationsEnabled) { _, newValue in
                             if newValue {
                                 Task {
                                     await NotificationService.shared.requestAuthorization()
@@ -63,7 +63,7 @@ struct SettingsView: View {
                             }
                         }
                         .tint(.accentPrimary)
-                        .onChange(of: discreetNotifications) { _ in
+                        .onChange(of: discreetNotifications) {
                             // Reschedule all notifications with new format
                             NotificationService.shared.rescheduleAllNotifications()
                         }
