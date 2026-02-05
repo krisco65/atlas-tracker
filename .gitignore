@@ -32,3 +32,20 @@ Thumbs.db
 
 # Claude Code
 .claude/
+
+# Fastlane
+fastlane/report.xml
+fastlane/Preview.html
+fastlane/screenshots/**/*.png
+fastlane/test_output/
+fastlane/README.md
+
+# Test results
+test_results/
+*.xcresult
+
+# Secrets (NEVER commit these)
+*.p8
+*.p12
+*.mobileprovision
+*.cer
