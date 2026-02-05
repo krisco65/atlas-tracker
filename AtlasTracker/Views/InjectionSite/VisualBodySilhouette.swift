@@ -189,25 +189,26 @@ enum PEDInjectionRegion: String, CaseIterable, Identifiable {
     }
 
     // Positions - corrected for proper anatomy
+    // Glutes stacked above VG with clear vertical separation
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
         case .deltLeft: return (0.20, 0.24)      // On shoulders
         case .deltRight: return (0.80, 0.24)
-        case .gluteLeft: return (0.32, 0.50)     // Butt area
-        case .gluteRight: return (0.68, 0.50)
-        case .vgLeft: return (0.24, 0.52)        // Hip area (slightly outside glutes)
-        case .vgRight: return (0.76, 0.52)
-        case .quadLeft: return (0.38, 0.62)      // Mid-thigh
-        case .quadRight: return (0.62, 0.62)
+        case .gluteLeft: return (0.32, 0.45)     // Upper butt area
+        case .gluteRight: return (0.68, 0.45)
+        case .vgLeft: return (0.24, 0.56)        // Hip area, below glutes
+        case .vgRight: return (0.76, 0.56)
+        case .quadLeft: return (0.38, 0.66)      // Mid-thigh
+        case .quadRight: return (0.62, 0.66)
         }
     }
 
     var regionSize: CGSize {
         switch self {
-        case .deltLeft, .deltRight: return CGSize(width: 40, height: 40)
-        case .gluteLeft, .gluteRight: return CGSize(width: 40, height: 45)
-        case .vgLeft, .vgRight: return CGSize(width: 35, height: 40)
-        case .quadLeft, .quadRight: return CGSize(width: 40, height: 50)
+        case .deltLeft, .deltRight: return CGSize(width: 36, height: 36)
+        case .gluteLeft, .gluteRight: return CGSize(width: 34, height: 34)
+        case .vgLeft, .vgRight: return CGSize(width: 30, height: 30)
+        case .quadLeft, .quadRight: return CGSize(width: 36, height: 42)
         }
     }
 
@@ -458,16 +459,12 @@ struct PEDRegionButton: View {
                 }
 
                 Text(region.shortLabel)
-                    .font(.system(size: 10, weight: .bold))
+                    .font(.system(size: 9, weight: .bold))
                     .foregroundColor(.white)
-                    .padding(.horizontal, 5)
+                    .padding(.horizontal, 4)
                     .padding(.vertical, 2)
                     .background(Color.black.opacity(0.7))
                     .cornerRadius(4)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.red, lineWidth: 1.5)
-                    )
             }
         }
         .buttonStyle(.plain)
@@ -539,10 +536,6 @@ struct HighlightedRegionButton: View {
                     .padding(.vertical, 2)
                     .background(Color.black.opacity(0.7))
                     .cornerRadius(4)
-                    .overlay(
-                        RoundedRectangle(cornerRadius: 4)
-                            .stroke(Color.red, lineWidth: 1.5)
-                    )
             }
         }
         .buttonStyle(.plain)
