@@ -709,7 +709,7 @@ struct AddWeightSheet: View {
     }
 
     private var canSave: Bool {
-        guard let weight = Double(weightString), weight > 0 else { return false }
+        guard let weight = Double(weightString), weight > 0, weight <= 1500 else { return false }
         return true
     }
 

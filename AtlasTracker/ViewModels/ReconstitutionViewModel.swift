@@ -142,7 +142,7 @@ final class ReconstitutionViewModel {
     func calculate() {
         errorMessage = nil
 
-        guard let vial = Double(vialSize), vial > 0 else {
+        guard let vial = Double(vialSize), vial > 0, vial <= 100000 else {
             errorMessage = "Enter a valid vial size"
             result = nil
             return

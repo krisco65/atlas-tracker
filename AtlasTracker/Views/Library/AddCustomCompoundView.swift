@@ -58,9 +58,8 @@ struct AddCustomCompoundView: View {
                                 .cornerRadius(10)
                                 .foregroundColor(.textPrimary)
                                 .onChange(of: name) { _, newValue in
-                                    // Limit to max length + some buffer for user experience
-                                    if newValue.count > maxNameLength + 10 {
-                                        name = String(newValue.prefix(maxNameLength + 10))
+                                    if newValue.count > maxNameLength {
+                                        name = String(newValue.prefix(maxNameLength))
                                     }
                                 }
 

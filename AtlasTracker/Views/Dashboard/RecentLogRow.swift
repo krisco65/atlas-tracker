@@ -16,6 +16,7 @@ struct RecentLogRow: View {
                     .font(.subheadline)
                     .fontWeight(.medium)
                     .foregroundColor(.textPrimary)
+                    .lineLimit(1)
 
                 // Dosage
                 Text(log.dosageString)

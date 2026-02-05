@@ -246,11 +246,19 @@ struct EditDoseLogSheet: View {
 
     // MARK: - Notes Section
 
+    private let maxNotesLength = 500
+
     private var notesSection: some View {
         VStack(alignment: .leading, spacing: 8) {
-            Text("Notes")
-                .font(.headline)
-                .foregroundColor(.textPrimary)
+            HStack {
+                Text("Notes")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+                Spacer()
+                Text("\(notes.count)/\(maxNotesLength)")
+                    .font(.caption2)
+                    .foregroundColor(notes.count > maxNotesLength ? .statusError : .textTertiary)
+            }
 
             TextField("Add any notes...", text: $notes, axis: .vertical)
                 .lineLimit(3...6)
@@ -258,6 +266,11 @@ struct EditDoseLogSheet: View {
                 .background(Color.backgroundSecondary)
                 .cornerRadius(10)
                 .foregroundColor(.textPrimary)
+                .onChange(of: notes) {
+                    if notes.count > maxNotesLength {
+                        notes = String(notes.prefix(maxNotesLength))
+                    }
+                }
         }
     }
 
@@ -278,7 +291,7 @@ struct EditDoseLogSheet: View {
     }
 
     private var canSave: Bool {
-        guard let amount = Double(dosageAmount), amount > 0 else { return false }
+        guard let amount = Double(dosageAmount), amount > 0, amount <= 10000 else { return false }
         if log.compound?.requiresInjection == true && selectedInjectionSite == nil { return false }
         return true
     }

@@ -34,11 +34,11 @@ final class CompoundDetailViewModel {
     }
 
     var canSaveTracking: Bool {
-        guard let amount = Double(dosageAmount), amount > 0 else { return false }
+        guard let amount = Double(dosageAmount), amount > 0, amount <= 10000 else { return false }
 
         switch scheduleType {
         case .everyXDays:
-            guard let interval = Int(scheduleInterval), interval > 0 else { return false }
+            guard let interval = Int(scheduleInterval), interval > 0, interval <= 365 else { return false }
         case .specificDays:
             if selectedDays.isEmpty { return false }
         default:

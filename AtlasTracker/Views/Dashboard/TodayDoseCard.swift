@@ -127,6 +127,7 @@ struct TodayDoseCard: View {
                         .font(.headline)
                         .foregroundColor(isCompleted ? .textSecondary : .textPrimary)
                         .strikethrough(isCompleted)
+                        .lineLimit(1)
 
                     HStack(spacing: 8) {
                         Text(tracked.dosageString)
