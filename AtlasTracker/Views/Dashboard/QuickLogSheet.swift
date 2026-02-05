@@ -11,16 +11,11 @@ struct QuickLogSheet: View {
             LogDoseView(onSuccess: {
                 onComplete()
                 dismiss()
+            }, onCancel: {
+                dismiss()
             }, preselectedCompound: compound)
             .navigationTitle("Log \(compound.name ?? "Dose")")
             .navigationBarTitleDisplayMode(.inline)
-            .toolbar {
-                ToolbarItem(placement: .navigationBarLeading) {
-                    Button("Cancel") {
-                        dismiss()
-                    }
-                }
-            }
         }
     }
 }

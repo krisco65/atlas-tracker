@@ -171,6 +171,13 @@ final class DashboardViewModel {
         HapticManager.warning()
     }
 
+    // MARK: - Delete Dose Log
+    func deleteDoseLog(_ log: DoseLog) {
+        coreDataManager.deleteDoseLog(log)
+        loadData()
+        HapticManager.warning()
+    }
+
     // MARK: - Quick Stats
     var weeklyDoseCount: Int {
         let startDate = Date().startOfWeek

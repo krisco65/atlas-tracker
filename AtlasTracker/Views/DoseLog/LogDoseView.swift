@@ -3,10 +3,12 @@ import SwiftUI
 struct LogDoseView: View {
     @State private var viewModel = DoseLogViewModel()
     var onSuccess: (() -> Void)?
+    var onCancel: (() -> Void)?
     var preselectedCompound: Compound?
 
-    init(onSuccess: (() -> Void)? = nil, preselectedCompound: Compound? = nil) {
+    init(onSuccess: (() -> Void)? = nil, onCancel: (() -> Void)? = nil, preselectedCompound: Compound? = nil) {
         self.onSuccess = onSuccess
+        self.onCancel = onCancel
         self.preselectedCompound = preselectedCompound
     }
 
@@ -58,6 +60,20 @@ struct LogDoseView: View {
         .navigationTitle("Log Dose")
         .navigationBarTitleDisplayMode(.large)
         .toolbar {
+            ToolbarItem(placement: .navigationBarLeading) {
+                if viewModel.selectedCompound != nil || onCancel != nil {
+                    Button("Cancel") {
+                        if let onCancel {
+                            onCancel()
+                        } else {
+                            withAnimation {
+                                viewModel.resetForm()
+                            }
+                        }
+                    }
+                    .foregroundColor(.textSecondary)
+                }
+            }
             ToolbarItemGroup(placement: .keyboard) {
                 Spacer()
                 Button("Done") {

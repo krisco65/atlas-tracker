@@ -36,6 +36,10 @@ struct RecentLogRow: View {
             }
 
             Spacer()
+
+            Image(systemName: "ellipsis")
+                .font(.caption)
+                .foregroundColor(.textTertiary)
         }
         .padding(.vertical, 6)
     }

@@ -8,6 +8,8 @@ struct DashboardView: View {
     @State private var showReconstitutionCalculator = false
     @State private var showSkipConfirmation = false
     @State private var trackedToSkip: TrackedCompound?
+    @State private var logToDelete: DoseLog?
+    @State private var showDeleteConfirmation = false
 
     var body: some View {
         NavigationStack {
@@ -287,11 +289,35 @@ struct DashboardView: View {
 
             ForEach(viewModel.recentLogs.prefix(5), id: \.id) { log in
                 RecentLogRow(log: log)
+                    .contentShape(Rectangle())
+                    .onTapGesture {
+                        logToDelete = log
+                        showDeleteConfirmation = true
+                    }
             }
         }
         .padding()
         .background(Color.backgroundSecondary)
         .cornerRadius(16)
+        .confirmationDialog(
+            "Manage Injection Log",
+            isPresented: $showDeleteConfirmation,
+            titleVisibility: .visible
+        ) {
+            Button("Delete", role: .destructive) {
+                if let log = logToDelete {
+                    viewModel.deleteDoseLog(log)
+                }
+                logToDelete = nil
+            }
+            Button("Cancel", role: .cancel) {
+                logToDelete = nil
+            }
+        } message: {
+            if let log = logToDelete {
+                Text("Delete \(log.compound?.name ?? "this") log from \(log.relativeDateString)?")
+            }
+        }
     }
 }
 
