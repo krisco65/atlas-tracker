@@ -490,6 +490,14 @@
       "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
     },
     {
+      "name": "Wolverine Stack (BPC-157 + TB-500)",
+      "category": "peptide",
+      "supportedUnits": ["mg", "mcg", "ml"],
+      "defaultUnit": "mg",
+      "requiresInjection": true,
+      "recommendedSites": ["left_belly_upper", "right_belly_upper", "left_belly_lower", "right_belly_lower"]
+    },
+    {
       "name": "MOTS-C",
       "category": "peptide",
       "supportedUnits": ["mg", "mcg", "ml"],
