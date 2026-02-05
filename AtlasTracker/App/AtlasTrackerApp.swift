@@ -6,6 +6,7 @@ struct AtlasTrackerApp: App {
     @UIApplicationDelegateAdaptor(AppDelegate.self) var appDelegate
     @AppStorage(AppConstants.UserDefaultsKeys.biometricEnabled) private var biometricEnabled = false
     @AppStorage(AppConstants.UserDefaultsKeys.hasCompletedOnboarding) private var hasCompletedOnboarding = false
+    @Environment(\.scenePhase) private var scenePhase
 
     @State private var isAuthenticated = false
     @State private var showAuthError = false
@@ -33,6 +34,17 @@ struct AtlasTrackerApp: App {
                     authenticate()
                 } else {
                     isAuthenticated = true
+                }
+            }
+            .onChange(of: scenePhase) { oldPhase, newPhase in
+                // Security: Reset authentication when app goes to background
+                if newPhase == .background && biometricEnabled {
+                    isAuthenticated = false
+                    showAuthError = false
+                }
+                // Re-authenticate when returning to active
+                if newPhase == .active && biometricEnabled && !isAuthenticated {
+                    authenticate()
                 }
             }
         }

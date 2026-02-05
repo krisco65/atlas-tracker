@@ -1,0 +1,21 @@
+# Git repository for storing certificates and profiles
+# UPDATE THIS: Create a private repo named "atlas-tracker-certificates" first
+git_url("git@github.com:YOUR_GITHUB_USERNAME/atlas-tracker-certificates.git")
+
+# Storage mode
+storage_mode("git")
+
+# Default certificate type
+type("appstore")
+
+# App identifier(s) to provision
+app_identifier(["com.atlasmedtracker.AtlasTracker"])
+
+# Apple ID
+username("krisco65@gmail.com")
+
+# Clone using SSH (required for CI/CD)
+git_basic_authorization(false)
+
+# For CI environments, don't prompt for passwords
+readonly(is_ci)

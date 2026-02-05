@@ -1,0 +1,198 @@
+# Fastfile for AtlasTracker
+# Documentation: https://docs.fastlane.tools
+
+default_platform(:ios)
+
+platform :ios do
+
+  # ============================================
+  # MARK: - Code Signing
+  # ============================================
+
+  desc "Sync certificates and provisioning profiles from Match"
+  lane :sync_certificates do
+    # Setup CI environment (creates temporary keychain)
+    setup_ci if is_ci
+
+    match(
+      type: "appstore",
+      readonly: is_ci,
+      git_private_key: ENV["MATCH_GIT_PRIVATE_KEY"]
+    )
+  end
+
+  desc "Sync development certificates"
+  lane :sync_dev_certificates do
+    setup_ci if is_ci
+
+    match(
+      type: "development",
+      readonly: is_ci,
+      git_private_key: ENV["MATCH_GIT_PRIVATE_KEY"]
+    )
+  end
+
+  # ============================================
+  # MARK: - Building
+  # ============================================
+
+  desc "Build the app for App Store distribution"
+  lane :build do
+    sync_certificates
+
+    # Increment build number for CI builds
+    if is_ci
+      increment_build_number(
+        build_number: ENV["GITHUB_RUN_NUMBER"] || Time.now.strftime("%Y%m%d%H%M")
+      )
+    end
+
+    build_app(
+      project: "AtlasTracker.xcodeproj",
+      scheme: "AtlasTracker",
+      configuration: "Release",
+      export_method: "app-store",
+      output_directory: "./build",
+      output_name: "AtlasTracker.ipa",
+      clean: true,
+      xcargs: "-allowProvisioningUpdates"
+    )
+  end
+
+  desc "Build for simulator (no signing)"
+  lane :build_simulator do
+    xcodebuild(
+      project: "AtlasTracker.xcodeproj",
+      scheme: "AtlasTracker",
+      configuration: "Debug",
+      destination: "platform=iOS Simulator,name=iPhone 15",
+      build: true,
+      clean: true,
+      xcargs: "CODE_SIGN_IDENTITY='' CODE_SIGNING_REQUIRED=NO"
+    )
+  end
+
+  # ============================================
+  # MARK: - Testing
+  # ============================================
+
+  desc "Run all tests (unit + UI)"
+  lane :test do
+    run_tests(
+      project: "AtlasTracker.xcodeproj",
+      scheme: "AtlasTracker",
+      devices: ["iPhone 15"],
+      clean: true,
+      result_bundle: true,
+      output_directory: "./test_results",
+      code_coverage: true
+    )
+  end
+
+  desc "Run unit tests only"
+  lane :unit_test do
+    run_tests(
+      project: "AtlasTracker.xcodeproj",
+      scheme: "AtlasTracker",
+      devices: ["iPhone 15"],
+      only_testing: ["AtlasTrackerTests"],
+      result_bundle: true,
+      output_directory: "./test_results"
+    )
+  end
+
+  desc "Run UI tests only"
+  lane :ui_test do
+    run_tests(
+      project: "AtlasTracker.xcodeproj",
+      scheme: "AtlasTracker",
+      devices: ["iPhone 15"],
+      only_testing: ["AtlasTrackerUITests"],
+      result_bundle: true,
+      output_directory: "./test_results"
+    )
+  end
+
+  # ============================================
+  # MARK: - TestFlight
+  # ============================================
+
+  desc "Upload to TestFlight"
+  lane :beta do
+    build
+
+    upload_to_testflight(
+      skip_waiting_for_build_processing: true,
+      changelog: changelog_from_git_commits(
+        commits_count: 10,
+        merge_commit_filtering: "exclude_merges"
+      )
+    )
+
+    # Notify on success
+    UI.success("Successfully uploaded to TestFlight!")
+  end
+
+  desc "Upload to TestFlight with specific version"
+  lane :beta_version do |options|
+    version = options[:version] || prompt(text: "Version number: ")
+
+    increment_version_number(version_number: version)
+
+    beta
+  end
+
+  # ============================================
+  # MARK: - Full Pipelines
+  # ============================================
+
+  desc "Full CI pipeline: test, build, upload to TestFlight"
+  lane :release do
+    # Run tests first
+    test
+
+    # Build and upload
+    beta
+  end
+
+  desc "CI build verification (no upload)"
+  lane :ci_verify do
+    test
+    build
+    UI.success("CI verification passed!")
+  end
+
+  # ============================================
+  # MARK: - Utilities
+  # ============================================
+
+  desc "Clear derived data"
+  lane :clean do
+    clear_derived_data
+    UI.success("Derived data cleared!")
+  end
+
+  desc "Register new device"
+  lane :register_device do |options|
+    device_name = options[:name] || prompt(text: "Device name: ")
+    device_udid = options[:udid] || prompt(text: "Device UDID: ")
+
+    register_devices(
+      devices: {
+        device_name => device_udid
+      }
+    )
+
+    # Refresh provisioning profiles
+    match(type: "development", force_for_new_devices: true)
+  end
+
+end
+
+# ============================================
+# MARK: - Helper Methods
+# ============================================
+
+def is_ci
+  ENV['CI'] == 'true' || ENV['GITHUB_ACTIONS'] == 'true'
+end

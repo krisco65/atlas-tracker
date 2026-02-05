@@ -22,7 +22,6 @@ struct VisualBodySilhouette: View {
     let lastUsedSite: String?
     let recommendedSite: String?
 
-    @State private var showingSubOptions = false
     @State private var selectedRegion: InjectionRegion?
 
     var body: some View {
@@ -35,12 +34,11 @@ struct VisualBodySilhouette: View {
             }
             .font(.caption2)
 
-            // Body diagram with overlay buttons
+            // Body diagram with overlay regions
             GeometryReader { geometry in
-                // Make body fill most of screen height (2-3x larger than before)
-                let availableHeight = geometry.size.height * 0.95
+                let availableHeight = geometry.size.height * 0.98
                 let bodyHeight = availableHeight
-                let bodyWidth = bodyHeight / 2.2  // Maintain aspect ratio
+                let bodyWidth = bodyHeight / 2.2
 
                 ZStack {
                     // Professional body silhouette shape
@@ -52,7 +50,7 @@ struct VisualBodySilhouette: View {
                     .frame(width: bodyWidth, height: bodyHeight)
                     .position(x: geometry.size.width / 2, y: geometry.size.height / 2)
 
-                    // Injection site buttons with labels
+                    // Injection site highlighted regions
                     if injectionType == .intramuscular {
                         PEDSiteOverlays(
                             selectedSite: $selectedSite,
@@ -67,7 +65,6 @@ struct VisualBodySilhouette: View {
                             selectedSite: $selectedSite,
                             lastUsedSite: lastUsedSite,
                             recommendedSite: recommendedSite,
-                            showingSubOptions: $showingSubOptions,
                             selectedRegion: $selectedRegion,
                             bodyWidth: bodyWidth,
                             bodyHeight: bodyHeight,
@@ -76,8 +73,8 @@ struct VisualBodySilhouette: View {
                     }
                 }
             }
-            .frame(minHeight: 550, maxHeight: 700)
-            .background(Color.black) // Match body image background
+            .frame(minHeight: 580, maxHeight: 750)
+            .background(Color.black)
 
             // Selected site display
             if let selected = selectedSite {
@@ -88,18 +85,17 @@ struct VisualBodySilhouette: View {
             }
         }
         .padding(.horizontal, 4)
-        .sheet(isPresented: $showingSubOptions) {
-            if let region = selectedRegion {
-                SubOptionSheet(
-                    region: region,
-                    selectedSite: $selectedSite,
-                    lastUsedSite: lastUsedSite,
-                    recommendedSite: recommendedSite,
-                    isPresented: $showingSubOptions
-                )
-                .presentationDetents([.height(region == .belly ? 280 : 200)])
-                .presentationDragIndicator(.visible)
-            }
+        .sheet(item: $selectedRegion) { region in
+            SubOptionSheet(
+                region: region,
+                selectedSite: $selectedSite,
+                lastUsedSite: lastUsedSite,
+                recommendedSite: recommendedSite,
+                onDismiss: { selectedRegion = nil }
+            )
+            .presentationDetents([.height(region == .belly ? 320 : 240)])
+            .presentationDragIndicator(.visible)
+            .presentationBackground(Color(white: 0.12))
         }
     }
 
@@ -113,42 +109,44 @@ struct VisualBodySilhouette: View {
 }
 
 // MARK: - Injection Region (for two-step selection)
-enum InjectionRegion: String, CaseIterable {
-    case belly = "belly"              // Single belly region - drills down to 4-zone grid
-    case loveHandleLeft = "love_handle_left"
-    case loveHandleRight = "love_handle_right"
+enum InjectionRegion: String, CaseIterable, Identifiable {
+    case belly = "belly"
     case gluteLeft = "glute_left"
     case gluteRight = "glute_right"
     case thighLeft = "thigh_left"
     case thighRight = "thigh_right"
+    case deltLeft = "delt_left"
+    case deltRight = "delt_right"
+
+    var id: String { rawValue }
 
     var displayName: String {
         switch self {
         case .belly: return "Belly"
-        case .loveHandleLeft: return "Left Side"
-        case .loveHandleRight: return "Right Side"
         case .gluteLeft: return "Left Glute"
         case .gluteRight: return "Right Glute"
         case .thighLeft: return "Left Thigh"
         case .thighRight: return "Right Thigh"
+        case .deltLeft: return "Left Deltoid"
+        case .deltRight: return "Right Deltoid"
         }
     }
 
     var shortLabel: String {
         switch self {
         case .belly: return "Belly"
-        case .loveHandleLeft: return "Side"
-        case .loveHandleRight: return "Side"
-        case .gluteLeft: return "Glute"
-        case .gluteRight: return "Glute"
-        case .thighLeft: return "Thigh"
-        case .thighRight: return "Thigh"
+        case .gluteLeft: return "L Glute"
+        case .gluteRight: return "R Glute"
+        case .thighLeft: return "L Thigh"
+        case .thighRight: return "R Thigh"
+        case .deltLeft: return "L Delt"
+        case .deltRight: return "R Delt"
         }
     }
 
     var hasSubOptions: Bool {
         switch self {
-        case .thighLeft, .thighRight: return false
+        case .deltLeft, .deltRight: return false
         default: return true
         }
     }
@@ -161,49 +159,57 @@ enum InjectionRegion: String, CaseIterable {
             (.leftBellyLower, "Lower Left"),
             (.rightBellyLower, "Lower Right")
         ]
-        case .loveHandleLeft: return [(.leftLoveHandleUpper, "Upper"), (.leftLoveHandleLower, "Lower")]
-        case .loveHandleRight: return [(.rightLoveHandleUpper, "Upper"), (.rightLoveHandleLower, "Lower")]
         case .gluteLeft: return [(.gluteLeftUpper, "Upper"), (.gluteLeftLower, "Lower")]
         case .gluteRight: return [(.gluteRightUpper, "Upper"), (.gluteRightLower, "Lower")]
-        case .thighLeft: return [(.thighLeft, "Left Thigh")]
-        case .thighRight: return [(.thighRight, "Right Thigh")]
+        case .thighLeft: return [(.thighLeftUpper, "Upper"), (.thighLeftMiddle, "Middle"), (.thighLeftLower, "Lower")]
+        case .thighRight: return [(.thighRightUpper, "Upper"), (.thighRightMiddle, "Middle"), (.thighRightLower, "Lower")]
+        case .deltLeft, .deltRight: return []
         }
     }
 
     var directSite: PeptideInjectionSite? {
         switch self {
-        case .thighLeft: return .thighLeft
-        case .thighRight: return .thighRight
+        case .deltLeft: return .deltLeft
+        case .deltRight: return .deltRight
         default: return nil
         }
     }
 
-    // Position on body (calibrated for Body.png image)
+    // Position on body - scaled for larger silhouette
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .belly: return (0.50, 0.38)         // Center of belly
-        case .loveHandleLeft: return (0.22, 0.38)
-        case .loveHandleRight: return (0.78, 0.38)
-        case .gluteLeft: return (0.35, 0.52)
-        case .gluteRight: return (0.65, 0.52)
-        case .thighLeft: return (0.38, 0.72)
-        case .thighRight: return (0.62, 0.72)
+        case .belly: return (0.50, 0.38)
+        case .gluteLeft: return (0.32, 0.52)
+        case .gluteRight: return (0.68, 0.52)
+        case .thighLeft: return (0.36, 0.64)
+        case .thighRight: return (0.64, 0.64)
+        case .deltLeft: return (0.18, 0.20)
+        case .deltRight: return (0.82, 0.20)
         }
     }
 
-    // Check if any sub-site is selected/recommended/lastUsed
+    // Size of the highlight region
+    var regionSize: CGSize {
+        switch self {
+        case .belly: return CGSize(width: 80, height: 60)
+        case .gluteLeft, .gluteRight: return CGSize(width: 55, height: 50)
+        case .thighLeft, .thighRight: return CGSize(width: 45, height: 70)
+        case .deltLeft, .deltRight: return CGSize(width: 45, height: 45)
+        }
+    }
+
     func containsSite(_ site: String?) -> Bool {
         guard let site = site else { return false }
+        if let direct = directSite, direct.rawValue == site { return true }
         return subOptions.contains { $0.0.rawValue == site }
     }
 }
 
-// MARK: - Peptide Site Overlays (Two-Step)
+// MARK: - Peptide Site Overlays (Two-Step with Highlighted Regions)
 struct PeptideSiteOverlays: View {
     @Binding var selectedSite: String?
     let lastUsedSite: String?
     let recommendedSite: String?
-    @Binding var showingSubOptions: Bool
     @Binding var selectedRegion: InjectionRegion?
     let bodyWidth: CGFloat
     let bodyHeight: CGFloat
@@ -214,26 +220,30 @@ struct PeptideSiteOverlays: View {
 
     var body: some View {
         ForEach(InjectionRegion.allCases, id: \.self) { region in
-            RegionButton(
+            HighlightedRegionButton(
                 region: region,
                 isSelected: region.containsSite(selectedSite),
                 isRecommended: region.containsSite(recommendedSite),
                 isLastUsed: region.containsSite(lastUsedSite)
             ) {
-                if region.hasSubOptions {
-                    selectedRegion = region
-                    showingSubOptions = true
-                } else if let site = region.directSite {
-                    withAnimation(.easeOut(duration: 0.15)) {
-                        selectedSite = site.rawValue
-                    }
-                }
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                handleRegionTap(region)
             }
             .position(
                 x: offsetX + bodyWidth * region.position.x,
                 y: offsetY + bodyHeight * region.position.y
             )
+        }
+    }
+
+    private func handleRegionTap(_ region: InjectionRegion) {
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+
+        if region.hasSubOptions {
+            selectedRegion = region
+        } else if let site = region.directSite {
+            withAnimation(.easeOut(duration: 0.15)) {
+                selectedSite = site.rawValue
+            }
         }
     }
 }
@@ -252,7 +262,7 @@ struct PEDSiteOverlays: View {
 
     var body: some View {
         ForEach(PEDInjectionSite.allCases, id: \.self) { site in
-            PEDSiteButton(
+            PEDHighlightedButton(
                 site: site,
                 isSelected: selectedSite == site.rawValue,
                 isRecommended: recommendedSite == site.rawValue,
@@ -261,7 +271,7 @@ struct PEDSiteOverlays: View {
                 withAnimation(.easeOut(duration: 0.15)) {
                     selectedSite = site.rawValue
                 }
-                UIImpactFeedbackGenerator(style: .light).impactOccurred()
+                UIImpactFeedbackGenerator(style: .medium).impactOccurred()
             }
             .position(
                 x: offsetX + bodyWidth * site.bodyMapPosition.x,
@@ -271,51 +281,140 @@ struct PEDSiteOverlays: View {
     }
 }
 
-// MARK: - Region Button (with label)
-struct RegionButton: View {
+// MARK: - Highlighted Region Button (Replaces Circles)
+struct HighlightedRegionButton: View {
     let region: InjectionRegion
     let isSelected: Bool
     let isRecommended: Bool
     let isLastUsed: Bool
     let onTap: () -> Void
 
-    private let buttonSize: CGFloat = 54  // Larger for bigger body
-
-    private var backgroundColor: Color {
-        if isSelected { return .accentPrimary }
-        return Color.black.opacity(0.7)
+    private var fillColor: Color {
+        if isSelected {
+            return Color.accentPrimary.opacity(0.5)
+        } else if isRecommended {
+            return Color.statusSuccess.opacity(0.35)
+        } else if isLastUsed {
+            return Color.statusWarning.opacity(0.3)
+        }
+        return Color.white.opacity(0.08)
     }
 
     private var borderColor: Color {
-        if isSelected { return .accentPrimary }
-        if isRecommended { return .statusSuccess }
-        if isLastUsed { return .statusWarning }
-        return Color.white.opacity(0.4)
+        if isSelected {
+            return Color.accentPrimary
+        } else if isRecommended {
+            return Color.statusSuccess
+        } else if isLastUsed {
+            return Color.statusWarning
+        }
+        return Color.white.opacity(0.25)
     }
 
     var body: some View {
         Button(action: onTap) {
-            VStack(spacing: 2) {
+            VStack(spacing: 4) {
                 ZStack {
-                    // Glow for recommended
+                    // Glow effect for recommended
                     if isRecommended && !isSelected {
-                        Circle()
-                            .fill(Color.statusSuccess.opacity(0.4))
-                            .frame(width: buttonSize + 14, height: buttonSize + 14)
+                        RoundedRectangle(cornerRadius: 12)
+                            .fill(Color.statusSuccess.opacity(0.3))
+                            .frame(width: region.regionSize.width + 16, height: region.regionSize.height + 16)
+                            .blur(radius: 10)
+                    }
+
+                    // Main highlighted region
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(fillColor)
+                        .frame(width: region.regionSize.width, height: region.regionSize.height)
+                        .overlay(
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(borderColor, lineWidth: isSelected ? 3 : 2)
+                        )
+                        .shadow(color: isSelected ? .accentPrimary.opacity(0.6) : .clear, radius: 8)
+
+                    // Icons
+                    VStack(spacing: 2) {
+                        if isRecommended && !isSelected {
+                            Image(systemName: "star.fill")
+                                .font(.system(size: 14))
+                                .foregroundColor(.statusSuccess)
+                        }
+
+                        if region.hasSubOptions {
+                            Image(systemName: "chevron.down.circle.fill")
+                                .font(.system(size: 12))
+                                .foregroundColor(.white.opacity(0.7))
+                        }
+                    }
+                }
+
+                // Label
+                Text(region.shortLabel)
+                    .font(.system(size: 11, weight: .bold))
+                    .foregroundColor(.white)
+                    .shadow(color: .black.opacity(0.8), radius: 2)
+            }
+        }
+        .buttonStyle(.plain)
+        .scaleEffect(isSelected ? 1.08 : 1.0)
+        .animation(.easeOut(duration: 0.15), value: isSelected)
+        .accessibilityIdentifier("region_button_\(region.rawValue)")
+    }
+}
+
+// MARK: - PED Highlighted Button
+struct PEDHighlightedButton: View {
+    let site: PEDInjectionSite
+    let isSelected: Bool
+    let isRecommended: Bool
+    let isLastUsed: Bool
+    let onTap: () -> Void
+
+    private let buttonSize = CGSize(width: 50, height: 50)
+
+    private var fillColor: Color {
+        if isSelected {
+            return Color.accentPrimary.opacity(0.5)
+        } else if isRecommended {
+            return Color.statusSuccess.opacity(0.35)
+        } else if isLastUsed {
+            return Color.statusWarning.opacity(0.3)
+        }
+        return Color.white.opacity(0.08)
+    }
+
+    private var borderColor: Color {
+        if isSelected {
+            return Color.accentPrimary
+        } else if isRecommended {
+            return Color.statusSuccess
+        } else if isLastUsed {
+            return Color.statusWarning
+        }
+        return Color.white.opacity(0.25)
+    }
+
+    var body: some View {
+        Button(action: onTap) {
+            VStack(spacing: 4) {
+                ZStack {
+                    if isRecommended && !isSelected {
+                        RoundedRectangle(cornerRadius: 10)
+                            .fill(Color.statusSuccess.opacity(0.3))
+                            .frame(width: buttonSize.width + 12, height: buttonSize.height + 12)
                             .blur(radius: 8)
                     }
 
-                    // Main circle
-                    Circle()
-                        .fill(backgroundColor)
-                        .frame(width: buttonSize, height: buttonSize)
+                    RoundedRectangle(cornerRadius: 10)
+                        .fill(fillColor)
+                        .frame(width: buttonSize.width, height: buttonSize.height)
                         .overlay(
-                            Circle()
-                                .stroke(borderColor, lineWidth: 2)
+                            RoundedRectangle(cornerRadius: 10)
+                                .stroke(borderColor, lineWidth: isSelected ? 3 : 2)
                         )
-                        .shadow(color: isSelected ? .accentPrimary.opacity(0.5) : .clear, radius: 4)
+                        .shadow(color: isSelected ? .accentPrimary.opacity(0.6) : .clear, radius: 6)
 
-                    // Star for recommended
                     if isRecommended && !isSelected {
                         Image(systemName: "star.fill")
                             .font(.system(size: 12))
@@ -323,105 +422,38 @@ struct RegionButton: View {
                     }
                 }
 
-                // Label
-                Text(region.shortLabel)
-                    .font(.system(size: 12, weight: .semibold))
-                    .foregroundColor(.white)
-                    .shadow(color: .black, radius: 2)
-            }
-        }
-        .buttonStyle(.plain)
-        .scaleEffect(isSelected ? 1.1 : 1.0)
-        .animation(.easeOut(duration: 0.15), value: isSelected)
-        .accessibilityIdentifier("region_button_\(region.rawValue)")
-    }
-}
-
-// MARK: - PED Site Button (with label)
-struct PEDSiteButton: View {
-    let site: PEDInjectionSite
-    let isSelected: Bool
-    let isRecommended: Bool
-    let isLastUsed: Bool
-    let onTap: () -> Void
-
-    private let buttonSize: CGFloat = 50  // Larger for bigger body
-
-    private var backgroundColor: Color {
-        if isSelected { return .accentPrimary }
-        return Color.black.opacity(0.7)
-    }
-
-    private var borderColor: Color {
-        if isSelected { return .accentPrimary }
-        if isRecommended { return .statusSuccess }
-        if isLastUsed { return .statusWarning }
-        return Color.white.opacity(0.4)
-    }
-
-    var body: some View {
-        Button(action: onTap) {
-            VStack(spacing: 2) {
-                ZStack {
-                    // Glow for recommended
-                    if isRecommended && !isSelected {
-                        Circle()
-                            .fill(Color.statusSuccess.opacity(0.4))
-                            .frame(width: buttonSize + 12, height: buttonSize + 12)
-                            .blur(radius: 6)
-                    }
-
-                    // Main circle
-                    Circle()
-                        .fill(backgroundColor)
-                        .frame(width: buttonSize, height: buttonSize)
-                        .overlay(
-                            Circle()
-                                .stroke(borderColor, lineWidth: 2)
-                        )
-                        .shadow(color: isSelected ? .accentPrimary.opacity(0.5) : .clear, radius: 4)
-
-                    // Star for recommended
-                    if isRecommended && !isSelected {
-                        Image(systemName: "star.fill")
-                            .font(.system(size: 10))
-                            .foregroundColor(.statusSuccess)
-                    }
-                }
-
-                // Label
                 Text(site.shortName)
-                    .font(.system(size: 11, weight: .semibold))
+                    .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.white)
-                    .shadow(color: .black, radius: 2)
+                    .shadow(color: .black.opacity(0.8), radius: 2)
             }
         }
         .buttonStyle(.plain)
-        .scaleEffect(isSelected ? 1.1 : 1.0)
+        .scaleEffect(isSelected ? 1.08 : 1.0)
         .animation(.easeOut(duration: 0.15), value: isSelected)
         .accessibilityIdentifier("ped_site_button_\(site.rawValue)")
     }
 }
 
-// MARK: - Sub-Option Sheet
+// MARK: - Sub-Option Sheet (Fixed Navigation)
 struct SubOptionSheet: View {
     let region: InjectionRegion
     @Binding var selectedSite: String?
     let lastUsedSite: String?
     let recommendedSite: String?
-    @Binding var isPresented: Bool
+    let onDismiss: () -> Void
 
     var body: some View {
-        VStack(spacing: 16) {
+        VStack(spacing: 20) {
             // Header with close button
             HStack {
                 Text("Select \(region.displayName) Zone")
-                    .font(.headline)
-                    .fontWeight(.semibold)
+                    .font(.title3)
+                    .fontWeight(.bold)
                     .foregroundStyle(.white)
                 Spacer()
                 Button {
-                    isPresented = false
+                    onDismiss()
                 } label: {
                     Image(systemName: "xmark.circle.fill")
                         .font(.title2)
@@ -429,79 +461,74 @@ struct SubOptionSheet: View {
                 }
                 .accessibilityIdentifier("sub_option_sheet_close")
             }
-            .padding(.horizontal, 20)
-            .padding(.top, 20)
+            .padding(.horizontal, 24)
+            .padding(.top, 24)
 
-            // Explicit buttons - NO ForEach, just direct buttons
-            if region == .belly {
-                bellyZoneButtons
-            } else {
-                twoZoneButtons
+            // Zone buttons based on region
+            VStack(spacing: 12) {
+                switch region {
+                case .belly:
+                    bellyZoneGrid
+                case .thighLeft, .thighRight:
+                    thighZoneButtons
+                default:
+                    twoZoneButtons
+                }
             }
+            .padding(.horizontal, 24)
 
             Spacer()
         }
-        .presentationBackground(Color(white: 0.11))
     }
 
-    // MARK: - Belly: 4-zone grid (explicit, no ForEach)
+    // MARK: - Belly: 2x2 Grid
     @ViewBuilder
-    private var bellyZoneButtons: some View {
+    private var bellyZoneGrid: some View {
         VStack(spacing: 12) {
-            // Top row: Upper Left, Upper Right
             HStack(spacing: 12) {
-                zoneButton(
-                    site: .leftBellyUpper,
-                    label: "Upper Left"
-                )
-                zoneButton(
-                    site: .rightBellyUpper,
-                    label: "Upper Right"
-                )
+                zoneButton(site: .leftBellyUpper, label: "Upper Left")
+                zoneButton(site: .rightBellyUpper, label: "Upper Right")
             }
-            // Bottom row: Lower Left, Lower Right
             HStack(spacing: 12) {
-                zoneButton(
-                    site: .leftBellyLower,
-                    label: "Lower Left"
-                )
-                zoneButton(
-                    site: .rightBellyLower,
-                    label: "Lower Right"
-                )
+                zoneButton(site: .leftBellyLower, label: "Lower Left")
+                zoneButton(site: .rightBellyLower, label: "Lower Right")
             }
         }
-        .padding(.horizontal, 20)
     }
 
-    // MARK: - Other regions: 2-zone row
+    // MARK: - Thigh: 3 zones
+    @ViewBuilder
+    private var thighZoneButtons: some View {
+        let sites: [(PeptideInjectionSite, String)] = region == .thighLeft
+            ? [(.thighLeftUpper, "Upper"), (.thighLeftMiddle, "Middle"), (.thighLeftLower, "Lower")]
+            : [(.thighRightUpper, "Upper"), (.thighRightMiddle, "Middle"), (.thighRightLower, "Lower")]
+
+        HStack(spacing: 12) {
+            ForEach(sites, id: \.0.rawValue) { site, label in
+                zoneButton(site: site, label: label)
+            }
+        }
+    }
+
+    // MARK: - Other: 2 zones
     @ViewBuilder
     private var twoZoneButtons: some View {
+        let sites: [(PeptideInjectionSite, String)] = {
+            switch region {
+            case .gluteLeft: return [(.gluteLeftUpper, "Upper"), (.gluteLeftLower, "Lower")]
+            case .gluteRight: return [(.gluteRightUpper, "Upper"), (.gluteRightLower, "Lower")]
+            default: return []
+            }
+        }()
+
         HStack(spacing: 12) {
-            if let options = twoZoneOptions {
-                zoneButton(site: options.0.site, label: options.0.label)
-                zoneButton(site: options.1.site, label: options.1.label)
+            ForEach(sites, id: \.0.rawValue) { site, label in
+                zoneButton(site: site, label: label)
             }
         }
-        .padding(.horizontal, 20)
     }
 
-    private var twoZoneOptions: ((site: PeptideInjectionSite, label: String), (site: PeptideInjectionSite, label: String))? {
-        switch region {
-        case .loveHandleLeft:
-            return ((.leftLoveHandleUpper, "Upper"), (.leftLoveHandleLower, "Lower"))
-        case .loveHandleRight:
-            return ((.rightLoveHandleUpper, "Upper"), (.rightLoveHandleLower, "Lower"))
-        case .gluteLeft:
-            return ((.gluteLeftUpper, "Upper"), (.gluteLeftLower, "Lower"))
-        case .gluteRight:
-            return ((.gluteRightUpper, "Upper"), (.gluteRightLower, "Lower"))
-        default:
-            return nil
-        }
-    }
-
-    // MARK: - Zone Button (explicit implementation)
+    // MARK: - Zone Button
     @ViewBuilder
     private func zoneButton(site: PeptideInjectionSite, label: String) -> some View {
         let isSelected = selectedSite == site.rawValue
@@ -511,11 +538,11 @@ struct SubOptionSheet: View {
         Button {
             selectedSite = site.rawValue
             UIImpactFeedbackGenerator(style: .medium).impactOccurred()
-            DispatchQueue.main.asyncAfter(deadline: .now() + 0.25) {
-                isPresented = false
+            DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
+                onDismiss()
             }
         } label: {
-            HStack(spacing: 6) {
+            HStack(spacing: 8) {
                 if isRecommended && !isSelected {
                     Image(systemName: "star.fill")
                         .font(.caption)
@@ -523,30 +550,31 @@ struct SubOptionSheet: View {
                 }
                 Text(label)
                     .font(.headline)
+                    .fontWeight(.semibold)
                     .foregroundStyle(.white)
             }
             .frame(maxWidth: .infinity)
-            .padding(.vertical, 16)
+            .padding(.vertical, 18)
             .background(
-                isSelected ? Color.blue :
-                isRecommended ? Color.green.opacity(0.2) :
-                isLastUsed ? Color.yellow.opacity(0.2) :
+                isSelected ? Color.accentPrimary :
+                isRecommended ? Color.statusSuccess.opacity(0.25) :
+                isLastUsed ? Color.statusWarning.opacity(0.25) :
                 Color(white: 0.18)
             )
-            .clipShape(RoundedRectangle(cornerRadius: 12))
+            .clipShape(RoundedRectangle(cornerRadius: 14))
             .overlay(
-                RoundedRectangle(cornerRadius: 12)
+                RoundedRectangle(cornerRadius: 14)
                     .stroke(
-                        isSelected ? Color.blue :
-                        isRecommended ? Color.green :
-                        isLastUsed ? Color.yellow :
+                        isSelected ? Color.accentPrimary :
+                        isRecommended ? Color.statusSuccess :
+                        isLastUsed ? Color.statusWarning :
                         Color.gray.opacity(0.3),
-                        lineWidth: 2
+                        lineWidth: isSelected ? 3 : 2
                     )
             )
         }
         .buttonStyle(.plain)
-        .accessibilityIdentifier("sub_option_\(label.lowercased().replacingOccurrences(of: " ", with: "_"))")
+        .accessibilityIdentifier("zone_\(site.rawValue)")
     }
 }
 
@@ -587,7 +615,6 @@ struct LegendItem: View {
     }
 }
 
-
 #Preview("Peptide Sites") {
     ScrollView {
         VStack {
@@ -598,7 +625,7 @@ struct LegendItem: View {
                 injectionType: .subcutaneous,
                 selectedSite: .constant("left_belly_upper"),
                 lastUsedSite: "right_belly_lower",
-                recommendedSite: "left_love_handle_upper"
+                recommendedSite: "delt_left"
             )
         }
         .padding()

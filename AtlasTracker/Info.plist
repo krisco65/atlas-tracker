@@ -6,6 +6,8 @@
 	<string>Atlas Tracker needs access to read your weight data from Apple Health to track your progress alongside your supplement and compound usage.</string>
 	<key>NSHealthUpdateUsageDescription</key>
 	<string>Atlas Tracker needs access to save weight entries to Apple Health so your data stays synced across all your health apps.</string>
+	<key>NSFaceIDUsageDescription</key>
+	<string>Atlas Tracker uses Face ID to protect your health tracking data.</string>
 	<key>UIBackgroundModes</key>
 	<array>
 		<string>processing</string>
