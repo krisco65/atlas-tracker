@@ -147,26 +147,31 @@ struct AnalyticsView: View {
 
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Time Period Picker
-                        periodPicker
+                        if viewModel.doseLogs.isEmpty && viewModel.weightEntries.isEmpty {
+                            // Empty state for analytics
+                            analyticsEmptyState
+                        } else {
+                            // Time Period Picker
+                            periodPicker
 
-                        // Summary Cards
-                        summaryCards
+                            // Summary Cards
+                            summaryCards
 
-                        // Adherence Card
-                        adherenceCard
+                            // Adherence Card
+                            adherenceCard
 
-                        // Dose Frequency Chart
-                        if !viewModel.doseLogs.isEmpty {
-                            doseFrequencyChart
-                        }
+                            // Dose Frequency Chart
+                            if !viewModel.doseLogs.isEmpty {
+                                doseFrequencyChart
+                            }
 
-                        // Weight Tracking Section
-                        weightSection
+                            // Weight Tracking Section
+                            weightSection
 
-                        // Compounds Breakdown
-                        if !viewModel.dosesByCompound.isEmpty {
-                            compoundsBreakdown
+                            // Compounds Breakdown
+                            if !viewModel.dosesByCompound.isEmpty {
+                                compoundsBreakdown
+                            }
                         }
                     }
                     .padding()
@@ -194,6 +199,70 @@ struct AnalyticsView: View {
             .sheet(isPresented: $viewModel.showAddWeight) {
                 AddWeightSheet(viewModel: viewModel)
             }
+        }
+    }
+
+    // MARK: - Analytics Empty State
+    private var analyticsEmptyState: some View {
+        VStack(spacing: 20) {
+            Spacer()
+                .frame(height: 40)
+
+            Image(systemName: "chart.bar.fill")
+                .font(.system(size: 56))
+                .foregroundColor(.textTertiary)
+
+            Text("No Data Yet")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.textPrimary)
+
+            Text("Start logging doses to see your analytics. Your adherence, frequency charts, and compound breakdowns will appear here.")
+                .font(.subheadline)
+                .foregroundColor(.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 20)
+
+            VStack(alignment: .leading, spacing: 12) {
+                analyticsFeatureRow(icon: "chart.line.uptrend.xyaxis", text: "Adherence tracking", color: .statusSuccess)
+                analyticsFeatureRow(icon: "chart.bar.fill", text: "Dose frequency charts", color: .accentPrimary)
+                analyticsFeatureRow(icon: "scalemass", text: "Weight trend tracking", color: .accentSecondary)
+                analyticsFeatureRow(icon: "flask.fill", text: "Compound breakdowns", color: .categoryPeptide)
+            }
+            .padding(20)
+            .background(Color.backgroundSecondary)
+            .cornerRadius(16)
+
+            // Weight logging shortcut
+            Button {
+                viewModel.showAddWeight = true
+            } label: {
+                HStack {
+                    Image(systemName: "scalemass")
+                    Text("Log Your First Weight Entry")
+                }
+                .font(.subheadline)
+                .fontWeight(.semibold)
+                .foregroundColor(.accentPrimary)
+                .padding()
+                .frame(maxWidth: .infinity)
+                .background(Color.accentPrimary.opacity(0.12))
+                .cornerRadius(12)
+            }
+
+            Spacer()
+        }
+    }
+
+    private func analyticsFeatureRow(icon: String, text: String, color: Color) -> some View {
+        HStack(spacing: 12) {
+            Image(systemName: icon)
+                .font(.body)
+                .foregroundColor(color)
+                .frame(width: 24)
+            Text(text)
+                .font(.subheadline)
+                .foregroundColor(.textPrimary)
         }
     }
 

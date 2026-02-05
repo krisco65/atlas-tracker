@@ -12,6 +12,7 @@ struct DashboardView: View {
     @State private var showLogActions = false
     @State private var showDeleteConfirmation = false
     @State private var logToEdit: DoseLog?
+    @State private var showLibrary = false
 
     var body: some View {
         NavigationStack {
@@ -21,13 +22,18 @@ struct DashboardView: View {
 
                 ScrollView {
                     VStack(spacing: 20) {
-                        // Progress Card
-                        if viewModel.hasDosesToday {
-                            todayProgressCard
-                        }
+                        if viewModel.isNewUser {
+                            // Welcome empty state for brand new users
+                            welcomeCard
+                        } else {
+                            // Progress Card
+                            if viewModel.hasDosesToday {
+                                todayProgressCard
+                            }
 
-                        // Today's Doses
-                        todaysDosesSection
+                            // Today's Doses
+                            todaysDosesSection
+                        }
 
                         // Quick Tools (Calculator)
                         quickToolsCard
@@ -37,8 +43,10 @@ struct DashboardView: View {
                             lowStockSection
                         }
 
-                        // Quick Stats
-                        quickStatsCard
+                        // Quick Stats (hide for new users)
+                        if !viewModel.isNewUser {
+                            quickStatsCard
+                        }
 
                         // Recent Activity
                         if !viewModel.recentLogs.isEmpty {
@@ -83,6 +91,11 @@ struct DashboardView: View {
             .sheet(isPresented: $showReconstitutionCalculator) {
                 ReconstitutionCalculatorView()
             }
+            .sheet(isPresented: $showLibrary) {
+                NavigationStack {
+                    LibraryView(onClose: { showLibrary = false })
+                }
+            }
             .sheet(item: $logToEdit, onDismiss: {
                 viewModel.loadData()
             }) { log in
@@ -108,6 +121,67 @@ struct DashboardView: View {
                 }
             }
         }
+    }
+
+    // MARK: - Welcome Card (New User)
+    private var welcomeCard: some View {
+        VStack(spacing: 20) {
+            Image(systemName: "figure.strengthtraining.traditional")
+                .font(.system(size: 56))
+                .foregroundColor(.accentPrimary)
+                .padding(.top, 8)
+
+            Text("Ready to Start Tracking?")
+                .font(.title2)
+                .fontWeight(.bold)
+                .foregroundColor(.textPrimary)
+
+            Text("Add your first compound from the library to set up your schedule and start logging doses.")
+                .font(.subheadline)
+                .foregroundColor(.textSecondary)
+                .multilineTextAlignment(.center)
+                .padding(.horizontal, 8)
+
+            VStack(spacing: 12) {
+                Button {
+                    showLibrary = true
+                } label: {
+                    HStack {
+                        Image(systemName: "books.vertical.fill")
+                        Text("Browse Compound Library")
+                    }
+                    .primaryButtonStyle()
+                }
+
+                HStack(spacing: 16) {
+                    getStartedStep(number: "1", text: "Pick a compound")
+                    getStartedStep(number: "2", text: "Set your schedule")
+                    getStartedStep(number: "3", text: "Log your doses")
+                }
+                .padding(.top, 4)
+            }
+        }
+        .padding(24)
+        .background(Color.backgroundSecondary)
+        .cornerRadius(16)
+    }
+
+    private func getStartedStep(number: String, text: String) -> some View {
+        VStack(spacing: 6) {
+            Text(number)
+                .font(.headline)
+                .fontWeight(.bold)
+                .foregroundColor(.accentPrimary)
+                .frame(width: 28, height: 28)
+                .background(Color.accentPrimary.opacity(0.15))
+                .clipShape(Circle())
+
+            Text(text)
+                .font(.caption)
+                .foregroundColor(.textSecondary)
+                .multilineTextAlignment(.center)
+        }
+        .frame(maxWidth: .infinity)
     }
 
     // MARK: - Quick Tools Card
@@ -199,9 +273,11 @@ struct DashboardView: View {
 
             if viewModel.todaysDoses.isEmpty {
                 EmptyStateView(
-                    icon: "calendar.badge.checkmark",
-                    title: "No Doses Today",
-                    message: "You're all caught up! No scheduled doses for today."
+                    icon: "checkmark.circle",
+                    title: "No Doses Scheduled Today",
+                    message: viewModel.activeCompoundsCount > 0
+                        ? "You're all caught up! Your next dose is on a different day."
+                        : "Add a compound from the Library tab and set up a schedule to see your daily doses here."
                 )
             } else {
                 ForEach(viewModel.todaysDoses, id: \.id) { tracked in

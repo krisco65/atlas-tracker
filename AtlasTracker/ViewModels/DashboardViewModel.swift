@@ -27,6 +27,10 @@ final class DashboardViewModel {
         return !lowStockItems.isEmpty
     }
 
+    var isNewUser: Bool {
+        return activeTracked.isEmpty && recentLogs.isEmpty
+    }
+
     var todaysCompletedCount: Int {
         // Count how many of today's doses have been logged today
         let today = Date().startOfDay
