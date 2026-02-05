@@ -6,49 +6,38 @@ final class InjectionSiteTests: XCTestCase {
     // MARK: - PED Injection Site Tests
 
     func testPEDInjectionSite_AllCasesExist() {
-        XCTAssertEqual(PEDInjectionSite.allCases.count, 8, "Should have 8 PED sites")
+        XCTAssertEqual(PEDInjectionSite.allCases.count, 12, "Should have 12 PED sites")
     }
 
     func testPEDInjectionSite_DisplayName() {
-        XCTAssertEqual(PEDInjectionSite.gluteLeft.displayName, "Left Glute")
-        XCTAssertEqual(PEDInjectionSite.gluteRight.displayName, "Right Glute")
+        XCTAssertEqual(PEDInjectionSite.gluteLeftUpper.displayName, "Left Glute - Upper")
+        XCTAssertEqual(PEDInjectionSite.gluteRightLower.displayName, "Right Glute - Lower")
         XCTAssertEqual(PEDInjectionSite.deltLeft.displayName, "Left Delt")
         XCTAssertEqual(PEDInjectionSite.deltRight.displayName, "Right Delt")
         XCTAssertEqual(PEDInjectionSite.quadLeft.displayName, "Left Quad")
         XCTAssertEqual(PEDInjectionSite.quadRight.displayName, "Right Quad")
-        XCTAssertEqual(PEDInjectionSite.vgLeft.displayName, "Left VG")
-        XCTAssertEqual(PEDInjectionSite.vgRight.displayName, "Right VG")
+        XCTAssertEqual(PEDInjectionSite.vgLeftUpper.displayName, "Left VG - Upper")
+        XCTAssertEqual(PEDInjectionSite.vgRightLower.displayName, "Right VG - Lower")
     }
 
     func testPEDInjectionSite_ShortName() {
-        XCTAssertEqual(PEDInjectionSite.gluteLeft.shortName, "L Glute")
+        XCTAssertEqual(PEDInjectionSite.gluteLeftUpper.shortName, "L Glute U")
         XCTAssertEqual(PEDInjectionSite.deltRight.shortName, "R Delt")
     }
 
     func testPEDInjectionSite_BodyPart() {
-        XCTAssertEqual(PEDInjectionSite.gluteLeft.bodyPart, "Glute")
-        XCTAssertEqual(PEDInjectionSite.gluteRight.bodyPart, "Glute")
+        XCTAssertEqual(PEDInjectionSite.gluteLeftUpper.bodyPart, "Glute")
+        XCTAssertEqual(PEDInjectionSite.gluteRightLower.bodyPart, "Glute")
         XCTAssertEqual(PEDInjectionSite.deltLeft.bodyPart, "Delt")
         XCTAssertEqual(PEDInjectionSite.quadLeft.bodyPart, "Quad")
-        XCTAssertEqual(PEDInjectionSite.vgLeft.bodyPart, "Ventrogluteal")
+        XCTAssertEqual(PEDInjectionSite.vgLeftUpper.bodyPart, "Ventrogluteal")
     }
 
     func testPEDInjectionSite_Side() {
-        XCTAssertEqual(PEDInjectionSite.gluteLeft.side, "Left")
-        XCTAssertEqual(PEDInjectionSite.gluteRight.side, "Right")
-        XCTAssertTrue(PEDInjectionSite.gluteLeft.isLeftSide)
-        XCTAssertFalse(PEDInjectionSite.gluteRight.isLeftSide)
-    }
-
-    func testPEDInjectionSite_OppositeSite() {
-        XCTAssertEqual(PEDInjectionSite.gluteLeft.oppositeSite, .gluteRight)
-        XCTAssertEqual(PEDInjectionSite.gluteRight.oppositeSite, .gluteLeft)
-        XCTAssertEqual(PEDInjectionSite.deltLeft.oppositeSite, .deltRight)
-        XCTAssertEqual(PEDInjectionSite.deltRight.oppositeSite, .deltLeft)
-        XCTAssertEqual(PEDInjectionSite.quadLeft.oppositeSite, .quadRight)
-        XCTAssertEqual(PEDInjectionSite.quadRight.oppositeSite, .quadLeft)
-        XCTAssertEqual(PEDInjectionSite.vgLeft.oppositeSite, .vgRight)
-        XCTAssertEqual(PEDInjectionSite.vgRight.oppositeSite, .vgLeft)
+        XCTAssertEqual(PEDInjectionSite.gluteLeftUpper.side, "Left")
+        XCTAssertEqual(PEDInjectionSite.gluteRightUpper.side, "Right")
+        XCTAssertTrue(PEDInjectionSite.gluteLeftUpper.isLeftSide)
+        XCTAssertFalse(PEDInjectionSite.gluteRightUpper.isLeftSide)
     }
 
     func testPEDInjectionSite_Grouped() {
@@ -75,38 +64,38 @@ final class InjectionSiteTests: XCTestCase {
     // MARK: - Peptide Injection Site Tests
 
     func testPeptideInjectionSite_AllCasesExist() {
-        XCTAssertEqual(PeptideInjectionSite.allCases.count, 16, "Should have 16 peptide sites")
+        XCTAssertEqual(PeptideInjectionSite.allCases.count, 18, "Should have 18 peptide sites")
     }
 
     func testPeptideInjectionSite_DisplayName() {
-        XCTAssertEqual(PeptideInjectionSite.leftBellyUpper.displayName, "Left of Navel - Upper")
-        XCTAssertEqual(PeptideInjectionSite.rightBellyLower.displayName, "Right of Navel - Lower")
-        XCTAssertEqual(PeptideInjectionSite.thighLeft.displayName, "Left Thigh")
-        XCTAssertEqual(PeptideInjectionSite.thighRight.displayName, "Right Thigh")
+        XCTAssertEqual(PeptideInjectionSite.leftBellyUpper.displayName, "Belly - Upper Left")
+        XCTAssertEqual(PeptideInjectionSite.rightBellyLower.displayName, "Belly - Lower Right")
+        XCTAssertEqual(PeptideInjectionSite.thighLeftUpper.displayName, "Left Thigh - Upper")
+        XCTAssertEqual(PeptideInjectionSite.thighRightMiddle.displayName, "Right Thigh - Middle")
     }
 
     func testPeptideInjectionSite_BodyPart() {
         XCTAssertEqual(PeptideInjectionSite.leftBellyUpper.bodyPart, "Belly")
-        XCTAssertEqual(PeptideInjectionSite.leftLoveHandleUpper.bodyPart, "Love Handles")
         XCTAssertEqual(PeptideInjectionSite.gluteLeftUpper.bodyPart, "Glutes")
-        XCTAssertEqual(PeptideInjectionSite.thighLeft.bodyPart, "Thighs")
+        XCTAssertEqual(PeptideInjectionSite.thighLeftUpper.bodyPart, "Thighs")
+        XCTAssertEqual(PeptideInjectionSite.deltLeft.bodyPart, "Deltoids")
     }
 
     func testPeptideInjectionSite_IsLeftSide() {
         XCTAssertTrue(PeptideInjectionSite.leftBellyUpper.isLeftSide)
-        XCTAssertTrue(PeptideInjectionSite.leftLoveHandleUpper.isLeftSide)
         XCTAssertTrue(PeptideInjectionSite.gluteLeftUpper.isLeftSide)
-        XCTAssertTrue(PeptideInjectionSite.thighLeft.isLeftSide)
+        XCTAssertTrue(PeptideInjectionSite.thighLeftUpper.isLeftSide)
+        XCTAssertTrue(PeptideInjectionSite.deltLeft.isLeftSide)
 
         XCTAssertFalse(PeptideInjectionSite.rightBellyUpper.isLeftSide)
-        XCTAssertFalse(PeptideInjectionSite.rightLoveHandleUpper.isLeftSide)
         XCTAssertFalse(PeptideInjectionSite.gluteRightUpper.isLeftSide)
-        XCTAssertFalse(PeptideInjectionSite.thighRight.isLeftSide)
+        XCTAssertFalse(PeptideInjectionSite.thighRightUpper.isLeftSide)
+        XCTAssertFalse(PeptideInjectionSite.deltRight.isLeftSide)
     }
 
     func testPeptideInjectionSite_Grouped() {
         let grouped = PeptideInjectionSite.grouped
-        XCTAssertEqual(grouped.count, 6, "Should have 6 groups")
+        XCTAssertEqual(grouped.count, 5, "Should have 5 groups")
     }
 
     func testPeptideInjectionSite_BodyMapPosition() {
@@ -122,9 +111,9 @@ final class InjectionSiteTests: XCTestCase {
     // MARK: - Unified Injection Site Tests
 
     func testInjectionSite_FromRawValue_PED() {
-        let site = InjectionSite.from(rawValue: "glute_left", category: .ped)
+        let site = InjectionSite.from(rawValue: "glute_left_upper", category: .ped)
         if case .ped(let pedSite) = site {
-            XCTAssertEqual(pedSite, .gluteLeft)
+            XCTAssertEqual(pedSite, .gluteLeftUpper)
         } else {
             XCTFail("Should parse as PED site")
         }
@@ -149,19 +138,19 @@ final class InjectionSiteTests: XCTestCase {
     }
 
     func testInjectionSite_DisplayName() {
-        let pedSite = InjectionSite.ped(.gluteLeft)
-        XCTAssertEqual(pedSite.displayName, "Left Glute")
+        let pedSite = InjectionSite.ped(.gluteLeftUpper)
+        XCTAssertEqual(pedSite.displayName, "Left Glute - Upper")
 
         let peptideSite = InjectionSite.peptide(.leftBellyUpper)
-        XCTAssertEqual(peptideSite.displayName, "Left of Navel - Upper")
+        XCTAssertEqual(peptideSite.displayName, "Belly - Upper Left")
 
         let none = InjectionSite.none
         XCTAssertEqual(none.displayName, "Not Applicable")
     }
 
     func testInjectionSite_RawValue() {
-        let pedSite = InjectionSite.ped(.gluteLeft)
-        XCTAssertEqual(pedSite.rawValue, "glute_left")
+        let pedSite = InjectionSite.ped(.gluteLeftUpper)
+        XCTAssertEqual(pedSite.rawValue, "glute_left_upper")
 
         let peptideSite = InjectionSite.peptide(.leftBellyUpper)
         XCTAssertEqual(peptideSite.rawValue, "left_belly_upper")
@@ -171,7 +160,7 @@ final class InjectionSiteTests: XCTestCase {
     }
 
     func testInjectionSite_InjectionType() {
-        let pedSite = InjectionSite.ped(.gluteLeft)
+        let pedSite = InjectionSite.ped(.gluteLeftUpper)
         XCTAssertEqual(pedSite.injectionType, .intramuscular)
 
         let peptideSite = InjectionSite.peptide(.leftBellyUpper)

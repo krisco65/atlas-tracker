@@ -78,9 +78,9 @@ final class InjectionSiteRecommendationService {
             return (site: site, date: date)
         }
 
-        // If no history, start with left glute
+        // If no history, start with left glute upper
         guard !history.isEmpty else {
-            return .gluteLeft
+            return .gluteLeftUpper
         }
 
         // Get last used site
@@ -123,7 +123,7 @@ final class InjectionSiteRecommendationService {
             return a.lastUsed < b.lastUsed // Tie-break: older = better
         }
 
-        return sorted.first?.site ?? .gluteLeft
+        return sorted.first?.site ?? .gluteLeftUpper
     }
 
     // MARK: - Body Part Balancing for Peptides

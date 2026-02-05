@@ -88,7 +88,7 @@ enum SideEffect: String, CaseIterable, Codable, Identifiable {
     var icon: String {
         switch self {
         case .nausea, .vomiting, .diarrhea, .constipation:
-            return "stomach"
+            return "staroflife"
         case .decreasedAppetite, .increasedAppetite:
             return "fork.knife"
         case .headache, .dizziness, .brainFog:
