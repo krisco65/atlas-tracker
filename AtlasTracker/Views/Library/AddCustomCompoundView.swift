@@ -67,7 +67,7 @@ struct AddCustomCompoundView: View {
                             if let error = nameValidationError, !trimmedName.isEmpty {
                                 Text(error)
                                     .font(.caption)
-                                    .foregroundColor(.red)
+                                    .foregroundColor(.statusError)
                             }
                         }
 

@@ -196,7 +196,7 @@ struct LogDoseView: View {
             if let error = viewModel.dosageValidationError {
                 Text(error)
                     .font(.caption)
-                    .foregroundColor(.red)
+                    .foregroundColor(.statusError)
             }
         }
     }
