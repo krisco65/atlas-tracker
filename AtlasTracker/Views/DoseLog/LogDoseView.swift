@@ -119,9 +119,15 @@ struct LogDoseView: View {
     // MARK: - Compound Selector
     private var compoundSelector: some View {
         VStack(alignment: .leading, spacing: 12) {
-            Text("Compound")
-                .font(.headline)
-                .foregroundColor(.textPrimary)
+            HStack {
+                Text("Select Compound")
+                    .font(.headline)
+                    .foregroundColor(.textPrimary)
+                Spacer()
+                Text("\(viewModel.trackedCompounds.count) tracked")
+                    .font(.caption)
+                    .foregroundColor(.textTertiary)
+            }
 
             if viewModel.trackedCompounds.isEmpty {
                 EmptyStateView(
@@ -130,21 +136,16 @@ struct LogDoseView: View {
                     message: "Start tracking compounds in the Library to log doses"
                 )
             } else {
-                ScrollView(.horizontal, showsIndicators: false) {
-                    HStack(spacing: 12) {
-                        ForEach(viewModel.trackedCompounds, id: \.id) { tracked in
-                            CompoundChip(
-                                tracked: tracked,
-                                isSelected: viewModel.selectedCompound?.id == tracked.compound?.id
-                            ) {
-                                viewModel.selectTrackedCompound(tracked)
-                            }
+                // Vertical scrollable list of compounds
+                VStack(spacing: 8) {
+                    ForEach(viewModel.trackedCompounds, id: \.id) { tracked in
+                        CompoundSelectRow(
+                            tracked: tracked,
+                            isSelected: viewModel.selectedCompound?.id == tracked.compound?.id
+                        ) {
+                            viewModel.selectTrackedCompound(tracked)
                         }
                     }
-                }
-
-                if let compound = viewModel.selectedCompound {
-                    SelectedCompoundCard(compound: compound)
                 }
             }
         }
@@ -430,6 +431,55 @@ struct LogDoseView: View {
 }
 
 // MARK: - Supporting Views
+
+// MARK: - Compound Select Row (Full-width, vertical layout)
+struct CompoundSelectRow: View {
+    let tracked: TrackedCompound
+    let isSelected: Bool
+    let onTap: () -> Void
+
+    var body: some View {
+        Button(action: onTap) {
+            HStack(spacing: 12) {
+                // Category indicator
+                Circle()
+                    .fill(tracked.compound?.category.color ?? .gray)
+                    .frame(width: 12, height: 12)
+
+                // Compound info
+                VStack(alignment: .leading, spacing: 2) {
+                    Text(tracked.compound?.name ?? "Unknown")
+                        .font(.subheadline)
+                        .fontWeight(isSelected ? .semibold : .regular)
+                        .foregroundColor(isSelected ? .white : .textPrimary)
+                        .lineLimit(2)
+
+                    Text(tracked.dosageString)
+                        .font(.caption)
+                        .foregroundColor(isSelected ? .white.opacity(0.8) : .textSecondary)
+                }
+
+                Spacer()
+
+                // Selection indicator
+                if isSelected {
+                    Image(systemName: "checkmark.circle.fill")
+                        .foregroundColor(.white)
+                        .font(.title3)
+                }
+            }
+            .padding(.horizontal, 16)
+            .padding(.vertical, 14)
+            .background(isSelected ? (tracked.compound?.category.color ?? .accentPrimary) : Color.backgroundSecondary)
+            .cornerRadius(12)
+            .overlay(
+                RoundedRectangle(cornerRadius: 12)
+                    .stroke(isSelected ? Color.clear : Color.backgroundTertiary, lineWidth: 1)
+            )
+        }
+        .buttonStyle(.plain)
+    }
+}
 
 struct CompoundChip: View {
     let tracked: TrackedCompound
