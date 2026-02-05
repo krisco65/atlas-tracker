@@ -182,13 +182,13 @@ enum InjectionRegion: String, CaseIterable, Identifiable {
     // Position on body - calibrated for larger silhouette
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .belly: return (0.50, 0.38)
+        case .belly: return (0.50, 0.42)      // Moved down to actual belly (was 0.38)
         case .gluteLeft: return (0.32, 0.52)
         case .gluteRight: return (0.68, 0.52)
         case .thighLeft: return (0.36, 0.64)
         case .thighRight: return (0.64, 0.64)
-        case .deltLeft: return (0.22, 0.26)   // Moved down to be on shoulders
-        case .deltRight: return (0.78, 0.26)  // Moved down to be on shoulders
+        case .deltLeft: return (0.24, 0.26)   // Symmetric with right (moved in from 0.22)
+        case .deltRight: return (0.76, 0.26)  // Symmetric with left (moved in from 0.78)
         }
     }
 

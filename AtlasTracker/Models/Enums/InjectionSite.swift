@@ -220,13 +220,13 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
     // Body shape positioning (calibrated for scaled-up body silhouette)
     var bodyMapPosition: (x: CGFloat, y: CGFloat) {
         switch self {
-        // Belly zones (3 columns × 2 rows)
-        case .leftBellyUpper: return (0.38, 0.36)
-        case .centerBellyUpper: return (0.50, 0.36)
-        case .rightBellyUpper: return (0.62, 0.36)
-        case .leftBellyLower: return (0.38, 0.42)
-        case .centerBellyLower: return (0.50, 0.42)
-        case .rightBellyLower: return (0.62, 0.42)
+        // Belly zones (3 columns × 2 rows) - centered on actual belly
+        case .leftBellyUpper: return (0.38, 0.40)
+        case .centerBellyUpper: return (0.50, 0.40)
+        case .rightBellyUpper: return (0.62, 0.40)
+        case .leftBellyLower: return (0.38, 0.46)
+        case .centerBellyLower: return (0.50, 0.46)
+        case .rightBellyLower: return (0.62, 0.46)
         // Glutes
         case .gluteLeftUpper: return (0.32, 0.50)
         case .gluteLeftLower: return (0.32, 0.56)
@@ -239,9 +239,9 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
         case .thighRightUpper: return (0.64, 0.60)
         case .thighRightMiddle: return (0.64, 0.66)
         case .thighRightLower: return (0.64, 0.72)
-        // Deltoids (on shoulders, not above)
-        case .deltLeft: return (0.20, 0.22)
-        case .deltRight: return (0.80, 0.22)
+        // Deltoids - symmetric positioning on shoulders
+        case .deltLeft: return (0.24, 0.26)
+        case .deltRight: return (0.76, 0.26)
         }
     }
 }
