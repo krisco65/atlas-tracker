@@ -4,11 +4,15 @@ import SwiftUI
 
 // MARK: - Reconstitution Result
 struct ReconstitutionResult {
-    let concentration: Double       // mg per ml
+    let bacWaterMl: Double          // how much BAC water to add (the answer)
+    let concentration: Double       // mg per ml after reconstitution
     let volumeToDrawMl: Double     // ml to draw for desired dose
-    let syringeUnits: Double       // insulin syringe units (100-unit syringe)
+    let syringeUnits: Double       // insulin syringe units per dose
     let dosesPerVial: Double       // number of doses per vial
-    let totalVolumeMl: Double      // total volume after reconstitution
+
+    var bacWaterString: String {
+        String(format: "%.2f ml", bacWaterMl)
+    }
 
     var concentrationString: String {
         String(format: "%.2f mg/ml", concentration)
@@ -27,13 +31,25 @@ struct ReconstitutionResult {
     }
 
     // Warning states
-    var isVolumeVerySmall: Bool {
-        volumeToDrawMl < 0.05 // Less than 5 units on insulin syringe
+    var isBacWaterVerySmall: Bool {
+        bacWaterMl < 0.3
+    }
+
+    var isBacWaterLarge: Bool {
+        bacWaterMl > 5.0
     }
 
     var isVolumeLarge: Bool {
-        volumeToDrawMl > 1.0 // More than 1ml per injection
+        volumeToDrawMl > 1.0
     }
+}
+
+// MARK: - Vial Size Unit
+enum VialSizeUnit: String, CaseIterable {
+    case mg = "mg"
+    case iu = "IU"
+
+    var displayName: String { rawValue }
 }
 
 // MARK: - Reconstitution View Model
@@ -41,12 +57,17 @@ struct ReconstitutionResult {
 final class ReconstitutionViewModel {
 
     // MARK: - Input Properties
-    var vialSizeMg: String = ""
-    var desiredDoseMg: String = ""
-    var bacWaterMl: String = ""
 
-    // Toggle between mg and mcg for dose input
-    var doseUnitIsMcg: Bool = false
+    // Step 1: Vial size
+    var vialSize: String = ""
+    var vialSizeUnit: VialSizeUnit = .mg
+
+    // Step 2: Desired dose per injection
+    var desiredDose: String = ""
+    var doseUnitIsMcg: Bool = false  // toggle between mg/IU and mcg
+
+    // Step 3: Syringe units (how many units on the syringe per dose)
+    var syringeUnits: String = "20"
 
     // MARK: - Output Properties
     var result: ReconstitutionResult?
@@ -56,127 +77,144 @@ final class ReconstitutionViewModel {
     // MARK: - Selected Compound (for saving settings)
     var selectedCompound: TrackedCompound?
 
+    // MARK: - Backward compat: mapped property for presets
+    var vialSizeMg: String {
+        get { vialSize }
+        set { vialSize = newValue }
+    }
+
+    var desiredDoseMg: String {
+        get { desiredDose }
+        set { desiredDose = newValue }
+    }
+
     // MARK: - Common Presets
     struct Preset: Identifiable {
         let id = UUID()
         let name: String
-        let vialSizeMg: Double
-        let typicalDoseMcg: Double
-        let suggestedBacMl: Double
+        let vialSize: Double
+        let vialUnit: VialSizeUnit
+        let typicalDose: Double    // in the dose display unit
+        let doseIsMcg: Bool
+        let syringeUnits: Double
     }
 
     let commonPresets: [Preset] = [
-        Preset(name: "HGH (10 IU)", vialSizeMg: 3.33, typicalDoseMcg: 333, suggestedBacMl: 1.0),
-        Preset(name: "BPC-157 (5mg)", vialSizeMg: 5, typicalDoseMcg: 250, suggestedBacMl: 2.0),
-        Preset(name: "TB-500 (5mg)", vialSizeMg: 5, typicalDoseMcg: 500, suggestedBacMl: 2.0),
-        Preset(name: "Tirzepatide (5mg)", vialSizeMg: 5, typicalDoseMcg: 2500, suggestedBacMl: 1.0),
-        Preset(name: "Semaglutide (3mg)", vialSizeMg: 3, typicalDoseMcg: 250, suggestedBacMl: 1.5),
-        Preset(name: "CJC-1295 (2mg)", vialSizeMg: 2, typicalDoseMcg: 100, suggestedBacMl: 2.0),
-        Preset(name: "Ipamorelin (2mg)", vialSizeMg: 2, typicalDoseMcg: 100, suggestedBacMl: 2.0),
+        Preset(name: "Retatrutide (10mg)", vialSize: 10, vialUnit: .mg, typicalDose: 2, doseIsMcg: false, syringeUnits: 20),
+        Preset(name: "HGH (10 IU)", vialSize: 10, vialUnit: .iu, typicalDose: 2, doseIsMcg: false, syringeUnits: 20),
+        Preset(name: "HCG (5000 IU)", vialSize: 5000, vialUnit: .iu, typicalDose: 500, doseIsMcg: false, syringeUnits: 20),
+        Preset(name: "BPC-157 (5mg)", vialSize: 5, vialUnit: .mg, typicalDose: 250, doseIsMcg: true, syringeUnits: 20),
+        Preset(name: "Tirzepatide (5mg)", vialSize: 5, vialUnit: .mg, typicalDose: 2.5, doseIsMcg: false, syringeUnits: 20),
+        Preset(name: "Semaglutide (3mg)", vialSize: 3, vialUnit: .mg, typicalDose: 250, doseIsMcg: true, syringeUnits: 25),
+        Preset(name: "CJC/Ipa (2mg)", vialSize: 2, vialUnit: .mg, typicalDose: 100, doseIsMcg: true, syringeUnits: 20),
     ]
 
     // MARK: - Computed Properties
 
     var canCalculate: Bool {
-        guard let vial = Double(vialSizeMg), vial > 0,
-              let dose = Double(desiredDoseMg), dose > 0,
-              let bac = Double(bacWaterMl), bac > 0 else {
+        guard let vial = Double(vialSize), vial > 0,
+              let dose = doseInVialUnits, dose > 0,
+              let units = Double(syringeUnits), units > 0 else {
             return false
         }
-        return true
+        // Dose must be <= vial size (in same units)
+        return dose <= vial
     }
 
-    var desiredDoseInMg: Double? {
-        guard let dose = Double(desiredDoseMg), dose > 0 else { return nil }
-        return doseUnitIsMcg ? dose / 1000 : dose
+    /// Converts the desired dose into the same unit as the vial (mg or IU)
+    var doseInVialUnits: Double? {
+        guard let dose = Double(desiredDose), dose > 0 else { return nil }
+        if vialSizeUnit == .mg && doseUnitIsMcg {
+            return dose / 1000  // mcg → mg
+        }
+        return dose
     }
 
     var doseUnitLabel: String {
-        doseUnitIsMcg ? "mcg" : "mg"
+        if vialSizeUnit == .iu {
+            return "IU"
+        }
+        return doseUnitIsMcg ? "mcg" : "mg"
     }
 
-    // MARK: - Calculation
+    // MARK: - Calculation (solves for BAC water)
 
     func calculate() {
         errorMessage = nil
 
-        guard let vialMg = Double(vialSizeMg), vialMg > 0 else {
-            errorMessage = "Please enter a valid vial size"
+        guard let vial = Double(vialSize), vial > 0 else {
+            errorMessage = "Enter a valid vial size"
             result = nil
             return
         }
 
-        guard let doseMg = desiredDoseInMg, doseMg > 0 else {
-            errorMessage = "Please enter a valid desired dose"
+        guard let dose = doseInVialUnits, dose > 0 else {
+            errorMessage = "Enter a valid desired dose"
             result = nil
             return
         }
 
-        guard let bacMl = Double(bacWaterMl), bacMl > 0 else {
-            errorMessage = "Please enter a valid BAC water amount"
+        guard let units = Double(syringeUnits), units > 0, units <= 100 else {
+            errorMessage = "Enter valid syringe units (1-100)"
             result = nil
             return
         }
 
-        // Validate dose isn't larger than vial
-        if doseMg > vialMg {
-            errorMessage = "Desired dose cannot exceed vial size"
+        if dose > vial {
+            errorMessage = "Dose cannot exceed vial size"
             result = nil
             return
         }
 
-        // Calculate concentration: mg per ml
-        let concentration = vialMg / bacMl
+        // Formula: bacWaterMl = (syringeUnits * vialSize) / (dose * 100)
+        // Derivation:
+        //   syringeUnits = volumeToDraw * 100
+        //   volumeToDraw = dose / concentration
+        //   concentration = vialSize / bacWater
+        //   => syringeUnits = (dose * bacWater / vialSize) * 100
+        //   => bacWater = (syringeUnits * vialSize) / (dose * 100)
+        let bacWaterMl = (units * vial) / (dose * 100)
 
-        // Calculate volume to draw for desired dose
-        let volumeToDraw = doseMg / concentration
-
-        // Calculate insulin syringe units (100-unit syringe = 1ml)
-        let syringeUnits = volumeToDraw * 100
-
-        // Calculate doses per vial
-        let dosesPerVial = vialMg / doseMg
+        let concentration = vial / bacWaterMl
+        let volumeToDraw = dose / concentration
+        let dosesPerVial = vial / dose
 
         result = ReconstitutionResult(
+            bacWaterMl: bacWaterMl,
             concentration: concentration,
             volumeToDrawMl: volumeToDraw,
-            syringeUnits: syringeUnits,
-            dosesPerVial: dosesPerVial,
-            totalVolumeMl: bacMl
+            syringeUnits: units,
+            dosesPerVial: dosesPerVial
         )
     }
 
     // MARK: - Apply Preset
 
     func applyPreset(_ preset: Preset) {
-        vialSizeMg = String(format: "%.2f", preset.vialSizeMg)
-        desiredDoseMg = String(format: "%.0f", preset.typicalDoseMcg)
-        bacWaterMl = String(format: "%.1f", preset.suggestedBacMl)
-        doseUnitIsMcg = true
+        vialSize = preset.vialUnit == .iu && preset.vialSize >= 1000
+            ? String(format: "%.0f", preset.vialSize)
+            : String(format: "%g", preset.vialSize)
+        vialSizeUnit = preset.vialUnit
+        desiredDose = preset.doseIsMcg
+            ? String(format: "%.0f", preset.typicalDose)
+            : String(format: "%g", preset.typicalDose)
+        doseUnitIsMcg = preset.doseIsMcg
+        syringeUnits = String(format: "%.0f", preset.syringeUnits)
 
-        // Auto-calculate after applying preset
         calculate()
-
-        // Haptic feedback
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
     }
 
     // MARK: - Save to Compound
 
     func saveToCompound() {
         guard let tracked = selectedCompound,
-              let bacMl = Double(bacWaterMl),
               let result = result else { return }
 
-        tracked.reconstitutionBAC = bacMl
+        tracked.reconstitutionBAC = result.bacWaterMl
         tracked.reconstitutionConcentration = result.concentration
-
         CoreDataManager.shared.saveContext()
-
-        // Haptic feedback
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
+        UINotificationFeedbackGenerator().notificationOccurred(.success)
     }
 
     // MARK: - Load from Compound
@@ -184,26 +222,21 @@ final class ReconstitutionViewModel {
     func loadFromCompound(_ tracked: TrackedCompound) {
         selectedCompound = tracked
 
-        if tracked.reconstitutionBAC > 0 {
-            bacWaterMl = String(format: "%.1f", tracked.reconstitutionBAC)
-        }
-
-        if tracked.reconstitutionConcentration > 0 {
-            // Back-calculate vial size if we have concentration and BAC
-            if let bac = Double(bacWaterMl), bac > 0 {
-                let vialSize = tracked.reconstitutionConcentration * bac
-                vialSizeMg = String(format: "%.2f", vialSize)
+        if let compound = tracked.compound {
+            // Determine vial unit based on compound
+            let name = (compound.name ?? "").lowercased()
+            if name.contains("hgh") || name.contains("hcg") || name.contains("growth") {
+                vialSizeUnit = .iu
             }
         }
 
         // Set dose from tracked compound
         let dose = tracked.dosageAmount
-        if dose < 1 {
-            // Convert to mcg for display
-            desiredDoseMg = String(format: "%.0f", dose * 1000)
+        if dose < 1 && vialSizeUnit == .mg {
+            desiredDose = String(format: "%.0f", dose * 1000)
             doseUnitIsMcg = true
         } else {
-            desiredDoseMg = String(format: "%.2f", dose)
+            desiredDose = String(format: "%g", dose)
             doseUnitIsMcg = false
         }
     }
@@ -211,60 +244,29 @@ final class ReconstitutionViewModel {
     // MARK: - Reset
 
     func reset() {
-        vialSizeMg = ""
-        desiredDoseMg = ""
-        bacWaterMl = ""
+        vialSize = ""
+        desiredDose = ""
+        syringeUnits = "20"
+        vialSizeUnit = .mg
         doseUnitIsMcg = false
         result = nil
         errorMessage = nil
     }
 
-    // MARK: - Suggested BAC Water
+    // MARK: - Explanation Text
 
-    /// Suggests optimal BAC water based on vial size and desired dose
-    /// Targets 25 units on insulin syringe for easy measurement
-    func suggestBacWater() -> String? {
-        guard let vialMg = Double(vialSizeMg), vialMg > 0,
-              let doseMg = desiredDoseInMg, doseMg > 0 else {
-            return nil
-        }
-
-        // Target: 25 units per dose for easy measurement
-        let targetUnits = 25.0
-        let targetVolume = targetUnits / 100 // ml (0.25 ml)
-
-        // Formula: BAC water = (vialMg * targetVolume) / doseMg
-        let suggestedBac = (vialMg * targetVolume) / doseMg
-
-        // Round to practical amounts (0.5, 1.0, 1.5, 2.0, etc.)
-        let roundedBac = (suggestedBac * 2).rounded() / 2
-
-        // Clamp to reasonable range (0.5 - 3.0 ml)
-        let clampedBac = max(0.5, min(3.0, roundedBac))
-
-        return String(format: "%.1f", clampedBac)
-    }
-
-    /// Auto-calculates with suggested BAC water
-    func autoCalculate() {
-        guard let suggestion = suggestBacWater() else { return }
-        bacWaterMl = suggestion
-        calculate()
-    }
-
-    /// Human-readable explanation of the math
     var explanationText: String? {
         guard let result = result,
-              let vialMg = Double(vialSizeMg),
-              let bacMl = Double(bacWaterMl),
-              desiredDoseInMg != nil else { return nil }
+              let vial = Double(vialSize) else { return nil }
 
-        let doseString = doseUnitIsMcg ? "\(desiredDoseMg) mcg" : "\(desiredDoseMg) mg"
+        let vialStr = "\(String(format: "%g", vial)) \(vialSizeUnit.displayName)"
+        let doseStr = "\(desiredDose) \(doseUnitLabel)"
+        let unitsStr = String(format: "%.0f", result.syringeUnits)
 
         return """
-        Add \(String(format: "%.1f", bacMl)) ml of BAC water to your \(String(format: "%.0f", vialMg)) mg vial.
+        Add \(result.bacWaterString) of BAC water to your \(vialStr) vial.
 
-        For your \(doseString) dose, draw \(result.syringeUnitsString) (\(result.volumeToDrawString)).
+        Each \(doseStr) dose = \(unitsStr) units on your syringe.
 
         This vial will give you \(result.dosesPerVialString).
         """

@@ -80,6 +80,7 @@
 
 		/* Views - DoseLog */
 		A1000012001 /* LogDoseView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100012001 /* LogDoseView.swift */; };
+		A1000012002 /* EditDoseLogSheet.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100012002 /* EditDoseLogSheet.swift */; };
 
 		/* Views - Analytics */
 		A1000013001 /* AnalyticsView.swift in Sources */ = {isa = PBXBuildFile; fileRef = A1100013001 /* AnalyticsView.swift */; };
@@ -195,6 +196,7 @@
 
 		/* Views - DoseLog */
 		A1100012001 /* LogDoseView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = LogDoseView.swift; sourceTree = "<group>"; };
+		A1100012002 /* EditDoseLogSheet.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = EditDoseLogSheet.swift; sourceTree = "<group>"; };
 
 		/* Views - Analytics */
 		A1100013001 /* AnalyticsView.swift */ = {isa = PBXFileReference; lastKnownFileType = sourcecode.swift; path = AnalyticsView.swift; sourceTree = "<group>"; };
@@ -440,6 +442,7 @@
 			isa = PBXGroup;
 			children = (
 				A1100012001 /* LogDoseView.swift */,
+				A1100012002 /* EditDoseLogSheet.swift */,
 			);
 			path = DoseLog;
 			sourceTree = "<group>";
@@ -713,6 +716,7 @@
 
 				/* Views - DoseLog */
 				A1000012001 /* LogDoseView.swift in Sources */,
+				A1000012002 /* EditDoseLogSheet.swift in Sources */,
 
 				/* Views - Analytics */
 				A1000013001 /* AnalyticsView.swift in Sources */,

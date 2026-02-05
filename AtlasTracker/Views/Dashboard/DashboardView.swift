@@ -8,8 +8,10 @@ struct DashboardView: View {
     @State private var showReconstitutionCalculator = false
     @State private var showSkipConfirmation = false
     @State private var trackedToSkip: TrackedCompound?
-    @State private var logToDelete: DoseLog?
+    @State private var logToManage: DoseLog?
+    @State private var showLogActions = false
     @State private var showDeleteConfirmation = false
+    @State private var logToEdit: DoseLog?
 
     var body: some View {
         NavigationStack {
@@ -79,6 +81,11 @@ struct DashboardView: View {
             }
             .sheet(isPresented: $showReconstitutionCalculator) {
                 ReconstitutionCalculatorView()
+            }
+            .sheet(item: $logToEdit) { log in
+                EditDoseLogSheet(log: log) {
+                    viewModel.loadData()
+                }
             }
             .alert("Skip Dose?", isPresented: $showSkipConfirmation) {
                 Button("Cancel", role: .cancel) {
@@ -291,8 +298,8 @@ struct DashboardView: View {
                 RecentLogRow(log: log)
                     .contentShape(Rectangle())
                     .onTapGesture {
-                        logToDelete = log
-                        showDeleteConfirmation = true
+                        logToManage = log
+                        showLogActions = true
                     }
             }
         }
@@ -301,21 +308,32 @@ struct DashboardView: View {
         .cornerRadius(16)
         .confirmationDialog(
             "Manage Injection Log",
-            isPresented: $showDeleteConfirmation,
+            isPresented: $showLogActions,
             titleVisibility: .visible
         ) {
+            Button("Edit") {
+                logToEdit = logToManage
+                logToManage = nil
+            }
             Button("Delete", role: .destructive) {
-                if let log = logToDelete {
-                    viewModel.deleteDoseLog(log)
-                }
-                logToDelete = nil
+                logToManage.map { viewModel.deleteDoseLog($0) }
+                logToManage = nil
             }
             Button("Cancel", role: .cancel) {
-                logToDelete = nil
+                logToManage = nil
             }
         } message: {
-            if let log = logToDelete {
-                Text("Delete \(log.compound?.name ?? "this") log from \(log.relativeDateString)?")
+            if let log = logToManage {
+                Text("\(log.compound?.name ?? "Unknown") - \(log.dosageString)\n\(log.relativeDateString)")
+            }
+        }
+        .alert("Delete Injection Log?", isPresented: $showDeleteConfirmation) {
+            Button("Delete", role: .destructive) {
+                logToManage.map { viewModel.deleteDoseLog($0) }
+                logToManage = nil
+            }
+            Button("Cancel", role: .cancel) {
+                logToManage = nil
             }
         }
     }

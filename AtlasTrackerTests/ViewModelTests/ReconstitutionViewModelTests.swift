@@ -13,13 +13,13 @@ final class ReconstitutionViewModelTests: XCTestCase {
         sut = nil
     }
 
-    // MARK: - Basic Calculation Tests
+    // MARK: - Basic Calculation Tests (solves for BAC water)
 
     func testCalculate_WithValidInputs_ProducesResult() {
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "250"
-        sut.doseUnitIsMcg = true  // 250 mcg
+        sut.vialSize = "10"
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
+        sut.doseUnitIsMcg = false
 
         sut.calculate()
 
@@ -27,10 +27,26 @@ final class ReconstitutionViewModelTests: XCTestCase {
         XCTAssertNil(sut.errorMessage, "Should not have error")
     }
 
+    func testCalculate_SolvesForBacWater() {
+        // 10mg vial, 2mg dose, 20 units on syringe
+        // bacWater = (20 * 10) / (2 * 100) = 1.0 ml
+        sut.vialSize = "10"
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
+        sut.doseUnitIsMcg = false
+
+        sut.calculate()
+
+        XCTAssertNotNil(sut.result)
+        if let result = sut.result {
+            XCTAssertEqual(result.bacWaterMl, 1.0, accuracy: 0.01)
+        }
+    }
+
     func testCalculate_WithInvalidVialSize_ProducesError() {
-        sut.vialSizeMg = ""
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "250"
+        sut.vialSize = ""
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
 
         sut.calculate()
 
@@ -38,96 +54,99 @@ final class ReconstitutionViewModelTests: XCTestCase {
         XCTAssertNotNil(sut.errorMessage, "Should have error message")
     }
 
-    func testCalculate_WithZeroBacWater_ProducesError() {
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "0"
-        sut.desiredDoseMg = "250"
+    func testCalculate_DoseExceedsVial_ProducesError() {
+        sut.vialSize = "5"
+        sut.desiredDose = "10"
+        sut.syringeUnits = "20"
+        sut.doseUnitIsMcg = false
 
         sut.calculate()
 
-        XCTAssertNil(sut.result, "Should not produce result with zero BAC water")
+        XCTAssertNil(sut.result)
+        XCTAssertNotNil(sut.errorMessage)
     }
 
     func testCalculate_ConcentrationCalculation() {
-        // 5mg vial with 2ml BAC water = 2.5mg/ml concentration
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "0.5"
-        sut.doseUnitIsMcg = false  // mg
+        // 10mg vial, 2mg dose, 20 units
+        // bacWater = 1.0ml, concentration = 10mg / 1ml = 10mg/ml
+        sut.vialSize = "10"
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
+        sut.doseUnitIsMcg = false
 
         sut.calculate()
 
         XCTAssertNotNil(sut.result)
         if let result = sut.result {
-            // 5mg / 2ml = 2.5 mg/ml concentration
-            XCTAssertEqual(result.concentrationMgPerMl, 2.5, accuracy: 0.01)
+            XCTAssertEqual(result.concentration, 10.0, accuracy: 0.01)
         }
     }
 
     func testCalculate_VolumeToDrawCalculation() {
-        // 5mg vial with 2ml BAC water = 2.5mg/ml
-        // Desired dose: 0.5mg = 0.2ml to draw
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "0.5"
+        // 10mg vial, 2mg dose, 20 units
+        // bacWater = 1.0ml, volume = 2mg / 10mg/ml = 0.2ml
+        sut.vialSize = "10"
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
         sut.doseUnitIsMcg = false
 
         sut.calculate()
 
         XCTAssertNotNil(sut.result)
         if let result = sut.result {
-            // 0.5mg / 2.5mg/ml = 0.2ml
             XCTAssertEqual(result.volumeToDrawMl, 0.2, accuracy: 0.001)
         }
     }
 
-    func testCalculate_SyringeUnitsCalculation() {
-        // 0.2ml = 20 insulin units
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "0.5"
+    func testCalculate_DosesPerVial() {
+        // 10mg vial, 2mg per dose = 5 doses
+        sut.vialSize = "10"
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
         sut.doseUnitIsMcg = false
 
         sut.calculate()
 
         XCTAssertNotNil(sut.result)
         if let result = sut.result {
-            // 0.2ml * 100 = 20 units
-            XCTAssertEqual(result.syringeUnits, 20, accuracy: 0.1)
+            XCTAssertEqual(result.dosesPerVial, 5, accuracy: 0.1)
         }
     }
 
-    func testCalculate_DosesPerVial() {
-        // 5mg vial, 0.5mg per dose = 10 doses
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "0.5"
-        sut.doseUnitIsMcg = false
+    // MARK: - IU Tests
+
+    func testCalculate_WithIUVialUnit() {
+        // 5000 IU vial, 500 IU dose, 20 units
+        // bacWater = (20 * 5000) / (500 * 100) = 2.0 ml
+        sut.vialSize = "5000"
+        sut.vialSizeUnit = .iu
+        sut.desiredDose = "500"
+        sut.syringeUnits = "20"
 
         sut.calculate()
 
         XCTAssertNotNil(sut.result)
         if let result = sut.result {
-            XCTAssertEqual(result.dosesPerVial, 10, accuracy: 0.1)
+            XCTAssertEqual(result.bacWaterMl, 2.0, accuracy: 0.01)
         }
     }
 
     // MARK: - Mcg Conversion Tests
 
     func testCalculate_WithMcgUnit() {
-        // 5mg = 5000mcg vial, 250mcg dose
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "250"
+        // 5mg vial, 250mcg (0.25mg) dose, 20 units
+        // bacWater = (20 * 5) / (0.25 * 100) = 4.0 ml
+        sut.vialSize = "5"
+        sut.vialSizeUnit = .mg
+        sut.desiredDose = "250"
         sut.doseUnitIsMcg = true
+        sut.syringeUnits = "20"
 
         sut.calculate()
 
         XCTAssertNotNil(sut.result)
         if let result = sut.result {
-            // 250mcg = 0.25mg, concentration = 2.5mg/ml
-            // Volume = 0.25 / 2.5 = 0.1ml = 10 units
-            XCTAssertEqual(result.syringeUnits, 10, accuracy: 0.5)
+            XCTAssertEqual(result.bacWaterMl, 4.0, accuracy: 0.01)
         }
     }
 
@@ -140,54 +159,26 @@ final class ReconstitutionViewModelTests: XCTestCase {
         if let firstPreset = presets.first {
             sut.applyPreset(firstPreset)
 
-            XCTAssertFalse(sut.vialSizeMg.isEmpty, "Should set vial size")
-            XCTAssertFalse(sut.desiredDoseMg.isEmpty, "Should set desired dose")
+            XCTAssertFalse(sut.vialSize.isEmpty, "Should set vial size")
+            XCTAssertFalse(sut.desiredDose.isEmpty, "Should set desired dose")
+            XCTAssertFalse(sut.syringeUnits.isEmpty, "Should set syringe units")
+            XCTAssertNotNil(sut.result, "Should auto-calculate")
         }
-    }
-
-    // MARK: - BAC Water Suggestion Tests
-
-    func testSuggestBacWater_ReturnsValue() {
-        sut.vialSizeMg = "5"
-
-        let suggestion = sut.suggestBacWater()
-
-        // Should suggest a reasonable BAC water amount
-        XCTAssertNotNil(suggestion)
-    }
-
-    func testSuggestBacWater_NoVialSize_ReturnsNil() {
-        sut.vialSizeMg = ""
-
-        let suggestion = sut.suggestBacWater()
-
-        XCTAssertNil(suggestion)
-    }
-
-    // MARK: - Auto Calculate Tests
-
-    func testAutoCalculate_SetsValues() {
-        sut.vialSizeMg = "5"
-
-        sut.autoCalculate()
-
-        XCTAssertFalse(sut.bacWaterMl.isEmpty, "Should set BAC water")
-        XCTAssertNotNil(sut.result, "Should calculate result")
     }
 
     // MARK: - Reset Tests
 
     func testReset_ClearsAllValues() {
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "250"
+        sut.vialSize = "5"
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
         sut.calculate()
 
         sut.reset()
 
-        XCTAssertTrue(sut.vialSizeMg.isEmpty)
-        XCTAssertTrue(sut.bacWaterMl.isEmpty)
-        XCTAssertTrue(sut.desiredDoseMg.isEmpty)
+        XCTAssertTrue(sut.vialSize.isEmpty)
+        XCTAssertTrue(sut.desiredDose.isEmpty)
+        XCTAssertEqual(sut.syringeUnits, "20") // Default value
         XCTAssertNil(sut.result)
         XCTAssertNil(sut.errorMessage)
     }
@@ -195,17 +186,17 @@ final class ReconstitutionViewModelTests: XCTestCase {
     // MARK: - Can Calculate Tests
 
     func testCanCalculate_WithAllInputs_ReturnsTrue() {
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "250"
+        sut.vialSize = "5"
+        sut.desiredDose = "2"
+        sut.syringeUnits = "20"
 
         XCTAssertTrue(sut.canCalculate)
     }
 
     func testCanCalculate_WithMissingInputs_ReturnsFalse() {
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = ""
-        sut.desiredDoseMg = "250"
+        sut.vialSize = "5"
+        sut.desiredDose = ""
+        sut.syringeUnits = "20"
 
         XCTAssertFalse(sut.canCalculate)
     }
@@ -213,44 +204,51 @@ final class ReconstitutionViewModelTests: XCTestCase {
     // MARK: - Dose Unit Label Tests
 
     func testDoseUnitLabel_WhenMcg() {
+        sut.vialSizeUnit = .mg
         sut.doseUnitIsMcg = true
         XCTAssertEqual(sut.doseUnitLabel, "mcg")
     }
 
     func testDoseUnitLabel_WhenMg() {
+        sut.vialSizeUnit = .mg
         sut.doseUnitIsMcg = false
         XCTAssertEqual(sut.doseUnitLabel, "mg")
     }
 
-    // MARK: - Result Warning Tests
+    func testDoseUnitLabel_WhenIU() {
+        sut.vialSizeUnit = .iu
+        XCTAssertEqual(sut.doseUnitLabel, "IU")
+    }
 
-    func testResult_VerySmallVolume_HasWarning() {
-        // Very small dose that results in tiny volume
-        sut.vialSizeMg = "10"
-        sut.bacWaterMl = "1"  // High concentration
-        sut.desiredDoseMg = "10"
-        sut.doseUnitIsMcg = true  // 10 mcg = 0.01mg
+    // MARK: - Warning Tests
+
+    func testResult_SmallBacWater_HasWarning() {
+        // Should produce very small BAC water
+        sut.vialSize = "5"
+        sut.desiredDose = "5"
+        sut.syringeUnits = "5"
+        sut.doseUnitIsMcg = false
 
         sut.calculate()
 
         if let result = sut.result {
-            // 0.01mg / 10mg/ml = 0.001ml = very small
-            XCTAssertTrue(result.isVolumeVerySmall, "Should flag very small volume")
+            // bacWater = (5 * 5) / (5 * 100) = 0.05ml
+            XCTAssertTrue(result.isBacWaterVerySmall, "Should flag very small BAC water")
         }
     }
 
-    func testResult_LargeVolume_HasWarning() {
-        // Large dose that results in big volume
-        sut.vialSizeMg = "5"
-        sut.bacWaterMl = "2"
-        sut.desiredDoseMg = "4"
-        sut.doseUnitIsMcg = false  // 4mg
+    func testResult_LargeBacWater_HasWarning() {
+        // Should produce large BAC water
+        sut.vialSize = "10"
+        sut.desiredDose = "100"
+        sut.doseUnitIsMcg = true  // 0.1mg
+        sut.syringeUnits = "50"
 
         sut.calculate()
 
         if let result = sut.result {
-            // 4mg / 2.5mg/ml = 1.6ml = large for SubQ
-            XCTAssertTrue(result.isVolumeLarge, "Should flag large volume")
+            // bacWater = (50 * 10) / (0.1 * 100) = 50ml
+            XCTAssertTrue(result.isBacWaterLarge, "Should flag large BAC water")
         }
     }
 }
