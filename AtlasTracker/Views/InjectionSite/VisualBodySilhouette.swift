@@ -188,18 +188,18 @@ enum PEDInjectionRegion: String, CaseIterable, Identifiable {
         }
     }
 
-    // Positions - corrected for proper anatomy
+    // Positions - posterior (back) view: patient's left is on screen-right
     // Glutes stacked above VG with clear vertical separation
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .deltLeft: return (0.20, 0.24)      // On shoulders
-        case .deltRight: return (0.80, 0.24)
-        case .gluteLeft: return (0.32, 0.45)     // Upper butt area
-        case .gluteRight: return (0.68, 0.45)
-        case .vgLeft: return (0.24, 0.56)        // Hip area, below glutes
-        case .vgRight: return (0.76, 0.56)
-        case .quadLeft: return (0.38, 0.66)      // Mid-thigh
-        case .quadRight: return (0.62, 0.66)
+        case .deltLeft: return (0.80, 0.24)      // Patient's left = screen-right
+        case .deltRight: return (0.20, 0.24)     // Patient's right = screen-left
+        case .gluteLeft: return (0.68, 0.45)     // Upper butt area
+        case .gluteRight: return (0.32, 0.45)
+        case .vgLeft: return (0.76, 0.56)        // Hip area, below glutes
+        case .vgRight: return (0.24, 0.56)
+        case .quadLeft: return (0.62, 0.66)      // Mid-thigh
+        case .quadRight: return (0.38, 0.66)
         }
     }
 

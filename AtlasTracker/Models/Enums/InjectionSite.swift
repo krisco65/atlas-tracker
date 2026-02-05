@@ -98,25 +98,25 @@ enum PEDInjectionSite: String, CaseIterable, Codable {
         ]
     }
 
-    // Body shape positioning - corrected for proper anatomy
+    // Body shape positioning - posterior (back) view: patient's left = screen-right
     var bodyMapPosition: (x: CGFloat, y: CGFloat) {
         switch self {
-        // Deltoids - on shoulders (not at head)
-        case .deltLeft: return (0.22, 0.24)
-        case .deltRight: return (0.78, 0.24)
+        // Deltoids - on shoulders
+        case .deltLeft: return (0.78, 0.24)      // Patient's left = screen-right
+        case .deltRight: return (0.22, 0.24)     // Patient's right = screen-left
         // Glutes - butt area (stacked vertically)
-        case .gluteLeftUpper: return (0.32, 0.48)
-        case .gluteLeftLower: return (0.32, 0.54)
-        case .gluteRightUpper: return (0.68, 0.48)
-        case .gluteRightLower: return (0.68, 0.54)
+        case .gluteLeftUpper: return (0.68, 0.48)
+        case .gluteLeftLower: return (0.68, 0.54)
+        case .gluteRightUpper: return (0.32, 0.48)
+        case .gluteRightLower: return (0.32, 0.54)
         // VG - hip area, below glutes
-        case .vgLeftUpper: return (0.26, 0.50)
-        case .vgLeftLower: return (0.26, 0.56)
-        case .vgRightUpper: return (0.74, 0.50)
-        case .vgRightLower: return (0.74, 0.56)
-        // Quads - mid-thigh (not at knees)
-        case .quadLeft: return (0.38, 0.62)
-        case .quadRight: return (0.62, 0.62)
+        case .vgLeftUpper: return (0.74, 0.50)
+        case .vgLeftLower: return (0.74, 0.56)
+        case .vgRightUpper: return (0.26, 0.50)
+        case .vgRightLower: return (0.26, 0.56)
+        // Quads - mid-thigh
+        case .quadLeft: return (0.62, 0.62)
+        case .quadRight: return (0.38, 0.62)
         }
     }
 }
