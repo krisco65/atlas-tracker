@@ -30,5 +30,7 @@ struct StatCard: View {
         .padding()
         .background(Color.backgroundSecondary)
         .cornerRadius(12)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(title), \(value) \(subtitle)")
     }
 }

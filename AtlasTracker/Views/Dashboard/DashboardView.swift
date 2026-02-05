@@ -217,6 +217,8 @@ struct DashboardView: View {
             .cornerRadius(12)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Reconstitution Calculator")
+        .accessibilityHint("Opens peptide dosing calculator")
     }
 
     // MARK: - Today Progress Card
@@ -259,6 +261,8 @@ struct DashboardView: View {
         .padding()
         .background(Color.backgroundSecondary)
         .cornerRadius(16)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Today's progress, \(viewModel.todaysCompletedCount) of \(viewModel.todaysTotalCount) doses completed")
     }
 
     // MARK: - Today's Doses Section
@@ -335,6 +339,8 @@ struct DashboardView: View {
             .cornerRadius(16)
         }
         .buttonStyle(.plain)
+        .accessibilityLabel("Low stock alerts, \(viewModel.lowStockItems.count) items running low")
+        .accessibilityHint("Opens inventory management")
     }
 
     // MARK: - Quick Stats Card
@@ -347,6 +353,8 @@ struct DashboardView: View {
                 icon: "chart.bar.fill",
                 color: .accentPrimary
             )
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("This week, \(viewModel.weeklyDoseCount) doses logged")
 
             Button {
                 showActiveCompounds = true
@@ -360,6 +368,8 @@ struct DashboardView: View {
                 )
             }
             .buttonStyle(.plain)
+            .accessibilityLabel("Active, \(viewModel.activeCompoundsCount) compounds")
+            .accessibilityHint("Opens active compounds list")
         }
     }
 

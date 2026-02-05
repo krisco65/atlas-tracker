@@ -43,6 +43,9 @@ struct RecentLogRow: View {
                 .foregroundColor(.textTertiary)
         }
         .padding(.vertical, 6)
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("\(log.compound?.name ?? "Unknown"), \(log.dosageString)\(log.injectionSiteDisplayName.map { ", \($0)" } ?? ""), \(log.relativeDateString)")
+        .accessibilityHint("Tap to edit or delete")
     }
 }
 

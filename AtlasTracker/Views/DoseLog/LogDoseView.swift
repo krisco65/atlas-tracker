@@ -120,6 +120,8 @@ struct LogDoseView: View {
 
             Spacer()
         }
+        .accessibilityElement(children: .combine)
+        .accessibilityLabel("Dose logged successfully")
         .onAppear {
             // Haptic feedback
             HapticManager.success()
@@ -164,6 +166,7 @@ struct LogDoseView: View {
                 }
             }
         }
+        .accessibilityHint("Select a compound to log a dose")
     }
 
     // MARK: - Dosage Section
@@ -180,6 +183,7 @@ struct LogDoseView: View {
                     .background(Color.backgroundSecondary)
                     .cornerRadius(10)
                     .foregroundColor(.textPrimary)
+                    .accessibilityLabel("Dosage amount")
 
                 Picker("Unit", selection: $viewModel.selectedUnit) {
                     ForEach(viewModel.availableUnits, id: \.self) { unit in
@@ -190,6 +194,7 @@ struct LogDoseView: View {
                 .padding()
                 .background(Color.backgroundSecondary)
                 .cornerRadius(10)
+                .accessibilityLabel("Dosage unit")
             }
 
             // Validation error display
@@ -207,6 +212,7 @@ struct LogDoseView: View {
             Text("Injection Site")
                 .font(.headline)
                 .foregroundColor(.textPrimary)
+                .accessibilityLabel("Injection site selection")
 
             // Recommendation Card
             if let recommended = viewModel.recommendedSite {
@@ -441,6 +447,7 @@ struct LogDoseView: View {
         }
         .disabled(!viewModel.canLogDose || viewModel.isLoading)
         .opacity(viewModel.canLogDose ? 1 : 0.5)
+        .accessibilityHint("Saves this dose to your history")
     }
 }
 

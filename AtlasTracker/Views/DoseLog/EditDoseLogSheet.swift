@@ -56,6 +56,7 @@ struct EditDoseLogSheet: View {
                 ToolbarItem(placement: .navigationBarLeading) {
                     Button("Cancel") { dismiss() }
                         .foregroundColor(.textSecondary)
+                        .accessibilityHint("Discards changes and returns to dashboard")
                 }
                 ToolbarItemGroup(placement: .keyboard) {
                     Spacer()
@@ -163,6 +164,8 @@ struct EditDoseLogSheet: View {
                                                      ? .white : .textSecondary)
                                     .cornerRadius(8)
                             }
+                            .accessibilityLabel(site.displayName)
+                            .accessibilityAddTraits(selectedInjectionSite == site.rawValue ? .isSelected : [])
                         }
                     }
                 }
@@ -288,6 +291,7 @@ struct EditDoseLogSheet: View {
         }
         .disabled(!canSave)
         .opacity(canSave ? 1 : 0.5)
+        .accessibilityHint("Saves your changes to this dose log")
     }
 
     private var canSave: Bool {

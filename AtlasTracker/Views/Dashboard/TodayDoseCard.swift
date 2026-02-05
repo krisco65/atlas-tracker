@@ -112,6 +112,10 @@ struct TodayDoseCard: View {
         }
     }
 
+    private var accessibilityStatusText: String {
+        isCompleted ? "completed" : "due"
+    }
+
     var body: some View {
         VStack(spacing: 0) {
             HStack(spacing: 12) {
@@ -177,6 +181,8 @@ struct TodayDoseCard: View {
                                     .background(Color.backgroundTertiary)
                                     .cornerRadius(6)
                             }
+                            .accessibilityLabel("Skip dose")
+                            .accessibilityHint("Marks this dose as skipped")
                         }
 
                         // Log button
@@ -190,6 +196,8 @@ struct TodayDoseCard: View {
                                 .background(Color.accentPrimary)
                                 .cornerRadius(6)
                         }
+                        .accessibilityLabel("Log dose")
+                        .accessibilityHint("Opens dose logging for \(tracked.compound?.name ?? "this compound")")
                     }
                 } else {
                     Image(systemName: "checkmark.circle.fill")
@@ -205,5 +213,7 @@ struct TodayDoseCard: View {
             RoundedRectangle(cornerRadius: 12)
                 .stroke(urgencyStatus == .overdue ? Color.statusError.opacity(0.3) : Color.clear, lineWidth: 1)
         )
+        .accessibilityElement(children: .contain)
+        .accessibilityLabel("\(tracked.compound?.name ?? "Unknown"), \(tracked.dosageString), \(accessibilityStatusText)")
     }
 }

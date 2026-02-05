@@ -208,6 +208,7 @@ struct ReconstitutionCalculatorView: View {
                     TextField(viewModel.vialSizeUnit == .iu ? "e.g., 10" : "e.g., 5", text: $viewModel.vialSize)
                         .keyboardType(.decimalPad)
                         .foregroundColor(.textPrimary)
+                        .accessibilityLabel("Vial size amount")
 
                     Text(viewModel.vialSizeUnit.displayName)
                         .foregroundColor(.textSecondary)
@@ -245,6 +246,7 @@ struct ReconstitutionCalculatorView: View {
                     TextField("e.g., 2", text: $viewModel.desiredDose)
                         .keyboardType(.decimalPad)
                         .foregroundColor(.textPrimary)
+                        .accessibilityLabel("Desired dose per injection")
 
                     Text(viewModel.doseUnitLabel)
                         .foregroundColor(.textSecondary)
@@ -269,6 +271,7 @@ struct ReconstitutionCalculatorView: View {
                     TextField("e.g., 20", text: $viewModel.syringeUnits)
                         .keyboardType(.decimalPad)
                         .foregroundColor(.textPrimary)
+                        .accessibilityLabel("Syringe units per dose")
 
                     Text("units")
                         .foregroundColor(.textSecondary)
@@ -300,6 +303,8 @@ struct ReconstitutionCalculatorView: View {
         }
         .disabled(!viewModel.canCalculate)
         .opacity(viewModel.canCalculate ? 1 : 0.5)
+        .accessibilityLabel("Calculate BAC Water")
+        .accessibilityHint("Calculates the amount of bacteriostatic water needed")
     }
 
     // MARK: - Results Section
@@ -340,6 +345,8 @@ struct ReconstitutionCalculatorView: View {
                 RoundedRectangle(cornerRadius: 16)
                     .stroke(Color.statusSuccess.opacity(0.3), lineWidth: 1)
             )
+            .accessibilityElement(children: .combine)
+            .accessibilityLabel("Result: Add \(result.bacWaterString) of bacteriostatic water. Each dose is \(result.syringeUnitsString) on syringe. Concentration: \(result.concentrationString). Doses per vial: \(result.dosesPerVialString).")
 
             // Warnings
             if result.isBacWaterVerySmall {
@@ -519,6 +526,7 @@ struct PresetChip: View {
                         .stroke(Color.backgroundTertiary, lineWidth: 1)
                 )
         }
+        .accessibilityHint("Fills in values for \(preset.name)")
     }
 }
 
