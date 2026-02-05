@@ -36,8 +36,10 @@ struct VisualBodySilhouette: View {
 
             // Body diagram with overlay regions
             GeometryReader { geometry in
-                let availableHeight = geometry.size.height * 0.98
-                let bodyHeight = availableHeight
+                // Scale up silhouette to fill more screen space (125% of container)
+                let scaleFactor: CGFloat = 1.25
+                let baseHeight = geometry.size.height
+                let bodyHeight = baseHeight * scaleFactor
                 let bodyWidth = bodyHeight / 2.2
 
                 ZStack {
@@ -93,7 +95,7 @@ struct VisualBodySilhouette: View {
                 recommendedSite: recommendedSite,
                 onDismiss: { selectedRegion = nil }
             )
-            .presentationDetents([.height(region == .belly ? 320 : 240)])
+            .presentationDetents([.height(region == .belly ? 380 : 240)])
             .presentationDragIndicator(.visible)
             .presentationBackground(Color(white: 0.12))
         }
@@ -155,8 +157,10 @@ enum InjectionRegion: String, CaseIterable, Identifiable {
         switch self {
         case .belly: return [
             (.leftBellyUpper, "Upper Left"),
+            (.centerBellyUpper, "Upper Middle"),
             (.rightBellyUpper, "Upper Right"),
             (.leftBellyLower, "Lower Left"),
+            (.centerBellyLower, "Lower Middle"),
             (.rightBellyLower, "Lower Right")
         ]
         case .gluteLeft: return [(.gluteLeftUpper, "Upper"), (.gluteLeftLower, "Lower")]
@@ -175,7 +179,7 @@ enum InjectionRegion: String, CaseIterable, Identifiable {
         }
     }
 
-    // Position on body - scaled for larger silhouette
+    // Position on body - calibrated for larger silhouette
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
         case .belly: return (0.50, 0.38)
@@ -183,8 +187,8 @@ enum InjectionRegion: String, CaseIterable, Identifiable {
         case .gluteRight: return (0.68, 0.52)
         case .thighLeft: return (0.36, 0.64)
         case .thighRight: return (0.64, 0.64)
-        case .deltLeft: return (0.18, 0.20)
-        case .deltRight: return (0.82, 0.20)
+        case .deltLeft: return (0.22, 0.26)   // Moved down to be on shoulders
+        case .deltRight: return (0.78, 0.26)  // Moved down to be on shoulders
         }
     }
 
@@ -481,16 +485,20 @@ struct SubOptionSheet: View {
         }
     }
 
-    // MARK: - Belly: 2x2 Grid
+    // MARK: - Belly: 3x2 Grid (3 columns × 2 rows)
     @ViewBuilder
     private var bellyZoneGrid: some View {
         VStack(spacing: 12) {
-            HStack(spacing: 12) {
+            // Upper row: Left, Middle, Right
+            HStack(spacing: 8) {
                 zoneButton(site: .leftBellyUpper, label: "Upper Left")
+                zoneButton(site: .centerBellyUpper, label: "Upper Mid")
                 zoneButton(site: .rightBellyUpper, label: "Upper Right")
             }
-            HStack(spacing: 12) {
+            // Lower row: Left, Middle, Right
+            HStack(spacing: 8) {
                 zoneButton(site: .leftBellyLower, label: "Lower Left")
+                zoneButton(site: .centerBellyLower, label: "Lower Mid")
                 zoneButton(site: .rightBellyLower, label: "Lower Right")
             }
         }

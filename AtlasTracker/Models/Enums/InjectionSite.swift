@@ -107,8 +107,10 @@ enum PEDInjectionSite: String, CaseIterable, Codable {
 enum PeptideInjectionSite: String, CaseIterable, Codable {
     // Belly zones (6 total: Upper/Lower × Left/Middle/Right)
     case leftBellyUpper = "left_belly_upper"
-    case leftBellyLower = "left_belly_lower"
+    case centerBellyUpper = "center_belly_upper"
     case rightBellyUpper = "right_belly_upper"
+    case leftBellyLower = "left_belly_lower"
+    case centerBellyLower = "center_belly_lower"
     case rightBellyLower = "right_belly_lower"
 
     // Glute quadrants for SubQ (4 zones)
@@ -132,8 +134,10 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
     var displayName: String {
         switch self {
         case .leftBellyUpper: return "Belly - Upper Left"
-        case .leftBellyLower: return "Belly - Lower Left"
+        case .centerBellyUpper: return "Belly - Upper Middle"
         case .rightBellyUpper: return "Belly - Upper Right"
+        case .leftBellyLower: return "Belly - Lower Left"
+        case .centerBellyLower: return "Belly - Lower Middle"
         case .rightBellyLower: return "Belly - Lower Right"
         case .gluteLeftUpper: return "Left Glute - Upper"
         case .gluteLeftLower: return "Left Glute - Lower"
@@ -153,8 +157,10 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
     var shortName: String {
         switch self {
         case .leftBellyUpper: return "Belly UL"
-        case .leftBellyLower: return "Belly LL"
+        case .centerBellyUpper: return "Belly UM"
         case .rightBellyUpper: return "Belly UR"
+        case .leftBellyLower: return "Belly LL"
+        case .centerBellyLower: return "Belly LM"
         case .rightBellyLower: return "Belly LR"
         case .gluteLeftUpper: return "L Glute U"
         case .gluteLeftLower: return "L Glute L"
@@ -173,7 +179,8 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
 
     var bodyPart: String {
         switch self {
-        case .leftBellyUpper, .leftBellyLower, .rightBellyUpper, .rightBellyLower:
+        case .leftBellyUpper, .centerBellyUpper, .rightBellyUpper,
+             .leftBellyLower, .centerBellyLower, .rightBellyLower:
             return "Belly"
         case .gluteLeftUpper, .gluteLeftLower, .gluteRightUpper, .gluteRightLower:
             return "Glutes"
@@ -192,6 +199,8 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
              .thighLeftUpper, .thighLeftMiddle, .thighLeftLower,
              .deltLeft:
             return true
+        case .centerBellyUpper, .centerBellyLower:
+            return false  // Center is neutral, treat as right for alternation
         default:
             return false
         }
@@ -199,7 +208,8 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
 
     static var grouped: [(name: String, sites: [PeptideInjectionSite])] {
         return [
-            ("Belly", [.leftBellyUpper, .leftBellyLower, .rightBellyUpper, .rightBellyLower]),
+            ("Belly", [.leftBellyUpper, .centerBellyUpper, .rightBellyUpper,
+                       .leftBellyLower, .centerBellyLower, .rightBellyLower]),
             ("Glutes", [.gluteLeftUpper, .gluteLeftLower, .gluteRightUpper, .gluteRightLower]),
             ("Left Thigh", [.thighLeftUpper, .thighLeftMiddle, .thighLeftLower]),
             ("Right Thigh", [.thighRightUpper, .thighRightMiddle, .thighRightLower]),
@@ -210,26 +220,28 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
     // Body shape positioning (calibrated for scaled-up body silhouette)
     var bodyMapPosition: (x: CGFloat, y: CGFloat) {
         switch self {
-        // Belly zones
-        case .leftBellyUpper: return (0.40, 0.36)
-        case .leftBellyLower: return (0.40, 0.42)
-        case .rightBellyUpper: return (0.60, 0.36)
-        case .rightBellyLower: return (0.60, 0.42)
+        // Belly zones (3 columns × 2 rows)
+        case .leftBellyUpper: return (0.38, 0.36)
+        case .centerBellyUpper: return (0.50, 0.36)
+        case .rightBellyUpper: return (0.62, 0.36)
+        case .leftBellyLower: return (0.38, 0.42)
+        case .centerBellyLower: return (0.50, 0.42)
+        case .rightBellyLower: return (0.62, 0.42)
         // Glutes
         case .gluteLeftUpper: return (0.32, 0.50)
         case .gluteLeftLower: return (0.32, 0.56)
         case .gluteRightUpper: return (0.68, 0.50)
         case .gluteRightLower: return (0.68, 0.56)
-        // Thighs (corrected - now at actual thigh position)
+        // Thighs
         case .thighLeftUpper: return (0.36, 0.60)
         case .thighLeftMiddle: return (0.36, 0.66)
         case .thighLeftLower: return (0.36, 0.72)
         case .thighRightUpper: return (0.64, 0.60)
         case .thighRightMiddle: return (0.64, 0.66)
         case .thighRightLower: return (0.64, 0.72)
-        // Deltoids
-        case .deltLeft: return (0.18, 0.20)
-        case .deltRight: return (0.82, 0.20)
+        // Deltoids (on shoulders, not above)
+        case .deltLeft: return (0.20, 0.22)
+        case .deltRight: return (0.80, 0.22)
         }
     }
 }
