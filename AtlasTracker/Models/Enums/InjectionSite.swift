@@ -239,9 +239,9 @@ enum PeptideInjectionSite: String, CaseIterable, Codable {
         case .thighRightUpper: return (0.64, 0.60)
         case .thighRightMiddle: return (0.64, 0.66)
         case .thighRightLower: return (0.64, 0.72)
-        // Deltoids - symmetric positioning on shoulders
-        case .deltLeft: return (0.24, 0.26)
-        case .deltRight: return (0.76, 0.26)
+        // Deltoids - on top of shoulders, not overlapping silhouette
+        case .deltLeft: return (0.18, 0.26)
+        case .deltRight: return (0.82, 0.26)
         }
     }
 }

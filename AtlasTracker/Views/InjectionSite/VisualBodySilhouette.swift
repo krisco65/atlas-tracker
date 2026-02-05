@@ -182,13 +182,13 @@ enum InjectionRegion: String, CaseIterable, Identifiable {
     // Position on body - calibrated for larger silhouette
     var position: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .belly: return (0.50, 0.42)      // Moved down to actual belly (was 0.38)
+        case .belly: return (0.52, 0.42)      // Slightly right of center
         case .gluteLeft: return (0.32, 0.52)
         case .gluteRight: return (0.68, 0.52)
         case .thighLeft: return (0.36, 0.64)
         case .thighRight: return (0.64, 0.64)
-        case .deltLeft: return (0.24, 0.26)   // Symmetric with right (moved in from 0.22)
-        case .deltRight: return (0.76, 0.26)  // Symmetric with left (moved in from 0.78)
+        case .deltLeft: return (0.18, 0.26)   // Further left, on top of shoulder
+        case .deltRight: return (0.82, 0.26)  // Further right, on top of shoulder
         }
     }
 
@@ -353,11 +353,18 @@ struct HighlightedRegionButton: View {
                     }
                 }
 
-                // Label
+                // Label with red border for visibility
                 Text(region.shortLabel)
                     .font(.system(size: 11, weight: .bold))
                     .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.8), radius: 2)
+                    .padding(.horizontal, 6)
+                    .padding(.vertical, 2)
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.red, lineWidth: 1.5)
+                    )
             }
         }
         .buttonStyle(.plain)
@@ -426,10 +433,18 @@ struct PEDHighlightedButton: View {
                     }
                 }
 
+                // Label with red border for visibility
                 Text(site.shortName)
                     .font(.system(size: 10, weight: .bold))
                     .foregroundColor(.white)
-                    .shadow(color: .black.opacity(0.8), radius: 2)
+                    .padding(.horizontal, 5)
+                    .padding(.vertical, 2)
+                    .background(Color.black.opacity(0.7))
+                    .cornerRadius(4)
+                    .overlay(
+                        RoundedRectangle(cornerRadius: 4)
+                            .stroke(Color.red, lineWidth: 1.5)
+                    )
             }
         }
         .buttonStyle(.plain)
