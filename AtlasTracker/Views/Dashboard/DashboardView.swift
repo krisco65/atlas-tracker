@@ -82,7 +82,9 @@ struct DashboardView: View {
             .sheet(isPresented: $showReconstitutionCalculator) {
                 ReconstitutionCalculatorView()
             }
-            .sheet(item: $logToEdit) { log in
+            .sheet(item: $logToEdit, onDismiss: {
+                viewModel.loadData()
+            }) { log in
                 EditDoseLogSheet(log: log) {
                     viewModel.loadData()
                 }
