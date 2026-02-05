@@ -131,8 +131,7 @@ final class InventoryViewModel {
         loadInventory()
 
         // Haptic feedback
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
+        HapticManager.success()
 
         showAddSheet = false
     }
@@ -144,8 +143,7 @@ final class InventoryViewModel {
         CoreDataManager.shared.saveContext()
         loadInventory()
 
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+        HapticManager.mediumImpact()
     }
 
     func startNewVial(for inventory: Inventory) {
@@ -153,8 +151,7 @@ final class InventoryViewModel {
         CoreDataManager.shared.saveContext()
         loadInventory()
 
-        let generator = UIImpactFeedbackGenerator(style: .medium)
-        generator.impactOccurred()
+        HapticManager.mediumImpact()
     }
 
     func setRemainingAmount(for inventory: Inventory, amount: Double) {
@@ -168,8 +165,7 @@ final class InventoryViewModel {
         CoreDataManager.shared.saveContext()
         loadInventory()
 
-        let generator = UIImpactFeedbackGenerator(style: .light)
-        generator.impactOccurred()
+        HapticManager.lightImpact()
     }
 
     func deleteInventory(_ inventory: Inventory) {
@@ -177,8 +173,7 @@ final class InventoryViewModel {
         CoreDataManager.shared.saveContext()
         loadInventory()
 
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.warning)
+        HapticManager.warning()
     }
 
     // MARK: - Utility

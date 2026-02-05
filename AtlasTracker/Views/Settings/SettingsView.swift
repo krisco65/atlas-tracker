@@ -324,8 +324,7 @@ struct SettingsView: View {
                     isHealthKitAuthorized = authorized
 
                     if authorized {
-                        let generator = UINotificationFeedbackGenerator()
-                        generator.notificationOccurred(.success)
+                        HapticManager.success()
                     } else {
                         healthKitErrorMessage = "Could not connect to Apple Health. Please check that you've granted permission in Settings > Privacy > Health > Atlas Tracker."
                         showHealthKitError = true
@@ -348,8 +347,7 @@ struct SettingsView: View {
                 healthImportCount = count
                 showHealthImportResult = true
 
-                let generator = UINotificationFeedbackGenerator()
-                generator.notificationOccurred(.success)
+                HapticManager.success()
             }
         }
     }
@@ -447,8 +445,7 @@ struct DataManagementView: View {
         loadStats()
         showRefreshSuccess = true
 
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
+        HapticManager.success()
     }
 }
 

@@ -122,8 +122,7 @@ struct LogDoseView: View {
         }
         .onAppear {
             // Haptic feedback
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.success)
+            HapticManager.success()
 
             // Call success callback
             DispatchQueue.main.asyncAfter(deadline: .now() + 1) {
@@ -230,8 +229,7 @@ struct LogDoseView: View {
                     if viewModel.selectedInjectionSite != viewModel.recommendedSiteRawValue {
                         Button {
                             viewModel.selectedInjectionSite = viewModel.recommendedSiteRawValue
-                            let generator = UIImpactFeedbackGenerator(style: .medium)
-                            generator.impactOccurred()
+                            HapticManager.mediumImpact()
                         } label: {
                             Text("Use")
                                 .font(.caption)

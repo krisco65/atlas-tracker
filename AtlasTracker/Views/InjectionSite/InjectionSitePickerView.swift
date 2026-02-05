@@ -104,8 +104,7 @@ struct InjectionSitePickerView: View {
                 if let site = recommendedSite {
                     Button {
                         selectedSite = site
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
+                        HapticManager.mediumImpact()
                     } label: {
                         Text("Use")
                             .font(.subheadline)

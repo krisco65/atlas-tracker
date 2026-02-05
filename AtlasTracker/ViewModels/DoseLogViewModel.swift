@@ -234,6 +234,7 @@ final class DoseLogViewModel {
 
             self.isLoading = false
             self.showSuccess = true
+            HapticManager.success()
 
             // Reset after short delay
             DispatchQueue.main.asyncAfter(deadline: .now() + 1.5) {

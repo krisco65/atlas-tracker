@@ -347,7 +347,7 @@ struct PEDSiteOverlays: View {
     }
 
     private func handleRegionTap(_ region: PEDInjectionRegion) {
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        HapticManager.mediumImpact()
 
         if region.hasSubOptions {
             selectedRegion = region
@@ -390,7 +390,7 @@ struct PeptideSiteOverlays: View {
     }
 
     private func handleRegionTap(_ region: InjectionRegion) {
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        HapticManager.mediumImpact()
 
         if region.hasSubOptions {
             selectedRegion = region
@@ -590,7 +590,7 @@ struct PEDSubOptionSheet: View {
 
         Button {
             selectedSite = site.rawValue
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            HapticManager.mediumImpact()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 onDismiss()
             }
@@ -727,7 +727,7 @@ struct SubOptionSheet: View {
 
         Button {
             selectedSite = site.rawValue
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            HapticManager.mediumImpact()
             DispatchQueue.main.asyncAfter(deadline: .now() + 0.2) {
                 onDismiss()
             }

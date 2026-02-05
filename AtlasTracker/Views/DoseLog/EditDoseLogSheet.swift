@@ -151,6 +151,7 @@ struct EditDoseLogSheet: View {
                         ForEach(group.sites, id: \.rawValue) { site in
                             Button {
                                 selectedInjectionSite = site.rawValue
+                                HapticManager.selectionChanged()
                             } label: {
                                 Text(site.displayName)
                                     .font(.caption)
@@ -220,6 +221,7 @@ struct EditDoseLogSheet: View {
                 selectedSideEffects.append(effect)
             }
         }
+        HapticManager.lightImpact()
     }
 
     // MARK: - Date/Time Section
@@ -296,7 +298,7 @@ struct EditDoseLogSheet: View {
 
         CoreDataManager.shared.saveContext()
 
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        HapticManager.success()
         onSave()
         dismiss()
     }

@@ -793,8 +793,7 @@ struct AddInventorySheetForCompound: View {
 
         CoreDataManager.shared.saveContext()
 
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
+        HapticManager.success()
 
         onSave()
         dismiss()
@@ -805,8 +804,7 @@ struct AddInventorySheetForCompound: View {
             CoreDataManager.shared.viewContext.delete(inventory)
             CoreDataManager.shared.saveContext()
 
-            let generator = UINotificationFeedbackGenerator()
-            generator.notificationOccurred(.warning)
+            HapticManager.warning()
 
             onSave()
             dismiss()

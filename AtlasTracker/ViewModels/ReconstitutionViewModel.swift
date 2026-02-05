@@ -186,6 +186,7 @@ final class ReconstitutionViewModel {
             syringeUnits: units,
             dosesPerVial: dosesPerVial
         )
+        HapticManager.success()
     }
 
     // MARK: - Apply Preset
@@ -202,7 +203,7 @@ final class ReconstitutionViewModel {
         syringeUnits = String(format: "%.0f", preset.syringeUnits)
 
         calculate()
-        UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+        HapticManager.mediumImpact()
     }
 
     // MARK: - Save to Compound
@@ -214,7 +215,7 @@ final class ReconstitutionViewModel {
         tracked.reconstitutionBAC = result.bacWaterMl
         tracked.reconstitutionConcentration = result.concentration
         CoreDataManager.shared.saveContext()
-        UINotificationFeedbackGenerator().notificationOccurred(.success)
+        HapticManager.success()
     }
 
     // MARK: - Load from Compound

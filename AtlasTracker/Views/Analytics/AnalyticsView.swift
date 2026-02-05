@@ -131,8 +131,7 @@ final class AnalyticsViewModel {
         CoreDataManager.shared.logWeight(weight: weight, unit: unit, date: Date(), notes: notes)
         loadData()
 
-        let generator = UINotificationFeedbackGenerator()
-        generator.notificationOccurred(.success)
+        HapticManager.success()
     }
 }
 

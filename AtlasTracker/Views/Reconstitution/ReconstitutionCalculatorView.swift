@@ -290,7 +290,7 @@ struct ReconstitutionCalculatorView: View {
     private var calculateButton: some View {
         Button {
             viewModel.calculate()
-            UIImpactFeedbackGenerator(style: .medium).impactOccurred()
+            HapticManager.mediumImpact()
         } label: {
             HStack {
                 Image(systemName: "function")
