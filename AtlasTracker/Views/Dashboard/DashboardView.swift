@@ -275,11 +275,11 @@ struct DashboardView: View {
         }
     }
 
-    // MARK: - Recent Activity Section
+    // MARK: - Last Injections Section
     private var recentActivitySection: some View {
         VStack(alignment: .leading, spacing: 12) {
             HStack {
-                Text("Recent Activity")
+                Text("Last Injections")
                     .font(.headline)
                     .foregroundColor(.textPrimary)
                 Spacer()
