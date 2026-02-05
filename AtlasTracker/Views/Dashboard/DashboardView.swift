@@ -43,6 +43,7 @@ struct DashboardView: View {
                         // Recent Activity
                         if !viewModel.recentLogs.isEmpty {
                             recentActivitySection
+                                .id(viewModel.refreshID)
                         }
                     }
                     .padding()

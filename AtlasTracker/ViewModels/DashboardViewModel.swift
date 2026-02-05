@@ -12,6 +12,7 @@ final class DashboardViewModel {
     var lowStockItems: [Inventory] = []
     var activeTracked: [TrackedCompound] = []
     var isLoading = false
+    var refreshID = UUID()
 
     // MARK: - Computed Properties
     var hasDosesToday: Bool {
@@ -74,6 +75,7 @@ final class DashboardViewModel {
             // Fetch active tracked compounds (for count display)
             self.activeTracked = self.coreDataManager.fetchTrackedCompounds(activeOnly: true)
 
+            self.refreshID = UUID()
             self.isLoading = false
         }
     }
