@@ -9,54 +9,79 @@ enum InjectionType: String, Codable {
 
 // MARK: - PED Injection Sites (Intramuscular)
 enum PEDInjectionSite: String, CaseIterable, Codable {
-    case gluteLeft = "glute_left"
-    case gluteRight = "glute_right"
+    // Glutes with upper/lower sub-zones
+    case gluteLeftUpper = "glute_left_upper"
+    case gluteLeftLower = "glute_left_lower"
+    case gluteRightUpper = "glute_right_upper"
+    case gluteRightLower = "glute_right_lower"
+
+    // Deltoids (no sub-zones needed for IM)
     case deltLeft = "delt_left"
     case deltRight = "delt_right"
+
+    // Quads (no sub-zones needed for IM)
     case quadLeft = "quad_left"
     case quadRight = "quad_right"
-    case vgLeft = "vg_left"         // Ventrogluteal
-    case vgRight = "vg_right"
+
+    // Ventrogluteal with upper/lower sub-zones
+    case vgLeftUpper = "vg_left_upper"
+    case vgLeftLower = "vg_left_lower"
+    case vgRightUpper = "vg_right_upper"
+    case vgRightLower = "vg_right_lower"
 
     var displayName: String {
         switch self {
-        case .gluteLeft: return "Left Glute"
-        case .gluteRight: return "Right Glute"
+        case .gluteLeftUpper: return "Left Glute - Upper"
+        case .gluteLeftLower: return "Left Glute - Lower"
+        case .gluteRightUpper: return "Right Glute - Upper"
+        case .gluteRightLower: return "Right Glute - Lower"
         case .deltLeft: return "Left Delt"
         case .deltRight: return "Right Delt"
         case .quadLeft: return "Left Quad"
         case .quadRight: return "Right Quad"
-        case .vgLeft: return "Left VG"
-        case .vgRight: return "Right VG"
+        case .vgLeftUpper: return "Left VG - Upper"
+        case .vgLeftLower: return "Left VG - Lower"
+        case .vgRightUpper: return "Right VG - Upper"
+        case .vgRightLower: return "Right VG - Lower"
         }
     }
 
     var shortName: String {
         switch self {
-        case .gluteLeft: return "L Glute"
-        case .gluteRight: return "R Glute"
+        case .gluteLeftUpper: return "L Glute U"
+        case .gluteLeftLower: return "L Glute L"
+        case .gluteRightUpper: return "R Glute U"
+        case .gluteRightLower: return "R Glute L"
         case .deltLeft: return "L Delt"
         case .deltRight: return "R Delt"
         case .quadLeft: return "L Quad"
         case .quadRight: return "R Quad"
-        case .vgLeft: return "L VG"
-        case .vgRight: return "R VG"
+        case .vgLeftUpper: return "L VG U"
+        case .vgLeftLower: return "L VG L"
+        case .vgRightUpper: return "R VG U"
+        case .vgRightLower: return "R VG L"
         }
     }
 
     var bodyPart: String {
         switch self {
-        case .gluteLeft, .gluteRight: return "Glute"
-        case .deltLeft, .deltRight: return "Delt"
-        case .quadLeft, .quadRight: return "Quad"
-        case .vgLeft, .vgRight: return "Ventrogluteal"
+        case .gluteLeftUpper, .gluteLeftLower, .gluteRightUpper, .gluteRightLower:
+            return "Glute"
+        case .deltLeft, .deltRight:
+            return "Delt"
+        case .quadLeft, .quadRight:
+            return "Quad"
+        case .vgLeftUpper, .vgLeftLower, .vgRightUpper, .vgRightLower:
+            return "Ventrogluteal"
         }
     }
 
     var side: String {
         switch self {
-        case .gluteLeft, .deltLeft, .quadLeft, .vgLeft: return "Left"
-        case .gluteRight, .deltRight, .quadRight, .vgRight: return "Right"
+        case .gluteLeftUpper, .gluteLeftLower, .deltLeft, .quadLeft, .vgLeftUpper, .vgLeftLower:
+            return "Left"
+        case .gluteRightUpper, .gluteRightLower, .deltRight, .quadRight, .vgRightUpper, .vgRightLower:
+            return "Right"
         }
     }
 
@@ -64,41 +89,34 @@ enum PEDInjectionSite: String, CaseIterable, Codable {
         return side == "Left"
     }
 
-    // Get opposite side for rotation
-    var oppositeSite: PEDInjectionSite {
-        switch self {
-        case .gluteLeft: return .gluteRight
-        case .gluteRight: return .gluteLeft
-        case .deltLeft: return .deltRight
-        case .deltRight: return .deltLeft
-        case .quadLeft: return .quadRight
-        case .quadRight: return .quadLeft
-        case .vgLeft: return .vgRight
-        case .vgRight: return .vgLeft
-        }
-    }
-
     static var grouped: [(name: String, sites: [PEDInjectionSite])] {
         return [
-            ("Glutes", [.gluteLeft, .gluteRight]),
+            ("Glutes", [.gluteLeftUpper, .gluteLeftLower, .gluteRightUpper, .gluteRightLower]),
             ("Delts", [.deltLeft, .deltRight]),
             ("Quads", [.quadLeft, .quadRight]),
-            ("Ventrogluteal", [.vgLeft, .vgRight])
+            ("Ventrogluteal", [.vgLeftUpper, .vgLeftLower, .vgRightUpper, .vgRightLower])
         ]
     }
 
-    // Body shape positioning (calibrated for ProfessionalBodyShape)
-    // x: 0=left edge, 1=right edge; y: 0=top, 1=bottom
+    // Body shape positioning - corrected for proper anatomy
     var bodyMapPosition: (x: CGFloat, y: CGFloat) {
         switch self {
-        case .deltLeft: return (0.15, 0.17)     // Left shoulder/deltoid
-        case .deltRight: return (0.85, 0.17)    // Right shoulder/deltoid
-        case .vgLeft: return (0.22, 0.48)       // Left ventrogluteal (hip)
-        case .vgRight: return (0.78, 0.48)      // Right ventrogluteal (hip)
-        case .gluteLeft: return (0.30, 0.52)    // Left glute
-        case .gluteRight: return (0.70, 0.52)   // Right glute
-        case .quadLeft: return (0.38, 0.68)     // Left quadricep
-        case .quadRight: return (0.62, 0.68)    // Right quadricep
+        // Deltoids - on shoulders (not at head)
+        case .deltLeft: return (0.22, 0.24)
+        case .deltRight: return (0.78, 0.24)
+        // Glutes - butt area (stacked vertically)
+        case .gluteLeftUpper: return (0.32, 0.48)
+        case .gluteLeftLower: return (0.32, 0.54)
+        case .gluteRightUpper: return (0.68, 0.48)
+        case .gluteRightLower: return (0.68, 0.54)
+        // VG - hip area, below glutes
+        case .vgLeftUpper: return (0.26, 0.50)
+        case .vgLeftLower: return (0.26, 0.56)
+        case .vgRightUpper: return (0.74, 0.50)
+        case .vgRightLower: return (0.74, 0.56)
+        // Quads - mid-thigh (not at knees)
+        case .quadLeft: return (0.38, 0.62)
+        case .quadRight: return (0.62, 0.62)
         }
     }
 }
