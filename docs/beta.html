@@ -1,0 +1,211 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AtlasTracker Beta</title>
+    <meta name="description" content="AtlasTracker is a free iOS beta for private peptide and supplement tracking, reminders, inventory, logs, notes, and offline reference chat.">
+    <style>
+        :root {
+            --bg: #f7f4ee;
+            --panel: #ffffff;
+            --ink: #151515;
+            --muted: #626262;
+            --line: #ded8ce;
+            --accent: #1f6f8b;
+            --accent-dark: #174f64;
+        }
+
+        * {
+            box-sizing: border-box;
+        }
+
+        body {
+            margin: 0;
+            font-family: -apple-system, BlinkMacSystemFont, "SF Pro Text", "Segoe UI", sans-serif;
+            color: var(--ink);
+            background: var(--bg);
+            line-height: 1.45;
+        }
+
+        .shell {
+            min-height: 100vh;
+            display: flex;
+            flex-direction: column;
+        }
+
+        main {
+            width: min(1040px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 44px 0 24px;
+            flex: 1;
+        }
+
+        .hero {
+            min-height: calc(100vh - 96px);
+            display: grid;
+            align-content: center;
+            gap: 28px;
+        }
+
+        .brand {
+            display: flex;
+            align-items: center;
+            gap: 14px;
+        }
+
+        .brand img {
+            width: 52px;
+            height: 52px;
+            border-radius: 8px;
+        }
+
+        .brand span {
+            font-size: 17px;
+            font-weight: 700;
+        }
+
+        h1 {
+            max-width: 760px;
+            margin: 0;
+            font-size: clamp(44px, 7vw, 82px);
+            line-height: 0.98;
+            letter-spacing: 0;
+        }
+
+        .lead {
+            max-width: 700px;
+            margin: 0;
+            color: var(--muted);
+            font-size: clamp(18px, 2.4vw, 24px);
+        }
+
+        .actions {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 12px;
+            align-items: center;
+        }
+
+        .button {
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            min-height: 48px;
+            padding: 0 18px;
+            border-radius: 8px;
+            background: var(--accent);
+            color: white;
+            text-decoration: none;
+            font-weight: 700;
+        }
+
+        .button:hover {
+            background: var(--accent-dark);
+        }
+
+        .note {
+            color: var(--muted);
+            font-size: 15px;
+            margin: 0;
+        }
+
+        .proof {
+            display: grid;
+            grid-template-columns: repeat(3, minmax(0, 1fr));
+            gap: 12px;
+            margin-top: 12px;
+        }
+
+        .item {
+            background: var(--panel);
+            border: 1px solid var(--line);
+            border-radius: 8px;
+            padding: 18px;
+        }
+
+        .item h2 {
+            margin: 0 0 8px;
+            font-size: 17px;
+            letter-spacing: 0;
+        }
+
+        .item p {
+            margin: 0;
+            color: var(--muted);
+            font-size: 15px;
+        }
+
+        footer {
+            width: min(1040px, calc(100% - 32px));
+            margin: 0 auto;
+            padding: 0 0 28px;
+            color: var(--muted);
+            font-size: 13px;
+        }
+
+        footer a {
+            color: var(--accent);
+        }
+
+        @media (max-width: 720px) {
+            main {
+                padding-top: 28px;
+            }
+
+            .hero {
+                min-height: auto;
+                padding: 36px 0 28px;
+            }
+
+            .proof {
+                grid-template-columns: 1fr;
+            }
+
+            .button {
+                width: 100%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <div class="shell">
+        <main>
+            <section class="hero" aria-labelledby="title">
+                <div class="brand">
+                    <img src="assets/atlastracker-logo-safe.png" alt="AtlasTracker app mark">
+                    <span>AtlasTracker Beta</span>
+                </div>
+
+                <h1 id="title">Free private peptide and supplement tracking for iPhone.</h1>
+
+                <p class="lead">AtlasTracker helps organize schedules, reminders, inventory, logs, notes, and an offline AI reference chat in one local-first iOS beta.</p>
+
+                <div class="actions">
+                    <a class="button" href="https://testflight.apple.com/join/aqwYxxbt">Join the TestFlight Beta</a>
+                    <p class="note">Looking for testers who will try it and send blunt product feedback.</p>
+                </div>
+
+                <div class="proof" aria-label="Beta details">
+                    <article class="item">
+                        <h2>Local-first</h2>
+                        <p>Built for private personal records with no product analytics or telemetry.</p>
+                    </article>
+                    <article class="item">
+                        <h2>Structured</h2>
+                        <p>Keep recurring entries, reminders, inventory, history, and notes in one place.</p>
+                    </article>
+                    <article class="item">
+                        <h2>Offline AI</h2>
+                        <p>Use the built-in reference chat without sending prompts to a cloud service.</p>
+                    </article>
+                </div>
+            </section>
+        </main>
+
+        <footer>
+            AtlasTracker is for educational and entertainment purposes only. It is not medical advice and is not a substitute for professional medical care. Read the <a href="privacy-policy.html">privacy policy</a>.
+        </footer>
+    </div>
+</body>
+</html>
