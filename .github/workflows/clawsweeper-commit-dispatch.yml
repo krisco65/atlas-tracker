@@ -1,0 +1,49 @@
+name: ClawSweeper Commit Dispatch
+
+on:
+  push:
+    branches: [main]
+
+permissions:
+  contents: read
+
+concurrency:
+  group: clawsweeper-commit-dispatch-${{ github.repository }}-${{ github.sha }}
+  cancel-in-progress: false
+
+jobs:
+  dispatch:
+    runs-on: ubuntu-latest
+    if: ${{ vars.CLAWSWEEPER_COMMIT_REVIEW_ENABLED != 'false' }}
+    env:
+      HAS_CLAWSWEEPER_APP_PRIVATE_KEY: ${{ secrets.CLAWSWEEPER_APP_PRIVATE_KEY != '' }}
+      CLAWSWEEPER_APP_CLIENT_ID: ${{ vars.CLAWSWEEPER_APP_CLIENT_ID }}
+    steps:
+      - name: Create ClawSweeper dispatch token
+        id: token
+        if: ${{ env.HAS_CLAWSWEEPER_APP_PRIVATE_KEY == 'true' }}
+        uses: actions/create-github-app-token@1b10c78c7865c340bc4f6099eb2f838309f1e8c3
+        with:
+          client-id: ${{ env.CLAWSWEEPER_APP_CLIENT_ID }}
+          private-key: ${{ secrets.CLAWSWEEPER_APP_PRIVATE_KEY }}
+          owner: krisco65
+          repositories: clawsweeper
+
+      - name: Dispatch commit review
+        env:
+          GH_TOKEN: ${{ steps.token.outputs.token }}
+          TARGET_REPO: ${{ github.repository }}
+          BEFORE_SHA: ${{ github.event.before }}
+          AFTER_SHA: ${{ github.sha }}
+          CREATE_CHECKS: ${{ vars.CLAWSWEEPER_COMMIT_REVIEW_CREATE_CHECKS || 'false' }}
+        run: |
+          if [ -z "$GH_TOKEN" ]; then
+            echo "::notice::Skipping commit review dispatch because no dispatch credential is configured."
+            exit 0
+          fi
+          case "$CREATE_CHECKS" in
+            true|TRUE|1|yes|YES|on|ON) create_checks=true ;;
+            *) create_checks=false ;;
+          esac
+          payload="$(jq -nc             --arg target_repo "$TARGET_REPO"             --arg before_sha "$BEFORE_SHA"             --arg after_sha "$AFTER_SHA"             --arg ref "refs/heads/main"             --argjson create_checks "$create_checks"             '{event_type:"clawsweeper_commit_review",client_payload:{target_repo:$target_repo,before_sha:$before_sha,after_sha:$after_sha,ref:$ref,enabled:true,create_checks:$create_checks}}')"
+          gh api repos/krisco65/clawsweeper/dispatches             --method POST             --input - <<< "$payload"
