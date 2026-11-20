@@ -49,7 +49,7 @@
     .transcript { margin-top: .65rem; font-size: .92rem; color: var(--muted); }
     .transcript summary { width: fit-content; margin: 0 auto; color: var(--accent); cursor: pointer; }
     .transcript summary:focus-visible { outline: 3px solid #217da6; outline-offset: 4px; }
-    .transcript p { margin-top: .4rem; }
+    .transcript p { margin-top: .4rem; text-align: left; }
     .details { padding: 2rem 0 2.6rem; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
     .details p { color: var(--muted); max-width: 48ch; }
     .details .feedback { margin-top: .85rem; }
@@ -83,11 +83,13 @@
           <source src="assets/store-records-preview.mp4" type="video/mp4">
           <a href="assets/store-records-preview.mp4">Watch the dose history preview</a>
         </video>
-        <figcaption id="demo-caption">18 seconds · Fictional records in the planned App Store edition</figcaption>
-        <details class="transcript">
-          <summary>Read the demo</summary>
-          <p>In Dose Records, select a calendar day and open <strong>Edit group</strong> to see the two fictional entries logged together. In Settings, leave <strong>Dose Summary Only</strong> on and choose <strong>Export Dose Summary (PDF)</strong>. The share sheet opens with the five-field report.</p>
-        </details>
+        <figcaption>
+          <span id="demo-caption">18 seconds · Fictional records in the planned App Store edition</span>
+          <details class="transcript">
+            <summary>Read the demo</summary>
+            <p>In Dose Records, select a calendar day and open <strong>Edit group</strong> to see the two fictional entries logged together. In Settings, leave <strong>Dose Summary Only</strong> on and choose <strong>Export Dose Summary (PDF)</strong>. The share sheet opens with the five-field report.</p>
+          </details>
+        </figcaption>
       </figure>
     </section>
     <section class="details" aria-label="Product examples">
