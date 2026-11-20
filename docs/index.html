@@ -36,6 +36,7 @@
     .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: .7rem 1.2rem; margin: 1.6rem 0 .65rem; border-radius: .5rem; color: white; background: var(--accent); font-weight: 700; text-decoration: none; }
     .button:hover { background: #104557; }
     .install, figcaption, footer { color: var(--muted); font-size: .92rem; }
+    .beta { margin-top: 1.1rem; color: var(--muted); font-size: .96rem; }
     .preview { justify-self: center; width: min(100%, 16rem); }
     video { display: block; width: 100%; height: auto; aspect-ratio: 540 / 1174; background: #f5f2ed; border: 1px solid var(--line); border-radius: 1.1rem; }
     figcaption { margin-top: .6rem; text-align: center; }
@@ -47,7 +48,8 @@
     @media (max-width: 45rem) {
       main, header, footer { width: min(36rem, calc(100% - 2.5rem)); }
       .hero { grid-template-columns: 1fr; gap: 1.75rem; }
-      .preview { width: min(15rem, 76%); }
+      .beta { margin-top: 1.1rem; color: var(--muted); font-size: .96rem; }
+    .preview { width: min(15rem, 76%); }
       .details { grid-template-columns: 1fr; gap: 1.45rem; }
       footer { align-items: start; flex-direction: column; gap: .2rem; }
     }
@@ -62,28 +64,29 @@
     <section class="hero" aria-labelledby="title">
       <div>
         <h1 id="title">Find and correct a dose record.</h1>
-        <p class="lead">Keep a dated log on your iPhone. Filter by compound, add a note, or edit related entries together.</p>
-        <a class="button" href="https://testflight.apple.com/join/aqwYxxbt">Join the free iPhone beta</a>
-        <p class="install">Opens Apple TestFlight. The beta download is about 3.4 GB.</p>
+        <p class="lead">Keep related entries together, find a past day and share a PDF or CSV that leaves your notes private.</p>
+        <a class="button" href="https://docs.google.com/forms/d/e/1FAIpQLSc4xjDSO7jPpSWm_OUYxR_QlmUNbJlgLDZvGm_3Z3ZMFP1OtQ/viewform">Email me when it launches</a>
+        <p class="install">Planned for iPhone at US$9.99 once. One launch email.</p>
+        <p class="beta"><a href="https://testflight.apple.com/join/aqwYxxbt">Try the existing free beta</a> through Apple TestFlight (3.4 GB).</p>
       </div>
       <figure class="preview">
-        <video controls playsinline preload="none" poster="assets/history-demo.webp" aria-label="Silent 24-second demo of filtering and editing fictional dose records" aria-describedby="demo-caption" width="540" height="1174">
-          <source src="assets/history-demo.mp4" type="video/mp4">
-          <a href="assets/history-demo.mp4">Download the history demo</a>
+        <video controls playsinline preload="none" poster="assets/store-records-poster.webp" aria-label="Silent preview of the planned App Store edition" aria-describedby="demo-caption" width="438" height="950">
+          <source src="assets/store-records-preview.mp4" type="video/mp4">
+          <a href="assets/store-records-preview.mp4">Watch the dose history preview</a>
         </video>
-        <figcaption id="demo-caption">24 seconds · Fictional records from the app</figcaption>
+        <figcaption id="demo-caption">18 seconds · Fictional records in the planned App Store edition</figcaption>
       </figure>
     </section>
-    <section class="details" aria-label="Trying the beta">
+    <section class="details" aria-label="Product examples">
       <div>
-        <h2>Try it with a made-up entry</h2>
+        <h2>Try the beta with a made-up entry</h2>
         <p>Log a fictional record. From the dashboard, open <strong>View all dose records</strong>, edit its note, then reopen it. Send feedback through TestFlight if a step is unclear.</p>
-        <p class="feedback">Considering the paid iPhone version at $9.99 once? <a href="https://docs.google.com/forms/d/e/1FAIpQLSc4xjDSO7jPpSWm_OUYxR_QlmUNbJlgLDZvGm_3Z3ZMFP1OtQ/viewform">Request one email when it launches.</a> The beta is free.</p>
+        <p class="feedback"><a href="assets/history-demo.mp4">Watch the 24-second beta demo.</a></p>
         <p class="feedback"><a href="mailto:krisco65@gmail.com?subject=AtlasTracker%20price%20feedback">Prefer email? Send a launch request or price feedback.</a></p>
       </div>
       <div>
         <h2>Choose what you share</h2>
-        <p><a href="assets/store-records-preview.mp4">Watch the 18-second preview of the planned App Store edition.</a> It can export just dates, times, compound names, amounts, units and record types. Your notes and journal stay private. See the same 30 fictional entries in either format.</p>
+        <p>The planned App Store edition exports recorded dates and times, compound names, amounts, units and record types. Your notes and journal stay private. See the same 30 fictional entries in either format.</p>
         <p class="feedback"><a href="assets/sample-dose-summary.pdf">Open the sample PDF</a> · <a href="assets/sample-dose-summary.csv" download>Download the sample CSV</a></p>
       </div>
     </section>
