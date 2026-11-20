@@ -1,28 +1,92 @@
-<!DOCTYPE html>
+<!doctype html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Atlas Tracker</title>
-    <meta http-equiv="refresh" content="0; url=privacy-policy.html">
-    <style>
-        body {
-            font-family: -apple-system, BlinkMacSystemFont, 'SF Pro Text', sans-serif;
-            background: #0a0a0a;
-            color: #e0e0e0;
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            height: 100vh;
-            margin: 0;
-        }
-        a {
-            color: #007AFF;
-            text-decoration: none;
-        }
-    </style>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>AtlasTracker for iPhone · Dose records, organized</title>
+  <meta name="description" content="Keep a dated dose log on your iPhone. Find older records, edit notes, and keep related entries together. Try the free AtlasTracker beta through Apple TestFlight.">
+  <meta property="og:title" content="AtlasTracker for iPhone">
+  <meta property="og:description" content="Find an old dose record, correct its details, and keep related entries together. Try the free iPhone beta.">
+  <meta property="og:image" content="https://krisco65.github.io/atlas-tracker/assets/atlastracker-logo-safe.png">
+  <link rel="canonical" href="https://krisco65.github.io/atlas-tracker/">
+  <link rel="icon" href="assets/atlastracker-logo-safe.png">
+  <style>
+    :root {
+      color-scheme: light;
+      --paper: #f7f4ee;
+      --ink: #242924;
+      --muted: #4d5d60;
+      --accent: #175c73;
+      --line: #c7ccc3;
+    }
+    * { box-sizing: border-box; }
+    body { margin: 0; background: var(--paper); color: var(--ink); font: 1rem/1.52 -apple-system, BlinkMacSystemFont, "Segoe UI", sans-serif; }
+    main, header, footer { width: min(64rem, calc(100% - 3rem)); margin-inline: auto; }
+    header { padding: 1.25rem 0; display: flex; justify-content: space-between; align-items: center; gap: 1rem; }
+    .brand { display: flex; gap: .65rem; align-items: center; font-size: 1.12rem; font-weight: 700; }
+    .brand img { border-radius: .45rem; }
+    a { color: var(--accent); text-underline-offset: .18em; }
+    a:focus-visible, video:focus-visible { outline: 3px solid #217da6; outline-offset: 5px; }
+    header a, footer a { display: inline-block; padding-block: .5rem; }
+    .hero { display: grid; grid-template-columns: minmax(0, 1.37fr) minmax(0, 1fr); gap: clamp(1.8rem, 6vw, 6rem); align-items: center; padding: clamp(1.5rem, 5vw, 4.5rem) 0; }
+    h1, h2, p, figure { margin: 0; }
+    h1 { max-width: 12ch; font-size: clamp(2.5rem, 5.5vw, 4.5rem); line-height: 1.045; letter-spacing: -.035em; }
+    h2 { margin-bottom: .55rem; font-size: 1.35rem; line-height: 1.15; }
+    .lead { margin-top: 1.3rem; max-width: 37ch; color: var(--muted); font-size: clamp(1.12rem, 2vw, 1.4rem); }
+    .button { display: inline-flex; align-items: center; justify-content: center; min-height: 3rem; padding: .7rem 1.2rem; margin: 1.6rem 0 .65rem; border-radius: .5rem; color: white; background: var(--accent); font-weight: 700; text-decoration: none; }
+    .button:hover { background: #104557; }
+    .install, figcaption, footer { color: var(--muted); font-size: .92rem; }
+    .preview { justify-self: center; width: min(100%, 16rem); }
+    video { display: block; width: 100%; height: auto; aspect-ratio: 540 / 1174; background: #f5f2ed; border: 1px solid var(--line); border-radius: 1.1rem; }
+    figcaption { margin-top: .6rem; text-align: center; }
+    .details { padding: 2rem 0 2.6rem; border-top: 1px solid var(--line); display: grid; grid-template-columns: 1fr 1fr; gap: 2.5rem; }
+    .details p { color: var(--muted); max-width: 48ch; }
+    footer { display: flex; justify-content: space-between; align-items: center; gap: 1rem; border-top: 1px solid var(--line); padding: 1rem 0 1.6rem; }
+    footer nav { display: flex; gap: 1rem; flex-shrink: 0; }
+    @media (max-width: 45rem) {
+      main, header, footer { width: min(36rem, calc(100% - 2.5rem)); }
+      .hero { grid-template-columns: 1fr; gap: 1.75rem; }
+      .preview { width: min(15rem, 76%); }
+      .details { grid-template-columns: 1fr; gap: 1.45rem; }
+      footer { align-items: start; flex-direction: column; gap: .2rem; }
+    }
+  </style>
 </head>
 <body>
-    <p>Redirecting to <a href="privacy-policy.html">Privacy Policy</a>...</p>
+  <header>
+    <div class="brand"><img src="assets/atlastracker-logo-safe.png" width="38" height="38" alt=""><span>AtlasTracker</span></div>
+    <a href="support.html">Support</a>
+  </header>
+  <main>
+    <section class="hero" aria-labelledby="title">
+      <div>
+        <h1 id="title">Find and correct a dose record.</h1>
+        <p class="lead">Keep a dated log on your iPhone. Filter by compound, add a note, or edit related entries together.</p>
+        <a class="button" href="https://testflight.apple.com/join/aqwYxxbt">Join the free iPhone beta</a>
+        <p class="install">Opens Apple TestFlight. The beta download is about 3.4 GB.</p>
+      </div>
+      <figure class="preview">
+        <video controls playsinline preload="none" poster="assets/history-demo.webp" aria-label="Silent 24-second demo of filtering and editing fictional dose records" aria-describedby="demo-caption" width="540" height="1174">
+          <source src="assets/history-demo.mp4" type="video/mp4">
+          <a href="assets/history-demo.mp4">Download the history demo</a>
+        </video>
+        <figcaption id="demo-caption">24 seconds · Fictional records from the app</figcaption>
+      </figure>
+    </section>
+    <section class="details" aria-label="Trying the beta">
+      <div>
+        <h2>Try it with a made-up entry</h2>
+        <p>Log a fictional record. From the dashboard, open <strong>View all dose records</strong>, edit its note, then reopen it. Send feedback through TestFlight if a step is unclear.</p>
+      </div>
+      <div>
+        <h2>Your records stay on your iPhone</h2>
+        <p>AtlasTracker stores records on your device. You choose when to share an export. Device backups and feedback you send to Apple or support have their own privacy settings.</p>
+      </div>
+    </section>
+  </main>
+  <footer>
+    <span>For personal record keeping. Discuss treatment decisions with a qualified clinician.</span>
+    <nav aria-label="Product information"><a href="privacy-policy.html">Privacy</a><a href="support.html">Support</a></nav>
+  </footer>
 </body>
 </html>

@@ -198,214 +198,33 @@
     </style>
 </head>
 <body>
-    <div class="container">
-        <header>
-            <div class="app-icon">💊</div>
-            <h1>Atlas Tracker</h1>
-            <p class="subtitle">Privacy Policy</p>
-            <p class="subtitle">Effective Date: February 5, 2026 | Last Updated: February 5, 2026</p>
-        </header>
-
-        <div class="summary-box">
-            <p>Atlas Tracker stores all your data locally on your device.<br>We do not transmit, share, or sell your data to anyone. Period.</p>
-        </div>
-
-        <h2>Information We Collect</h2>
-
-        <h3>Information You Provide</h3>
-        <p>When you use Atlas Tracker, you may voluntarily provide:</p>
-        <ul>
-            <li><strong>Dose Logs:</strong> Compound names, dosage amounts, units, timestamps, injection sites, and personal notes</li>
-            <li><strong>Side Effects:</strong> Self-reported health effects associated with doses</li>
-            <li><strong>Weight Entries:</strong> Body weight measurements and associated notes</li>
-            <li><strong>Tracking Preferences:</strong> Dosing schedules, notification times, and reminder settings</li>
-            <li><strong>App Preferences:</strong> Weight unit preference (lbs/kg), notification settings, biometric lock preference</li>
-        </ul>
-
-        <h3>Health Data (Apple HealthKit)</h3>
-        <p>If you choose to connect Atlas Tracker to Apple Health:</p>
-        <ul>
-            <li><strong>Weight Data (Read):</strong> We can read weight entries from Apple Health to display your weight history</li>
-            <li><strong>Weight Data (Write):</strong> We can save weight entries you log to Apple Health</li>
-        </ul>
-
-        <div class="highlight">
-            <p><strong>We do not access any other HealthKit data types.</strong> We cannot read your heart rate, blood pressure, steps, sleep, medications, or any other health metrics.</p>
-        </div>
-
-        <h3>Biometric Data</h3>
-        <p>If you enable Face ID or Touch ID:</p>
-        <ul>
-            <li>Atlas Tracker <strong>never receives or stores</strong> your biometric data</li>
-            <li>Authentication is handled entirely by Apple's Secure Enclave</li>
-            <li>We only receive a success/failure response from the system</li>
-        </ul>
-
-        <h3>Information We Do NOT Collect</h3>
-        <ul>
-            <li>Device identifiers (IDFA, IDFV)</li>
-            <li>IP addresses</li>
-            <li>Location data</li>
-            <li>Camera or photo library access</li>
-            <li>Contact information</li>
-            <li>Advertising identifiers</li>
-            <li>Analytics or crash reports</li>
-            <li>Any data from third-party SDKs</li>
-        </ul>
-
-        <h2>How We Store Your Data</h2>
-
-        <h3>Local Storage Only</h3>
-        <p>All your data is stored exclusively on your device using:</p>
-        <ul>
-            <li><strong>Core Data:</strong> Encrypted local database for dose logs, compounds, weight entries, and tracking data</li>
-            <li><strong>UserDefaults:</strong> App preferences (encrypted by iOS)</li>
-            <li><strong>Apple Health:</strong> Weight data (if you grant permission)</li>
-        </ul>
-
-        <h3>Encryption</h3>
-        <p>Your data is protected by:</p>
-        <ul>
-            <li><strong>NSFileProtectionComplete:</strong> AES-256 hardware encryption</li>
-            <li>Data is only accessible when your device is unlocked</li>
-            <li>Encryption keys are managed by Apple's Secure Enclave</li>
-        </ul>
-
-        <h3>No Cloud Storage</h3>
-        <ul>
-            <li>We do not sync your data to any cloud service</li>
-            <li>We do not use iCloud, Firebase, or any backend servers</li>
-            <li>Your data never leaves your device (except Apple Health integration you control)</li>
-        </ul>
-
-        <h2>How We Use Your Data</h2>
-        <p>Your data is used solely to:</p>
-        <ol>
-            <li>Display your dose history and tracking information</li>
-            <li>Send local notification reminders (if enabled)</li>
-            <li>Calculate statistics and visualizations within the app</li>
-            <li>Export your data to CSV format (when you initiate it)</li>
-            <li>Sync weight data with Apple Health (if you enable it)</li>
-        </ol>
-
-        <p>We do not use your data for advertising, analytics, user profiling, sale to third parties, or any purpose beyond app functionality.</p>
-
-        <h2>Data Sharing</h2>
-
-        <h3>We Do Not Share Your Data</h3>
-        <p>Atlas Tracker does not share, sell, rent, or transmit your data to advertising networks, analytics providers, third-party services, social media platforms, healthcare providers, insurance companies, government agencies, or any other entity.</p>
-
-        <h3>Apple Health Integration</h3>
-        <p>If you enable Apple Health integration, weight entries you log may be shared with Apple Health. This data is then governed by Apple's privacy policies. You control this integration and can revoke it anytime.</p>
-
-        <h3>Data Export</h3>
-        <p>You can export your dose history to CSV format. This file is created locally on your device and is shared only when you explicitly choose to share it.</p>
-
-        <h2>Your Rights and Controls</h2>
-
-        <h3>Access Your Data</h3>
-        <ul>
-            <li>View all your data within the app at any time</li>
-            <li>Export your complete dose history to CSV format</li>
-        </ul>
-
-        <h3>Delete Your Data</h3>
-        <ul>
-            <li>Delete individual dose logs, weight entries, or tracked compounds</li>
-            <li>Reset all app data from Settings</li>
-            <li>Uninstall the app to remove all local data</li>
-        </ul>
-
-        <h3>Control Permissions</h3>
-        <ul>
-            <li>Enable or disable Face ID/Touch ID at any time</li>
-            <li>Enable or disable notifications at any time</li>
-            <li>Connect or disconnect Apple Health integration</li>
-            <li>Choose discreet notification mode to hide compound names</li>
-        </ul>
-
-        <h2>Data Retention</h2>
-        <ul>
-            <li><strong>App Data:</strong> Retained until you delete it or uninstall the app</li>
-            <li><strong>Apple Health Data:</strong> Managed separately by Apple Health (persists after app uninstall)</li>
-            <li><strong>Notification Data:</strong> Stored temporarily in memory until delivered</li>
-            <li><strong>Export Files:</strong> Stored in temporary directory until you share or delete them</li>
-        </ul>
-
-        <h2>Security Measures</h2>
-        <p>We implement the following security measures:</p>
-        <ul>
-            <li><strong>Hardware Encryption:</strong> All data encrypted with AES-256 via Apple's Secure Enclave</li>
-            <li><strong>Biometric Authentication:</strong> Optional Face ID/Touch ID protection</li>
-            <li><strong>No Network Transmission:</strong> Zero attack surface from network vulnerabilities</li>
-            <li><strong>No Third-Party Code:</strong> No external SDKs that could compromise security</li>
-            <li><strong>Sandboxed Storage:</strong> iOS app sandbox prevents unauthorized access</li>
-        </ul>
-
-        <h2>Children's Privacy</h2>
-        <p>Atlas Tracker is not intended for use by children under 17 years of age. We do not knowingly collect information from children. The app's content is appropriate only for adults.</p>
-
-        <h2>Changes to This Policy</h2>
-        <p>We may update this Privacy Policy from time to time. We will notify you of any material changes by updating the "Last Updated" date at the top of this policy and providing notice within the app for significant changes.</p>
-
-        <h2>International Users</h2>
-        <p>Atlas Tracker stores all data locally on your device. Your data remains on your device in your jurisdiction. No data is transferred internationally. Local data protection laws apply to your device storage.</p>
-
-        <h2>California Privacy Rights (CCPA)</h2>
-        <p>California residents have the right to know, delete, and opt-out. Since we do not collect, share, or sell personal information to third parties, most CCPA provisions are not applicable.</p>
-
-        <h2>European Privacy Rights (GDPR)</h2>
-        <p>For users in the European Economic Area, we process data based on your consent and contract performance. You have rights to access, erasure, portability, and restriction. Since all data is stored locally and never transmitted, we are not a data controller under GDPR for external processing.</p>
-
-        <div class="contact-section">
-            <h2 style="border: none; margin: 0 0 15px; padding: 0;">Contact Us</h2>
-            <p>If you have questions about this Privacy Policy:</p>
-            <p><strong>Email:</strong> <a href="mailto:krisco65@gmail.com">krisco65@gmail.com</a></p>
-        </div>
-
-        <h2>Summary</h2>
-        <table>
-            <tr>
-                <th>Aspect</th>
-                <th>Atlas Tracker Practice</th>
-            </tr>
-            <tr>
-                <td>Data Storage</td>
-                <td>Device only (encrypted)</td>
-            </tr>
-            <tr>
-                <td>Data Transmission</td>
-                <td>None</td>
-            </tr>
-            <tr>
-                <td>Third-Party Sharing</td>
-                <td>None</td>
-            </tr>
-            <tr>
-                <td>Analytics</td>
-                <td>None</td>
-            </tr>
-            <tr>
-                <td>Advertising</td>
-                <td>None</td>
-            </tr>
-            <tr>
-                <td>Cloud Backup</td>
-                <td>None</td>
-            </tr>
-            <tr>
-                <td>User Control</td>
-                <td>Full (view, export, delete)</td>
-            </tr>
-        </table>
-
-        <div class="highlight">
-            <p><strong>Your health data stays on your device. We never see it, and neither does anyone else.</strong></p>
-        </div>
-
-        <footer>
-            <p>&copy; 2026 Atlas Tracker. All rights reserved.</p>
-        </footer>
-    </div>
+    <main class="container">
+        <h1>Atlas Tracker Privacy Policy</h1>
+        <p>Updated November 19, 2026.</p>
+        <p>Atlas Tracker stores tracking records locally and runs its optional Atlas AI on supported devices using an embedded model. Atlas does not operate an account, cloud synchronization, advertising, or analytics service for these records. Exports, device backups, support messages and Apple platform services have separate data flows described below.</p>
+        <h2>Records stored on your device</h2>
+        <p>The app stores compound names, schedules, dose amounts and times, injection sites, reported effects, notes, weights, inventory and preferences in its app container. It uses Core Data for tracking records, a local file for AI chat history, and system preferences for settings. These records support logging, reminders, reference lookup and local charts.</p>
+        <h2>Atlas AI</h2>
+        <p>Atlas AI is an experimental feature designed to generate educational responses on-device using bundled llama/ggml runtime code, a Qwen-derived model and a MiniLM reference encoder. Its normal release path does not send prompts, retrieved context or answers to a remote model provider. The app includes third-party notices and an artifact manifest. Local AI can be inaccurate; it does not provide medical care, diagnosis or treatment.</p>
+        <p>Chat storage retains a bounded recent history. Older messages are removed when history is read or saved according to the app retention window; this is not a promise of background deletion at an exact clock time. You can clear chat history in the app. The current chat directory is marked to be excluded from device backups; previously created backups or exported copies are not retroactively deleted. Developer-only simulator configurations are separate from distributed on-device builds.</p>
+        <h2>Optional Apple Health import</h2>
+        <p>The current Settings import asks Apple Health for permission to read body-weight entries and copies selected entries into Atlas. It does not automatically write Atlas records to Apple Health or request other Health data types. You can revoke Health access in Apple&#x27;s Health permission controls. Revoking access does not delete records already imported into Atlas; remove those records separately if desired. Apple controls the Health store and any Health synchronization enabled in your Apple settings.</p>
+        <h2>File protection and app lock</h2>
+        <p>Atlas requests Apple&#x27;s complete file protection for its Core Data store files and current chat-history file. This uses iOS data protection; Atlas does not add a separate SQLCipher database or an app-managed database encryption key. Protection varies with the file, device state and system configuration, and is not an assurance that every export, preference, backup or previously saved copy has identical protection.</p>
+        <p>If enabled, Face ID or Touch ID uses Apple&#x27;s authentication service. Atlas receives the authentication result, not your face or fingerprint data. Keep your device passcode and system settings secure.</p>
+        <h2>Exports, backups and external links</h2>
+        <p>CSV dose-history files and PDF reports are created locally when you request them. PDF reports can include dose details, reported effects, notes and weights for the selected dates. The report formats are not complete app backups and cannot restore all relationships and settings. Exported report content is readable by the destination you select; it is not protected by a separate Atlas password. Sharing a report or saving it to a cloud-backed location sends that copy to the service you choose.</p>
+        <p>Atlas has no automatic app-level cloud sync. iOS or computer device backups can nevertheless include eligible app records according to your backup settings. The current chat-history directory requests backup exclusion. App deletion or Reset All Data does not erase external backups, Apple Health records, emailed material or files already shared elsewhere. See Apple&#x27;s documentation for your device backup settings.</p>
+        <p>Opening support, policy or source links uses the selected email app or browser, which can contact external services under their own policies. These actions are initiated by you.</p>
+        <h2>Support and beta feedback</h2>
+        <p>If you email support, we receive your email address and the content or attachments you choose to send, and use them to handle your request. Use fictional examples or redacted screenshots when reporting an issue. Please keep identifiable health records private. You may ask for deletion of support correspondence at the address below; email providers and legal retention obligations can affect retained copies.</p>
+        <p>App Store and TestFlight distribution, system diagnostics and feedback sent through Apple&#x27;s tools are handled by Apple and may make diagnostic or feedback information available to the developer. Atlas does not embed an advertising, analytics or remote crash-reporting SDK. This distinction does not mean Apple or an email provider collects nothing.</p>
+        <h2>Your controls</h2>
+        <p>You can edit or delete records, clear chat history, change notification and biometric preferences, and choose whether to import or share data. Reset All Data removes the app&#x27;s tracking records, custom compounds, chat and settings, then restores the default reference library. External copies remain under the control of their storage provider or recipient.</p>
+        <p>Atlas is intended for adults. Its App Store age rating is determined by Apple&#x27;s current questionnaire and regional rules; it is not a medical suitability assessment.</p>
+        <h2>Contact and policy changes</h2>
+        <p>Contact: <a href="mailto:krisco65@gmail.com">krisco65@gmail.com</a>. Use this address for support, privacy questions or requests about correspondence you have sent us. We do not sell tracking records or use them for advertising. This policy will be updated when app behavior changes; the date above identifies this revision.</p>
+        <p><a href="./">AtlasTracker for iPhone</a> · <a href="support.html">Support</a></p>
+    </main>
 </body>
 </html>
